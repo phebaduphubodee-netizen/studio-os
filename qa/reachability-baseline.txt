@@ -1,0 +1,106 @@
+# instruments not reachable from any entry point, as of the commit that
+# wrote this file. MAY SHRINK, MAY NEVER GROW (scripts/reachability_check.py).
+# Wire one into a path, or declare `CLI-ONLY: <who runs it, when>` in its
+# header, then delete its line here.
+#
+# 2026-08-08 — THIS LIST GREW FROM 55 TO 71 AND THE TREE DID NOT GET WORSE.
+# The detector did. `references()` counted ANY occurrence of `<name>.py` in any
+# text as an invocation, so a module was "reached" the moment some docstring
+# mentioned it. It was caught by its own false green: `asset_scale.py`'s
+# docstring cites `dwg_ingest.py` while explaining why the scale assertion had
+# to be written at all, and that citation alone moved `dwg_ingest` from
+# UNREACHED to reached in the same run that added the citation. A `.py` now
+# counts only when an interpreter is named within two lines of it.
+#
+# The sixteen that appeared are therefore not new debt — they were always
+# unreached and the instrument was flattering them:
+#   activity_taxonomy benchmark_precut discord_ingest eval_retrieval
+#   glazing_candidates id_mask judge_calibrate look_bench persona precut_pair
+#   raster_overlay rationale texture_check trn002_lightcheck trn002_station
+#   value_probe
+# Two of them sting more than the rest. `look_bench` IS R4's own command, named
+# in CLAUDE.md prose but not inside a `## Commands` block, which is the only
+# section the checker reads — the rule is real and its invocation is invisible
+# to the audit. `texture_check` was written and used yesterday (r33) and is
+# already outside every path.
+#
+# FUNCTION-LEVEL DEBT, tracked by hand because the checker works at MODULE granularity
+# and cannot see it (declared in scripts/reachability_check.py, "WHAT THIS CHECK CANNOT
+# SEE"). One entry, and it is the most expensive one on this page:
+#
+#   rule_gate.cap_check  — CLOSED 2026-08-08, and kept on this page because the SHAPE
+#     recurs and the entry is the clearest example of it. R1's STOP-LOSS, the first rule
+#     the owner adopted: a working function with four passing tests that `check()` never
+#     called, for 34 rounds. The code was never the missing part — it needed `cap_rounds`
+#     / `cap_full_frames`, R3 makes those the owner's, and the ledger meant to hold them
+#     is a markdown table nothing parses with no TRN-002 row in it at all. A rule needs
+#     its DATA reachable, not just its code. Now: owner declared 42 / 55 in
+#     `qa/curriculum-caps.json`, `check()` calls cap_check, rounds come from the specs on
+#     disk maxed against the spec's own `round`, and full frames are counted BY PIXEL SIZE
+#     because 137 of this lane's PNGs lack the `_quick` token and only 44 are frames.
+#
+#   (this section is now empty of open items — the next unwired FUNCTION goes here, since
+#    the checker still works at module granularity and cannot see one) OWNER DECISION.
+activity_taxonomy
+anomaly_flags
+audit_model_fit
+benchmark_precut
+benchmark_reader
+blind_wall_lane
+closure_run
+confidence
+critique_call
+cross_signal
+derive_curve_priors
+dim_string_score
+discord_ingest
+eval_retrieval
+f2_facing_lane
+facade_reader
+ffe_schedule
+flag_localization
+floor2_defect_gate
+floorplancad_adapter
+glazing_candidates
+golden_set_curate
+judge_calibrate
+kind_priors
+look_bench
+mutation_probe
+nlm_provenance
+persona
+pick_reproduction_target
+pilot_blindpack
+plan_symbol_unit
+precut_pair
+raster_overlay
+rationale
+rebuild_diff
+render_mask_labels
+rot_reconcile
+self_audit
+structured3d_adapter
+style_embed
+suite_elevations
+suite_package
+suite_plan
+suite_rcp
+svg_plan_reader
+swing_door_candidates
+symbol_unit_lane
+synth_plan_2d
+synth_plan_pdf
+texture_check
+trn001_lightcheck
+trn001_matcheck
+trn001_measure
+trn001_overlay
+trn001_solve
+trn002_lightcheck
+trn002_lines
+trn002_look
+trn002_station
+trn002_station_r2
+unit_adoption_lane
+wall_aware_lane
+wall_detect

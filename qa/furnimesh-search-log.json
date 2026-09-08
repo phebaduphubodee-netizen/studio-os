@@ -1,0 +1,1629 @@
+{
+ "_what": "Every FurniMesh listing/fetch this repo has run, with what came back, what was skipped and why, and each fetch's scale-assert verdict. Same law as qa/warehouse-search-log.json: 'we looked and there is nothing' must be checkable.",
+ "runs": [
+  {
+   "at": "2026-08-22T14:56:26+00:00",
+   "category": "tables/nightstand",
+   "pages": 1,
+   "dry_run": true,
+   "n_listed": 24,
+   "fetched": [],
+   "scale": {},
+   "hits": [
+    {
+     "slug": "a-twodrawer-nightstand-in-a-light-greige-f6xj4j",
+     "path": "/library/tables/nightstand/a-twodrawer-nightstand-in-a-light-greige-f6xj4j/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-nightstand-featuring-a-rounded-organic-md1fqm",
+     "path": "/library/tables/nightstand/a-contemporary-nightstand-featuring-a-rounded-organic-md1fqm/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-round-nightstand-featuring-a-dark-6txsl0",
+     "path": "/library/tables/nightstand/a-contemporary-round-nightstand-featuring-a-dark-6txsl0/",
+     "page": 1
+    },
+    {
+     "slug": "a-light-beige-twodrawer-nightstand-featuring-a-h132oc",
+     "path": "/library/tables/nightstand/a-light-beige-twodrawer-nightstand-featuring-a-h132oc/",
+     "page": 1
+    },
+    {
+     "slug": "a-twodrawer-nightstand-with-a-curved-modern-i2trm9",
+     "path": "/library/tables/nightstand/a-twodrawer-nightstand-with-a-curved-modern-i2trm9/",
+     "page": 1
+    },
+    {
+     "slug": "a-lightcolored-wooden-nightstand-featuring-a-single-4u8i3u",
+     "path": "/library/tables/nightstand/a-lightcolored-wooden-nightstand-featuring-a-single-4u8i3u/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-asymmetric-nightstand-featuring-a-twodrawer-vqv65o",
+     "path": "/library/tables/nightstand/a-modern-asymmetric-nightstand-featuring-a-twodrawer-vqv65o/",
+     "page": 1
+    },
+    {
+     "slug": "a-compact-rectangular-wooden-nightstand-with-two-oq8hnh",
+     "path": "/library/tables/nightstand/a-compact-rectangular-wooden-nightstand-with-two-oq8hnh/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-nightstand-featuring-an-offwhite-main-rfwpuc",
+     "path": "/library/tables/nightstand/a-contemporary-nightstand-featuring-an-offwhite-main-rfwpuc/",
+     "page": 1
+    },
+    {
+     "slug": "a-cylindrical-nightstand-with-a-marble-top-jf92a6",
+     "path": "/library/tables/nightstand/a-cylindrical-nightstand-with-a-marble-top-jf92a6/",
+     "page": 1
+    },
+    {
+     "slug": "a-compact-wooden-nightstand-featuring-a-single-q9t1ua",
+     "path": "/library/tables/nightstand/a-compact-wooden-nightstand-featuring-a-single-q9t1ua/",
+     "page": 1
+    },
+    {
+     "slug": "a-dark-wood-nightstand-featuring-two-drawers-a4he2f",
+     "path": "/library/tables/nightstand/a-dark-wood-nightstand-featuring-two-drawers-a4he2f/",
+     "page": 1
+    },
+    {
+     "slug": "a-dark-burl-wood-veneer-nightstand-featuring-6vbr8h",
+     "path": "/library/tables/nightstand/a-dark-burl-wood-veneer-nightstand-featuring-6vbr8h/",
+     "page": 1
+    },
+    {
+     "slug": "a-squareshaped-nightstand-crafted-from-burl-wood-08unz5",
+     "path": "/library/tables/nightstand/a-squareshaped-nightstand-crafted-from-burl-wood-08unz5/",
+     "page": 1
+    },
+    {
+     "slug": "a-lightcolored-wooden-cabinet-with-a-distinctive-fogott",
+     "path": "/library/tables/nightstand/a-lightcolored-wooden-cabinet-with-a-distinctive-fogott/",
+     "page": 1
+    },
+    {
+     "slug": "a-white-nightstand-with-a-single-drawer-svfzzr",
+     "path": "/library/tables/nightstand/a-white-nightstand-with-a-single-drawer-svfzzr/",
+     "page": 1
+    },
+    {
+     "slug": "a-compact-rectangular-bedside-table-constructed-from-0277kh",
+     "path": "/library/tables/nightstand/a-compact-rectangular-bedside-table-constructed-from-0277kh/",
+     "page": 1
+    },
+    {
+     "slug": "a-twodrawer-nightstand-constructed-from-lightcolored-wood-zcs88l",
+     "path": "/library/tables/nightstand/a-twodrawer-nightstand-constructed-from-lightcolored-wood-zcs88l/",
+     "page": 1
+    },
+    {
+     "slug": "a-compact-and-modern-twodrawer-nightstand-featuring-5xc8ap",
+     "path": "/library/tables/nightstand/a-compact-and-modern-twodrawer-nightstand-featuring-5xc8ap/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-nightstand-featuring-two-drawers-a-annlfb",
+     "path": "/library/tables/nightstand/a-modern-nightstand-featuring-two-drawers-a-annlfb/",
+     "page": 1
+    },
+    {
+     "slug": "a-twodrawer-nightstand-featuring-a-rich-burl-lqobo9",
+     "path": "/library/tables/nightstand/a-twodrawer-nightstand-featuring-a-rich-burl-lqobo9/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-nightstand-with-two-drawers-featuring-yqpge9",
+     "path": "/library/tables/nightstand/a-contemporary-nightstand-with-two-drawers-featuring-yqpge9/",
+     "page": 1
+    },
+    {
+     "slug": "a-small-tall-threedrawer-nightstand-with-a-5w6gsg",
+     "path": "/library/tables/nightstand/a-small-tall-threedrawer-nightstand-with-a-5w6gsg/",
+     "page": 1
+    },
+    {
+     "slug": "a-compact-rectangular-bedside-cabinet-or-nightstand-mynevx",
+     "path": "/library/tables/nightstand/a-compact-rectangular-bedside-cabinet-or-nightstand-mynevx/",
+     "page": 1
+    }
+   ],
+   "skipped": []
+  },
+  {
+   "at": "2026-08-22T14:56:57+00:00",
+   "category": "tables/nightstand",
+   "pages": 1,
+   "limit": 4,
+   "assert_class": "nightstand",
+   "dry_run": false,
+   "n_listed": 24,
+   "fetched": [
+    "a-twodrawer-nightstand-in-a-light-greige-f6xj4j",
+    "a-contemporary-nightstand-featuring-a-rounded-organic-md1fqm",
+    "a-contemporary-round-nightstand-featuring-a-dark-6txsl0",
+    "a-light-beige-twodrawer-nightstand-featuring-a-h132oc"
+   ],
+   "scale": {
+    "a-twodrawer-nightstand-in-a-light-greige-f6xj4j": {
+     "ok": false,
+     "class": "nightstand",
+     "measured_mm": 968.4,
+     "band_mm": [
+      300.0,
+      800.0
+     ],
+     "bbox_mm": {
+      "x_mm": 1002.0,
+      "y_mm": 800.4,
+      "z_mm": 968.4
+     },
+     "refusal": null,
+     "in_band_under": {}
+    },
+    "a-contemporary-nightstand-featuring-a-rounded-organic-md1fqm": {
+     "ok": false,
+     "class": "nightstand",
+     "measured_mm": 856.5,
+     "band_mm": [
+      300.0,
+      800.0
+     ],
+     "bbox_mm": {
+      "x_mm": 1003.7,
+      "y_mm": 775.0,
+      "z_mm": 856.5
+     },
+     "refusal": null,
+     "in_band_under": {}
+    },
+    "a-contemporary-round-nightstand-featuring-a-dark-6txsl0": {
+     "ok": false,
+     "class": "nightstand",
+     "measured_mm": 1003.9,
+     "band_mm": [
+      300.0,
+      800.0
+     ],
+     "bbox_mm": {
+      "x_mm": 912.2,
+      "y_mm": 880.2,
+      "z_mm": 1003.9
+     },
+     "refusal": null,
+     "in_band_under": {}
+    },
+    "a-light-beige-twodrawer-nightstand-featuring-a-h132oc": {
+     "ok": true,
+     "class": "nightstand",
+     "measured_mm": 722.1,
+     "band_mm": [
+      300.0,
+      800.0
+     ],
+     "bbox_mm": {
+      "x_mm": 993.5,
+      "y_mm": 456.5,
+      "z_mm": 722.1
+     },
+     "refusal": null,
+     "in_band_under": null
+    }
+   },
+   "hits": [
+    {
+     "slug": "a-twodrawer-nightstand-in-a-light-greige-f6xj4j",
+     "path": "/library/tables/nightstand/a-twodrawer-nightstand-in-a-light-greige-f6xj4j/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-nightstand-featuring-a-rounded-organic-md1fqm",
+     "path": "/library/tables/nightstand/a-contemporary-nightstand-featuring-a-rounded-organic-md1fqm/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-round-nightstand-featuring-a-dark-6txsl0",
+     "path": "/library/tables/nightstand/a-contemporary-round-nightstand-featuring-a-dark-6txsl0/",
+     "page": 1
+    },
+    {
+     "slug": "a-light-beige-twodrawer-nightstand-featuring-a-h132oc",
+     "path": "/library/tables/nightstand/a-light-beige-twodrawer-nightstand-featuring-a-h132oc/",
+     "page": 1
+    },
+    {
+     "slug": "a-twodrawer-nightstand-with-a-curved-modern-i2trm9",
+     "path": "/library/tables/nightstand/a-twodrawer-nightstand-with-a-curved-modern-i2trm9/",
+     "page": 1
+    },
+    {
+     "slug": "a-lightcolored-wooden-nightstand-featuring-a-single-4u8i3u",
+     "path": "/library/tables/nightstand/a-lightcolored-wooden-nightstand-featuring-a-single-4u8i3u/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-asymmetric-nightstand-featuring-a-twodrawer-vqv65o",
+     "path": "/library/tables/nightstand/a-modern-asymmetric-nightstand-featuring-a-twodrawer-vqv65o/",
+     "page": 1
+    },
+    {
+     "slug": "a-compact-rectangular-wooden-nightstand-with-two-oq8hnh",
+     "path": "/library/tables/nightstand/a-compact-rectangular-wooden-nightstand-with-two-oq8hnh/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-nightstand-featuring-an-offwhite-main-rfwpuc",
+     "path": "/library/tables/nightstand/a-contemporary-nightstand-featuring-an-offwhite-main-rfwpuc/",
+     "page": 1
+    },
+    {
+     "slug": "a-cylindrical-nightstand-with-a-marble-top-jf92a6",
+     "path": "/library/tables/nightstand/a-cylindrical-nightstand-with-a-marble-top-jf92a6/",
+     "page": 1
+    },
+    {
+     "slug": "a-compact-wooden-nightstand-featuring-a-single-q9t1ua",
+     "path": "/library/tables/nightstand/a-compact-wooden-nightstand-featuring-a-single-q9t1ua/",
+     "page": 1
+    },
+    {
+     "slug": "a-dark-wood-nightstand-featuring-two-drawers-a4he2f",
+     "path": "/library/tables/nightstand/a-dark-wood-nightstand-featuring-two-drawers-a4he2f/",
+     "page": 1
+    },
+    {
+     "slug": "a-dark-burl-wood-veneer-nightstand-featuring-6vbr8h",
+     "path": "/library/tables/nightstand/a-dark-burl-wood-veneer-nightstand-featuring-6vbr8h/",
+     "page": 1
+    },
+    {
+     "slug": "a-squareshaped-nightstand-crafted-from-burl-wood-08unz5",
+     "path": "/library/tables/nightstand/a-squareshaped-nightstand-crafted-from-burl-wood-08unz5/",
+     "page": 1
+    },
+    {
+     "slug": "a-lightcolored-wooden-cabinet-with-a-distinctive-fogott",
+     "path": "/library/tables/nightstand/a-lightcolored-wooden-cabinet-with-a-distinctive-fogott/",
+     "page": 1
+    },
+    {
+     "slug": "a-white-nightstand-with-a-single-drawer-svfzzr",
+     "path": "/library/tables/nightstand/a-white-nightstand-with-a-single-drawer-svfzzr/",
+     "page": 1
+    },
+    {
+     "slug": "a-compact-rectangular-bedside-table-constructed-from-0277kh",
+     "path": "/library/tables/nightstand/a-compact-rectangular-bedside-table-constructed-from-0277kh/",
+     "page": 1
+    },
+    {
+     "slug": "a-twodrawer-nightstand-constructed-from-lightcolored-wood-zcs88l",
+     "path": "/library/tables/nightstand/a-twodrawer-nightstand-constructed-from-lightcolored-wood-zcs88l/",
+     "page": 1
+    },
+    {
+     "slug": "a-compact-and-modern-twodrawer-nightstand-featuring-5xc8ap",
+     "path": "/library/tables/nightstand/a-compact-and-modern-twodrawer-nightstand-featuring-5xc8ap/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-nightstand-featuring-two-drawers-a-annlfb",
+     "path": "/library/tables/nightstand/a-modern-nightstand-featuring-two-drawers-a-annlfb/",
+     "page": 1
+    },
+    {
+     "slug": "a-twodrawer-nightstand-featuring-a-rich-burl-lqobo9",
+     "path": "/library/tables/nightstand/a-twodrawer-nightstand-featuring-a-rich-burl-lqobo9/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-nightstand-with-two-drawers-featuring-yqpge9",
+     "path": "/library/tables/nightstand/a-contemporary-nightstand-with-two-drawers-featuring-yqpge9/",
+     "page": 1
+    },
+    {
+     "slug": "a-small-tall-threedrawer-nightstand-with-a-5w6gsg",
+     "path": "/library/tables/nightstand/a-small-tall-threedrawer-nightstand-with-a-5w6gsg/",
+     "page": 1
+    },
+    {
+     "slug": "a-compact-rectangular-bedside-cabinet-or-nightstand-mynevx",
+     "path": "/library/tables/nightstand/a-compact-rectangular-bedside-cabinet-or-nightstand-mynevx/",
+     "page": 1
+    }
+   ],
+   "skipped": [
+    {
+     "slug": "a-twodrawer-nightstand-with-a-curved-modern-i2trm9",
+     "path": "/library/tables/nightstand/a-twodrawer-nightstand-with-a-curved-modern-i2trm9/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-lightcolored-wooden-nightstand-featuring-a-single-4u8i3u",
+     "path": "/library/tables/nightstand/a-lightcolored-wooden-nightstand-featuring-a-single-4u8i3u/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-modern-asymmetric-nightstand-featuring-a-twodrawer-vqv65o",
+     "path": "/library/tables/nightstand/a-modern-asymmetric-nightstand-featuring-a-twodrawer-vqv65o/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-compact-rectangular-wooden-nightstand-with-two-oq8hnh",
+     "path": "/library/tables/nightstand/a-compact-rectangular-wooden-nightstand-with-two-oq8hnh/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-contemporary-nightstand-featuring-an-offwhite-main-rfwpuc",
+     "path": "/library/tables/nightstand/a-contemporary-nightstand-featuring-an-offwhite-main-rfwpuc/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-cylindrical-nightstand-with-a-marble-top-jf92a6",
+     "path": "/library/tables/nightstand/a-cylindrical-nightstand-with-a-marble-top-jf92a6/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-compact-wooden-nightstand-featuring-a-single-q9t1ua",
+     "path": "/library/tables/nightstand/a-compact-wooden-nightstand-featuring-a-single-q9t1ua/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-dark-wood-nightstand-featuring-two-drawers-a4he2f",
+     "path": "/library/tables/nightstand/a-dark-wood-nightstand-featuring-two-drawers-a4he2f/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-dark-burl-wood-veneer-nightstand-featuring-6vbr8h",
+     "path": "/library/tables/nightstand/a-dark-burl-wood-veneer-nightstand-featuring-6vbr8h/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-squareshaped-nightstand-crafted-from-burl-wood-08unz5",
+     "path": "/library/tables/nightstand/a-squareshaped-nightstand-crafted-from-burl-wood-08unz5/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-lightcolored-wooden-cabinet-with-a-distinctive-fogott",
+     "path": "/library/tables/nightstand/a-lightcolored-wooden-cabinet-with-a-distinctive-fogott/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-white-nightstand-with-a-single-drawer-svfzzr",
+     "path": "/library/tables/nightstand/a-white-nightstand-with-a-single-drawer-svfzzr/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-compact-rectangular-bedside-table-constructed-from-0277kh",
+     "path": "/library/tables/nightstand/a-compact-rectangular-bedside-table-constructed-from-0277kh/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-twodrawer-nightstand-constructed-from-lightcolored-wood-zcs88l",
+     "path": "/library/tables/nightstand/a-twodrawer-nightstand-constructed-from-lightcolored-wood-zcs88l/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-compact-and-modern-twodrawer-nightstand-featuring-5xc8ap",
+     "path": "/library/tables/nightstand/a-compact-and-modern-twodrawer-nightstand-featuring-5xc8ap/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-modern-nightstand-featuring-two-drawers-a-annlfb",
+     "path": "/library/tables/nightstand/a-modern-nightstand-featuring-two-drawers-a-annlfb/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-twodrawer-nightstand-featuring-a-rich-burl-lqobo9",
+     "path": "/library/tables/nightstand/a-twodrawer-nightstand-featuring-a-rich-burl-lqobo9/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-contemporary-nightstand-with-two-drawers-featuring-yqpge9",
+     "path": "/library/tables/nightstand/a-contemporary-nightstand-with-two-drawers-featuring-yqpge9/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-small-tall-threedrawer-nightstand-with-a-5w6gsg",
+     "path": "/library/tables/nightstand/a-small-tall-threedrawer-nightstand-with-a-5w6gsg/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-compact-rectangular-bedside-cabinet-or-nightstand-mynevx",
+     "path": "/library/tables/nightstand/a-compact-rectangular-bedside-cabinet-or-nightstand-mynevx/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    }
+   ]
+  },
+  {
+   "at": "2026-08-22T14:57:42+00:00",
+   "category": "seating/bench",
+   "pages": 1,
+   "limit": 4,
+   "assert_class": "bench_seat",
+   "dry_run": false,
+   "n_listed": 24,
+   "fetched": [
+    "a-sculptural-organic-wood-bench-likely-crafted-gykhsp",
+    "a-robust-wooden-bench-constructed-from-solid-796t7t",
+    "an-elongated-contemporary-bench-featuring-an-upholstered-w2p8xm",
+    "an-elongated-ovalshaped-bench-featuring-a-lightcolored-dw0pj7"
+   ],
+   "scale": {
+    "a-sculptural-organic-wood-bench-likely-crafted-gykhsp": {
+     "ok": true,
+     "class": "bench_seat",
+     "measured_mm": 476.9,
+     "band_mm": [
+      300.0,
+      600.0
+     ],
+     "bbox_mm": {
+      "x_mm": 1001.1,
+      "y_mm": 362.5,
+      "z_mm": 476.9
+     },
+     "refusal": null,
+     "in_band_under": null
+    },
+    "a-robust-wooden-bench-constructed-from-solid-796t7t": {
+     "ok": false,
+     "class": "bench_seat",
+     "measured_mm": 292.0,
+     "band_mm": [
+      300.0,
+      600.0
+     ],
+     "bbox_mm": {
+      "x_mm": 1002.0,
+      "y_mm": 284.5,
+      "z_mm": 292.0
+     },
+     "refusal": null,
+     "in_band_under": {}
+    },
+    "an-elongated-contemporary-bench-featuring-an-upholstered-w2p8xm": {
+     "ok": true,
+     "class": "bench_seat",
+     "measured_mm": 544.6,
+     "band_mm": [
+      300.0,
+      600.0
+     ],
+     "bbox_mm": {
+      "x_mm": 1003.7,
+      "y_mm": 477.8,
+      "z_mm": 544.6
+     },
+     "refusal": null,
+     "in_band_under": null
+    },
+    "an-elongated-ovalshaped-bench-featuring-a-lightcolored-dw0pj7": {
+     "ok": true,
+     "class": "bench_seat",
+     "measured_mm": 365.2,
+     "band_mm": [
+      300.0,
+      600.0
+     ],
+     "bbox_mm": {
+      "x_mm": 1001.8,
+      "y_mm": 405.1,
+      "z_mm": 365.2
+     },
+     "refusal": null,
+     "in_band_under": null
+    }
+   },
+   "hits": [
+    {
+     "slug": "a-sculptural-organic-wood-bench-likely-crafted-gykhsp",
+     "path": "/library/seating/bench/a-sculptural-organic-wood-bench-likely-crafted-gykhsp/",
+     "page": 1
+    },
+    {
+     "slug": "a-robust-wooden-bench-constructed-from-solid-796t7t",
+     "path": "/library/seating/bench/a-robust-wooden-bench-constructed-from-solid-796t7t/",
+     "page": 1
+    },
+    {
+     "slug": "an-elongated-contemporary-bench-featuring-an-upholstered-w2p8xm",
+     "path": "/library/seating/bench/an-elongated-contemporary-bench-featuring-an-upholstered-w2p8xm/",
+     "page": 1
+    },
+    {
+     "slug": "an-elongated-ovalshaped-bench-featuring-a-lightcolored-dw0pj7",
+     "path": "/library/seating/bench/an-elongated-ovalshaped-bench-featuring-a-lightcolored-dw0pj7/",
+     "page": 1
+    },
+    {
+     "slug": "a-monolithic-bench-carved-from-a-single-6070i7",
+     "path": "/library/seating/bench/a-monolithic-bench-carved-from-a-single-6070i7/",
+     "page": 1
+    },
+    {
+     "slug": "a-large-contemporary-outdoor-structure-designed-to-wo2rw2",
+     "path": "/library/seating/bench/a-large-contemporary-outdoor-structure-designed-to-wo2rw2/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-bench-with-a-fluid-organic-3em2n7",
+     "path": "/library/seating/bench/a-contemporary-bench-with-a-fluid-organic-3em2n7/",
+     "page": 1
+    },
+    {
+     "slug": "an-upholstered-bench-featuring-a-sturdy-metal-imil18",
+     "path": "/library/seating/bench/an-upholstered-bench-featuring-a-sturdy-metal-imil18/",
+     "page": 1
+    },
+    {
+     "slug": "an-upholstered-curved-seating-unit-featuring-an-2ilrzc",
+     "path": "/library/seating/bench/an-upholstered-curved-seating-unit-featuring-an-2ilrzc/",
+     "page": 1
+    },
+    {
+     "slug": "a-long-rectangular-bench-featuring-a-tufted-pzjhih",
+     "path": "/library/seating/bench/a-long-rectangular-bench-featuring-a-tufted-pzjhih/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-wooden-bench-with-a-thick-1on6x4",
+     "path": "/library/seating/bench/a-modern-wooden-bench-with-a-thick-1on6x4/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-upholstered-bench-with-a-rectangular-ulh93h",
+     "path": "/library/seating/bench/a-contemporary-upholstered-bench-with-a-rectangular-ulh93h/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-organic-modular-bench-featuring-two-th25hi",
+     "path": "/library/seating/bench/a-modern-organic-modular-bench-featuring-two-th25hi/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-bench-featuring-an-integrated-backrest-bmiral",
+     "path": "/library/seating/bench/a-modern-bench-featuring-an-integrated-backrest-bmiral/",
+     "page": 1
+    },
+    {
+     "slug": "a-minimalist-wooden-bench-featuring-a-lightcolored-ja7zdt",
+     "path": "/library/seating/bench/a-minimalist-wooden-bench-featuring-a-lightcolored-ja7zdt/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-twoseater-swing-seat-featuring-a-pe7dgp",
+     "path": "/library/seating/bench/a-modern-twoseater-swing-seat-featuring-a-pe7dgp/",
+     "page": 1
+    },
+    {
+     "slug": "a-natural-rattan-bench-with-a-canewoven-u3wh64",
+     "path": "/library/seating/bench/a-natural-rattan-bench-with-a-canewoven-u3wh64/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-bench-crafted-from-lighttoned-oak-a8ym8x",
+     "path": "/library/seating/bench/a-modern-bench-crafted-from-lighttoned-oak-a8ym8x/",
+     "page": 1
+    },
+    {
+     "slug": "a-vibrant-green-elaborately-carved-low-bench-7uv088",
+     "path": "/library/seating/bench/a-vibrant-green-elaborately-carved-low-bench-7uv088/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-rectangular-upholstered-bench-featuring-a-fa9531",
+     "path": "/library/seating/bench/a-modern-rectangular-upholstered-bench-featuring-a-fa9531/",
+     "page": 1
+    },
+    {
+     "slug": "a-rustic-bench-crafted-from-large-natural-5nkhx4",
+     "path": "/library/seating/bench/a-rustic-bench-crafted-from-large-natural-5nkhx4/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-bench-featuring-an-organically-shaped-xp6gxi",
+     "path": "/library/seating/bench/a-modern-bench-featuring-an-organically-shaped-xp6gxi/",
+     "page": 1
+    },
+    {
+     "slug": "a-rectangular-bench-featuring-a-woven-natural-fvq2gt",
+     "path": "/library/seating/bench/a-rectangular-bench-featuring-a-woven-natural-fvq2gt/",
+     "page": 1
+    },
+    {
+     "slug": "a-unique-bench-featuring-a-liveedge-wooden-7y81fl",
+     "path": "/library/seating/bench/a-unique-bench-featuring-a-liveedge-wooden-7y81fl/",
+     "page": 1
+    }
+   ],
+   "skipped": [
+    {
+     "slug": "a-monolithic-bench-carved-from-a-single-6070i7",
+     "path": "/library/seating/bench/a-monolithic-bench-carved-from-a-single-6070i7/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-large-contemporary-outdoor-structure-designed-to-wo2rw2",
+     "path": "/library/seating/bench/a-large-contemporary-outdoor-structure-designed-to-wo2rw2/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-contemporary-bench-with-a-fluid-organic-3em2n7",
+     "path": "/library/seating/bench/a-contemporary-bench-with-a-fluid-organic-3em2n7/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "an-upholstered-bench-featuring-a-sturdy-metal-imil18",
+     "path": "/library/seating/bench/an-upholstered-bench-featuring-a-sturdy-metal-imil18/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "an-upholstered-curved-seating-unit-featuring-an-2ilrzc",
+     "path": "/library/seating/bench/an-upholstered-curved-seating-unit-featuring-an-2ilrzc/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-long-rectangular-bench-featuring-a-tufted-pzjhih",
+     "path": "/library/seating/bench/a-long-rectangular-bench-featuring-a-tufted-pzjhih/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-modern-wooden-bench-with-a-thick-1on6x4",
+     "path": "/library/seating/bench/a-modern-wooden-bench-with-a-thick-1on6x4/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-contemporary-upholstered-bench-with-a-rectangular-ulh93h",
+     "path": "/library/seating/bench/a-contemporary-upholstered-bench-with-a-rectangular-ulh93h/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-modern-organic-modular-bench-featuring-two-th25hi",
+     "path": "/library/seating/bench/a-modern-organic-modular-bench-featuring-two-th25hi/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-modern-bench-featuring-an-integrated-backrest-bmiral",
+     "path": "/library/seating/bench/a-modern-bench-featuring-an-integrated-backrest-bmiral/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-minimalist-wooden-bench-featuring-a-lightcolored-ja7zdt",
+     "path": "/library/seating/bench/a-minimalist-wooden-bench-featuring-a-lightcolored-ja7zdt/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-modern-twoseater-swing-seat-featuring-a-pe7dgp",
+     "path": "/library/seating/bench/a-modern-twoseater-swing-seat-featuring-a-pe7dgp/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-natural-rattan-bench-with-a-canewoven-u3wh64",
+     "path": "/library/seating/bench/a-natural-rattan-bench-with-a-canewoven-u3wh64/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-modern-bench-crafted-from-lighttoned-oak-a8ym8x",
+     "path": "/library/seating/bench/a-modern-bench-crafted-from-lighttoned-oak-a8ym8x/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-vibrant-green-elaborately-carved-low-bench-7uv088",
+     "path": "/library/seating/bench/a-vibrant-green-elaborately-carved-low-bench-7uv088/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-modern-rectangular-upholstered-bench-featuring-a-fa9531",
+     "path": "/library/seating/bench/a-modern-rectangular-upholstered-bench-featuring-a-fa9531/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-rustic-bench-crafted-from-large-natural-5nkhx4",
+     "path": "/library/seating/bench/a-rustic-bench-crafted-from-large-natural-5nkhx4/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-modern-bench-featuring-an-organically-shaped-xp6gxi",
+     "path": "/library/seating/bench/a-modern-bench-featuring-an-organically-shaped-xp6gxi/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-rectangular-bench-featuring-a-woven-natural-fvq2gt",
+     "path": "/library/seating/bench/a-rectangular-bench-featuring-a-woven-natural-fvq2gt/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-unique-bench-featuring-a-liveedge-wooden-7y81fl",
+     "path": "/library/seating/bench/a-unique-bench-featuring-a-liveedge-wooden-7y81fl/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    }
+   ]
+  },
+  {
+   "at": "2026-08-22T14:58:19+00:00",
+   "category": "lighting/table-lamp",
+   "pages": 1,
+   "limit": 4,
+   "assert_class": "table_lamp",
+   "dry_run": false,
+   "n_listed": 24,
+   "fetched": [
+    "a-distinctive-table-lamp-featuring-a-heavily-jaxwnk",
+    "a-modern-table-lamp-featuring-a-cylindrical-ob0zce",
+    "a-contemporary-table-lamp-featuring-a-matte-28zuzc",
+    "a-table-lamp-featuring-a-red-lacquered-a5e3x8"
+   ],
+   "scale": {
+    "a-distinctive-table-lamp-featuring-a-heavily-jaxwnk": {
+     "ok": true,
+     "class": "table_lamp",
+     "measured_mm": 1001.1,
+     "band_mm": [
+      250.0,
+      1100.0
+     ],
+     "bbox_mm": {
+      "x_mm": 284.9,
+      "y_mm": 285.4,
+      "z_mm": 1001.1
+     },
+     "refusal": null,
+     "in_band_under": null
+    },
+    "a-modern-table-lamp-featuring-a-cylindrical-ob0zce": {
+     "ok": true,
+     "class": "table_lamp",
+     "measured_mm": 1004.0,
+     "band_mm": [
+      250.0,
+      1100.0
+     ],
+     "bbox_mm": {
+      "x_mm": 611.0,
+      "y_mm": 611.0,
+      "z_mm": 1004.0
+     },
+     "refusal": null,
+     "in_band_under": null
+    },
+    "a-contemporary-table-lamp-featuring-a-matte-28zuzc": {
+     "ok": true,
+     "class": "table_lamp",
+     "measured_mm": 997.3,
+     "band_mm": [
+      250.0,
+      1100.0
+     ],
+     "bbox_mm": {
+      "x_mm": 623.2,
+      "y_mm": 620.6,
+      "z_mm": 997.3
+     },
+     "refusal": null,
+     "in_band_under": null
+    },
+    "a-table-lamp-featuring-a-red-lacquered-a5e3x8": {
+     "ok": true,
+     "class": "table_lamp",
+     "measured_mm": 1001.9,
+     "band_mm": [
+      250.0,
+      1100.0
+     ],
+     "bbox_mm": {
+      "x_mm": 713.8,
+      "y_mm": 713.5,
+      "z_mm": 1001.9
+     },
+     "refusal": null,
+     "in_band_under": null
+    }
+   },
+   "hits": [
+    {
+     "slug": "a-distinctive-table-lamp-featuring-a-heavily-jaxwnk",
+     "path": "/library/lighting/table-lamp/a-distinctive-table-lamp-featuring-a-heavily-jaxwnk/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-table-lamp-featuring-a-cylindrical-ob0zce",
+     "path": "/library/lighting/table-lamp/a-modern-table-lamp-featuring-a-cylindrical-ob0zce/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-table-lamp-featuring-a-matte-28zuzc",
+     "path": "/library/lighting/table-lamp/a-contemporary-table-lamp-featuring-a-matte-28zuzc/",
+     "page": 1
+    },
+    {
+     "slug": "a-table-lamp-featuring-a-red-lacquered-a5e3x8",
+     "path": "/library/lighting/table-lamp/a-table-lamp-featuring-a-red-lacquered-a5e3x8/",
+     "page": 1
+    },
+    {
+     "slug": "a-table-lamp-featuring-a-rounded-bulbous-sh6a6k",
+     "path": "/library/lighting/table-lamp/a-table-lamp-featuring-a-rounded-bulbous-sh6a6k/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-table-lamp-featuring-a-cylindrical-ad1ivj",
+     "path": "/library/lighting/table-lamp/a-modern-table-lamp-featuring-a-cylindrical-ad1ivj/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-monochromatic-black-table-lamp-featuring-ks45ll",
+     "path": "/library/lighting/table-lamp/a-modern-monochromatic-black-table-lamp-featuring-ks45ll/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-table-lamp-featuring-a-tall-kum22m",
+     "path": "/library/lighting/table-lamp/a-contemporary-table-lamp-featuring-a-tall-kum22m/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-table-lamp-featuring-a-sculptural-t21g0j",
+     "path": "/library/lighting/table-lamp/a-contemporary-table-lamp-featuring-a-sculptural-t21g0j/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-table-lamp-featuring-a-tall-7srga2",
+     "path": "/library/lighting/table-lamp/a-contemporary-table-lamp-featuring-a-tall-7srga2/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-table-lamp-featuring-a-monochromatic-w8ekes",
+     "path": "/library/lighting/table-lamp/a-modern-table-lamp-featuring-a-monochromatic-w8ekes/",
+     "page": 1
+    },
+    {
+     "slug": "a-table-lamp-featuring-a-distinctive-dark-ex2cbb",
+     "path": "/library/lighting/table-lamp/a-table-lamp-featuring-a-distinctive-dark-ex2cbb/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-black-led-desk-lamp-featuring-ihwsys",
+     "path": "/library/lighting/table-lamp/a-modern-black-led-desk-lamp-featuring-ihwsys/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-table-lamp-featuring-a-monolithic-7k8u1g",
+     "path": "/library/lighting/table-lamp/a-modern-table-lamp-featuring-a-monolithic-7k8u1g/",
+     "page": 1
+    },
+    {
+     "slug": "a-table-lamp-featuring-a-dark-brown-dzxsdx",
+     "path": "/library/lighting/table-lamp/a-table-lamp-featuring-a-dark-brown-dzxsdx/",
+     "page": 1
+    },
+    {
+     "slug": "a-spherical-lamp-designed-to-resemble-the-iywf2w",
+     "path": "/library/lighting/table-lamp/a-spherical-lamp-designed-to-resemble-the-iywf2w/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-portable-electric-lamp-featuring-a-d59r67",
+     "path": "/library/lighting/table-lamp/a-contemporary-portable-electric-lamp-featuring-a-d59r67/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-monochromatic-table-lamp-featuring-a-z6vpbw",
+     "path": "/library/lighting/table-lamp/a-modern-monochromatic-table-lamp-featuring-a-z6vpbw/",
+     "page": 1
+    },
+    {
+     "slug": "a-table-lamp-featuring-a-robust-darktextured-2g1bse",
+     "path": "/library/lighting/table-lamp/a-table-lamp-featuring-a-robust-darktextured-2g1bse/",
+     "page": 1
+    },
+    {
+     "slug": "a-table-lamp-featuring-a-glossy-caramelcolored-avpzhw",
+     "path": "/library/lighting/table-lamp/a-table-lamp-featuring-a-glossy-caramelcolored-avpzhw/",
+     "page": 1
+    },
+    {
+     "slug": "a-table-lamp-featuring-a-conical-lampshade-7dhkh5",
+     "path": "/library/lighting/table-lamp/a-table-lamp-featuring-a-conical-lampshade-7dhkh5/",
+     "page": 1
+    },
+    {
+     "slug": "a-sculptural-table-lamp-crafted-from-lighttoned-s1suhk",
+     "path": "/library/lighting/table-lamp/a-sculptural-table-lamp-crafted-from-lighttoned-s1suhk/",
+     "page": 1
+    },
+    {
+     "slug": "a-table-lamp-featuring-a-spherical-textured-ofud3a",
+     "path": "/library/lighting/table-lamp/a-table-lamp-featuring-a-spherical-textured-ofud3a/",
+     "page": 1
+    },
+    {
+     "slug": "a-table-lamp-featuring-a-lighttoned-wooden-v1ksjo",
+     "path": "/library/lighting/table-lamp/a-table-lamp-featuring-a-lighttoned-wooden-v1ksjo/",
+     "page": 1
+    }
+   ],
+   "skipped": [
+    {
+     "slug": "a-table-lamp-featuring-a-rounded-bulbous-sh6a6k",
+     "path": "/library/lighting/table-lamp/a-table-lamp-featuring-a-rounded-bulbous-sh6a6k/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-modern-table-lamp-featuring-a-cylindrical-ad1ivj",
+     "path": "/library/lighting/table-lamp/a-modern-table-lamp-featuring-a-cylindrical-ad1ivj/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-modern-monochromatic-black-table-lamp-featuring-ks45ll",
+     "path": "/library/lighting/table-lamp/a-modern-monochromatic-black-table-lamp-featuring-ks45ll/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-contemporary-table-lamp-featuring-a-tall-kum22m",
+     "path": "/library/lighting/table-lamp/a-contemporary-table-lamp-featuring-a-tall-kum22m/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-contemporary-table-lamp-featuring-a-sculptural-t21g0j",
+     "path": "/library/lighting/table-lamp/a-contemporary-table-lamp-featuring-a-sculptural-t21g0j/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-contemporary-table-lamp-featuring-a-tall-7srga2",
+     "path": "/library/lighting/table-lamp/a-contemporary-table-lamp-featuring-a-tall-7srga2/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-modern-table-lamp-featuring-a-monochromatic-w8ekes",
+     "path": "/library/lighting/table-lamp/a-modern-table-lamp-featuring-a-monochromatic-w8ekes/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-table-lamp-featuring-a-distinctive-dark-ex2cbb",
+     "path": "/library/lighting/table-lamp/a-table-lamp-featuring-a-distinctive-dark-ex2cbb/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-modern-black-led-desk-lamp-featuring-ihwsys",
+     "path": "/library/lighting/table-lamp/a-modern-black-led-desk-lamp-featuring-ihwsys/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-modern-table-lamp-featuring-a-monolithic-7k8u1g",
+     "path": "/library/lighting/table-lamp/a-modern-table-lamp-featuring-a-monolithic-7k8u1g/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-table-lamp-featuring-a-dark-brown-dzxsdx",
+     "path": "/library/lighting/table-lamp/a-table-lamp-featuring-a-dark-brown-dzxsdx/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-spherical-lamp-designed-to-resemble-the-iywf2w",
+     "path": "/library/lighting/table-lamp/a-spherical-lamp-designed-to-resemble-the-iywf2w/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-contemporary-portable-electric-lamp-featuring-a-d59r67",
+     "path": "/library/lighting/table-lamp/a-contemporary-portable-electric-lamp-featuring-a-d59r67/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-modern-monochromatic-table-lamp-featuring-a-z6vpbw",
+     "path": "/library/lighting/table-lamp/a-modern-monochromatic-table-lamp-featuring-a-z6vpbw/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-table-lamp-featuring-a-robust-darktextured-2g1bse",
+     "path": "/library/lighting/table-lamp/a-table-lamp-featuring-a-robust-darktextured-2g1bse/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-table-lamp-featuring-a-glossy-caramelcolored-avpzhw",
+     "path": "/library/lighting/table-lamp/a-table-lamp-featuring-a-glossy-caramelcolored-avpzhw/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-table-lamp-featuring-a-conical-lampshade-7dhkh5",
+     "path": "/library/lighting/table-lamp/a-table-lamp-featuring-a-conical-lampshade-7dhkh5/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-sculptural-table-lamp-crafted-from-lighttoned-s1suhk",
+     "path": "/library/lighting/table-lamp/a-sculptural-table-lamp-crafted-from-lighttoned-s1suhk/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-table-lamp-featuring-a-spherical-textured-ofud3a",
+     "path": "/library/lighting/table-lamp/a-table-lamp-featuring-a-spherical-textured-ofud3a/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    },
+    {
+     "slug": "a-table-lamp-featuring-a-lighttoned-wooden-v1ksjo",
+     "path": "/library/lighting/table-lamp/a-table-lamp-featuring-a-lighttoned-wooden-v1ksjo/",
+     "page": 1,
+     "why": "past --limit 4 in page order"
+    }
+   ]
+  },
+  {
+   "at": "2026-08-22T14:58:36+00:00",
+   "category": "decor/vase",
+   "pages": 1,
+   "limit": 4,
+   "assert_class": "vase",
+   "dry_run": false,
+   "n_listed": 3,
+   "fetched": [
+    "a-minimalist-light-beige-ceramic-vase-with-yjjzbb",
+    "a-tall-black-decorative-vase-with-a-3pla8a",
+    "a-brown-glazed-ceramic-vase-featuring-an-2piiu1"
+   ],
+   "scale": {
+    "a-minimalist-light-beige-ceramic-vase-with-yjjzbb": {
+     "ok": true,
+     "class": "vase",
+     "measured_mm": 751.4,
+     "band_mm": [
+      80.0,
+      900.0
+     ],
+     "bbox_mm": {
+      "x_mm": 998.8,
+      "y_mm": 956.5,
+      "z_mm": 751.4
+     },
+     "refusal": null,
+     "in_band_under": null
+    },
+    "a-tall-black-decorative-vase-with-a-3pla8a": {
+     "ok": false,
+     "class": "vase",
+     "measured_mm": 1001.9,
+     "band_mm": [
+      80.0,
+      900.0
+     ],
+     "bbox_mm": {
+      "x_mm": 552.2,
+      "y_mm": 552.2,
+      "z_mm": 1001.9
+     },
+     "refusal": null,
+     "in_band_under": {}
+    },
+    "a-brown-glazed-ceramic-vase-featuring-an-2piiu1": {
+     "ok": false,
+     "class": "vase",
+     "measured_mm": 1001.4,
+     "band_mm": [
+      80.0,
+      900.0
+     ],
+     "bbox_mm": {
+      "x_mm": 802.7,
+      "y_mm": 806.4,
+      "z_mm": 1001.4
+     },
+     "refusal": null,
+     "in_band_under": {}
+    }
+   },
+   "hits": [
+    {
+     "slug": "a-minimalist-light-beige-ceramic-vase-with-yjjzbb",
+     "path": "/library/decor/vase/a-minimalist-light-beige-ceramic-vase-with-yjjzbb/",
+     "page": 1
+    },
+    {
+     "slug": "a-tall-black-decorative-vase-with-a-3pla8a",
+     "path": "/library/decor/vase/a-tall-black-decorative-vase-with-a-3pla8a/",
+     "page": 1
+    },
+    {
+     "slug": "a-brown-glazed-ceramic-vase-featuring-an-2piiu1",
+     "path": "/library/decor/vase/a-brown-glazed-ceramic-vase-featuring-an-2piiu1/",
+     "page": 1
+    }
+   ],
+   "skipped": []
+  },
+  {
+   "at": "2026-08-22T14:59:19+00:00",
+   "category": "tables/nightstand",
+   "pages": 1,
+   "limit": 2,
+   "assert_class": "nightstand",
+   "dry_run": false,
+   "n_listed": 24,
+   "fetched": [
+    "a-twodrawer-nightstand-with-a-curved-modern-i2trm9",
+    "a-lightcolored-wooden-nightstand-featuring-a-single-4u8i3u"
+   ],
+   "scale": {
+    "a-twodrawer-nightstand-with-a-curved-modern-i2trm9": {
+     "ok": false,
+     "class": "nightstand",
+     "measured_mm": 933.3,
+     "band_mm": [
+      300.0,
+      800.0
+     ],
+     "bbox_mm": {
+      "x_mm": 1000.2,
+      "y_mm": 760.8,
+      "z_mm": 933.3
+     },
+     "refusal": null,
+     "in_band_under": {}
+    },
+    "a-lightcolored-wooden-nightstand-featuring-a-single-4u8i3u": {
+     "ok": false,
+     "class": "nightstand",
+     "measured_mm": 1001.8,
+     "band_mm": [
+      300.0,
+      800.0
+     ],
+     "bbox_mm": {
+      "x_mm": 469.4,
+      "y_mm": 368.2,
+      "z_mm": 1001.8
+     },
+     "refusal": null,
+     "in_band_under": {}
+    }
+   },
+   "hits": [
+    {
+     "slug": "a-twodrawer-nightstand-in-a-light-greige-f6xj4j",
+     "path": "/library/tables/nightstand/a-twodrawer-nightstand-in-a-light-greige-f6xj4j/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-nightstand-featuring-a-rounded-organic-md1fqm",
+     "path": "/library/tables/nightstand/a-contemporary-nightstand-featuring-a-rounded-organic-md1fqm/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-round-nightstand-featuring-a-dark-6txsl0",
+     "path": "/library/tables/nightstand/a-contemporary-round-nightstand-featuring-a-dark-6txsl0/",
+     "page": 1
+    },
+    {
+     "slug": "a-light-beige-twodrawer-nightstand-featuring-a-h132oc",
+     "path": "/library/tables/nightstand/a-light-beige-twodrawer-nightstand-featuring-a-h132oc/",
+     "page": 1
+    },
+    {
+     "slug": "a-twodrawer-nightstand-with-a-curved-modern-i2trm9",
+     "path": "/library/tables/nightstand/a-twodrawer-nightstand-with-a-curved-modern-i2trm9/",
+     "page": 1
+    },
+    {
+     "slug": "a-lightcolored-wooden-nightstand-featuring-a-single-4u8i3u",
+     "path": "/library/tables/nightstand/a-lightcolored-wooden-nightstand-featuring-a-single-4u8i3u/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-asymmetric-nightstand-featuring-a-twodrawer-vqv65o",
+     "path": "/library/tables/nightstand/a-modern-asymmetric-nightstand-featuring-a-twodrawer-vqv65o/",
+     "page": 1
+    },
+    {
+     "slug": "a-compact-rectangular-wooden-nightstand-with-two-oq8hnh",
+     "path": "/library/tables/nightstand/a-compact-rectangular-wooden-nightstand-with-two-oq8hnh/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-nightstand-featuring-an-offwhite-main-rfwpuc",
+     "path": "/library/tables/nightstand/a-contemporary-nightstand-featuring-an-offwhite-main-rfwpuc/",
+     "page": 1
+    },
+    {
+     "slug": "a-cylindrical-nightstand-with-a-marble-top-jf92a6",
+     "path": "/library/tables/nightstand/a-cylindrical-nightstand-with-a-marble-top-jf92a6/",
+     "page": 1
+    },
+    {
+     "slug": "a-compact-wooden-nightstand-featuring-a-single-q9t1ua",
+     "path": "/library/tables/nightstand/a-compact-wooden-nightstand-featuring-a-single-q9t1ua/",
+     "page": 1
+    },
+    {
+     "slug": "a-dark-wood-nightstand-featuring-two-drawers-a4he2f",
+     "path": "/library/tables/nightstand/a-dark-wood-nightstand-featuring-two-drawers-a4he2f/",
+     "page": 1
+    },
+    {
+     "slug": "a-dark-burl-wood-veneer-nightstand-featuring-6vbr8h",
+     "path": "/library/tables/nightstand/a-dark-burl-wood-veneer-nightstand-featuring-6vbr8h/",
+     "page": 1
+    },
+    {
+     "slug": "a-squareshaped-nightstand-crafted-from-burl-wood-08unz5",
+     "path": "/library/tables/nightstand/a-squareshaped-nightstand-crafted-from-burl-wood-08unz5/",
+     "page": 1
+    },
+    {
+     "slug": "a-lightcolored-wooden-cabinet-with-a-distinctive-fogott",
+     "path": "/library/tables/nightstand/a-lightcolored-wooden-cabinet-with-a-distinctive-fogott/",
+     "page": 1
+    },
+    {
+     "slug": "a-white-nightstand-with-a-single-drawer-svfzzr",
+     "path": "/library/tables/nightstand/a-white-nightstand-with-a-single-drawer-svfzzr/",
+     "page": 1
+    },
+    {
+     "slug": "a-compact-rectangular-bedside-table-constructed-from-0277kh",
+     "path": "/library/tables/nightstand/a-compact-rectangular-bedside-table-constructed-from-0277kh/",
+     "page": 1
+    },
+    {
+     "slug": "a-twodrawer-nightstand-constructed-from-lightcolored-wood-zcs88l",
+     "path": "/library/tables/nightstand/a-twodrawer-nightstand-constructed-from-lightcolored-wood-zcs88l/",
+     "page": 1
+    },
+    {
+     "slug": "a-compact-and-modern-twodrawer-nightstand-featuring-5xc8ap",
+     "path": "/library/tables/nightstand/a-compact-and-modern-twodrawer-nightstand-featuring-5xc8ap/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-nightstand-featuring-two-drawers-a-annlfb",
+     "path": "/library/tables/nightstand/a-modern-nightstand-featuring-two-drawers-a-annlfb/",
+     "page": 1
+    },
+    {
+     "slug": "a-twodrawer-nightstand-featuring-a-rich-burl-lqobo9",
+     "path": "/library/tables/nightstand/a-twodrawer-nightstand-featuring-a-rich-burl-lqobo9/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-nightstand-with-two-drawers-featuring-yqpge9",
+     "path": "/library/tables/nightstand/a-contemporary-nightstand-with-two-drawers-featuring-yqpge9/",
+     "page": 1
+    },
+    {
+     "slug": "a-small-tall-threedrawer-nightstand-with-a-5w6gsg",
+     "path": "/library/tables/nightstand/a-small-tall-threedrawer-nightstand-with-a-5w6gsg/",
+     "page": 1
+    },
+    {
+     "slug": "a-compact-rectangular-bedside-cabinet-or-nightstand-mynevx",
+     "path": "/library/tables/nightstand/a-compact-rectangular-bedside-cabinet-or-nightstand-mynevx/",
+     "page": 1
+    }
+   ],
+   "skipped": [
+    {
+     "slug": "a-twodrawer-nightstand-in-a-light-greige-f6xj4j",
+     "path": "/library/tables/nightstand/a-twodrawer-nightstand-in-a-light-greige-f6xj4j/",
+     "page": 1,
+     "why": "already cached as a-twodrawer-nightstand-in-a-light-greige-f6xj4j"
+    },
+    {
+     "slug": "a-contemporary-nightstand-featuring-a-rounded-organic-md1fqm",
+     "path": "/library/tables/nightstand/a-contemporary-nightstand-featuring-a-rounded-organic-md1fqm/",
+     "page": 1,
+     "why": "already cached as a-contemporary-nightstand-featuring-a-rounded-organic-md1fqm"
+    },
+    {
+     "slug": "a-contemporary-round-nightstand-featuring-a-dark-6txsl0",
+     "path": "/library/tables/nightstand/a-contemporary-round-nightstand-featuring-a-dark-6txsl0/",
+     "page": 1,
+     "why": "already cached as a-contemporary-round-nightstand-featuring-a-dark-6txsl0"
+    },
+    {
+     "slug": "a-light-beige-twodrawer-nightstand-featuring-a-h132oc",
+     "path": "/library/tables/nightstand/a-light-beige-twodrawer-nightstand-featuring-a-h132oc/",
+     "page": 1,
+     "why": "already cached as a-light-beige-twodrawer-nightstand-featuring-a-h132oc"
+    },
+    {
+     "slug": "a-modern-asymmetric-nightstand-featuring-a-twodrawer-vqv65o",
+     "path": "/library/tables/nightstand/a-modern-asymmetric-nightstand-featuring-a-twodrawer-vqv65o/",
+     "page": 1,
+     "why": "past --limit 2 in page order"
+    },
+    {
+     "slug": "a-compact-rectangular-wooden-nightstand-with-two-oq8hnh",
+     "path": "/library/tables/nightstand/a-compact-rectangular-wooden-nightstand-with-two-oq8hnh/",
+     "page": 1,
+     "why": "past --limit 2 in page order"
+    },
+    {
+     "slug": "a-contemporary-nightstand-featuring-an-offwhite-main-rfwpuc",
+     "path": "/library/tables/nightstand/a-contemporary-nightstand-featuring-an-offwhite-main-rfwpuc/",
+     "page": 1,
+     "why": "past --limit 2 in page order"
+    },
+    {
+     "slug": "a-cylindrical-nightstand-with-a-marble-top-jf92a6",
+     "path": "/library/tables/nightstand/a-cylindrical-nightstand-with-a-marble-top-jf92a6/",
+     "page": 1,
+     "why": "past --limit 2 in page order"
+    },
+    {
+     "slug": "a-compact-wooden-nightstand-featuring-a-single-q9t1ua",
+     "path": "/library/tables/nightstand/a-compact-wooden-nightstand-featuring-a-single-q9t1ua/",
+     "page": 1,
+     "why": "past --limit 2 in page order"
+    },
+    {
+     "slug": "a-dark-wood-nightstand-featuring-two-drawers-a4he2f",
+     "path": "/library/tables/nightstand/a-dark-wood-nightstand-featuring-two-drawers-a4he2f/",
+     "page": 1,
+     "why": "past --limit 2 in page order"
+    },
+    {
+     "slug": "a-dark-burl-wood-veneer-nightstand-featuring-6vbr8h",
+     "path": "/library/tables/nightstand/a-dark-burl-wood-veneer-nightstand-featuring-6vbr8h/",
+     "page": 1,
+     "why": "past --limit 2 in page order"
+    },
+    {
+     "slug": "a-squareshaped-nightstand-crafted-from-burl-wood-08unz5",
+     "path": "/library/tables/nightstand/a-squareshaped-nightstand-crafted-from-burl-wood-08unz5/",
+     "page": 1,
+     "why": "past --limit 2 in page order"
+    },
+    {
+     "slug": "a-lightcolored-wooden-cabinet-with-a-distinctive-fogott",
+     "path": "/library/tables/nightstand/a-lightcolored-wooden-cabinet-with-a-distinctive-fogott/",
+     "page": 1,
+     "why": "past --limit 2 in page order"
+    },
+    {
+     "slug": "a-white-nightstand-with-a-single-drawer-svfzzr",
+     "path": "/library/tables/nightstand/a-white-nightstand-with-a-single-drawer-svfzzr/",
+     "page": 1,
+     "why": "past --limit 2 in page order"
+    },
+    {
+     "slug": "a-compact-rectangular-bedside-table-constructed-from-0277kh",
+     "path": "/library/tables/nightstand/a-compact-rectangular-bedside-table-constructed-from-0277kh/",
+     "page": 1,
+     "why": "past --limit 2 in page order"
+    },
+    {
+     "slug": "a-twodrawer-nightstand-constructed-from-lightcolored-wood-zcs88l",
+     "path": "/library/tables/nightstand/a-twodrawer-nightstand-constructed-from-lightcolored-wood-zcs88l/",
+     "page": 1,
+     "why": "past --limit 2 in page order"
+    },
+    {
+     "slug": "a-compact-and-modern-twodrawer-nightstand-featuring-5xc8ap",
+     "path": "/library/tables/nightstand/a-compact-and-modern-twodrawer-nightstand-featuring-5xc8ap/",
+     "page": 1,
+     "why": "past --limit 2 in page order"
+    },
+    {
+     "slug": "a-modern-nightstand-featuring-two-drawers-a-annlfb",
+     "path": "/library/tables/nightstand/a-modern-nightstand-featuring-two-drawers-a-annlfb/",
+     "page": 1,
+     "why": "past --limit 2 in page order"
+    },
+    {
+     "slug": "a-twodrawer-nightstand-featuring-a-rich-burl-lqobo9",
+     "path": "/library/tables/nightstand/a-twodrawer-nightstand-featuring-a-rich-burl-lqobo9/",
+     "page": 1,
+     "why": "past --limit 2 in page order"
+    },
+    {
+     "slug": "a-contemporary-nightstand-with-two-drawers-featuring-yqpge9",
+     "path": "/library/tables/nightstand/a-contemporary-nightstand-with-two-drawers-featuring-yqpge9/",
+     "page": 1,
+     "why": "past --limit 2 in page order"
+    },
+    {
+     "slug": "a-small-tall-threedrawer-nightstand-with-a-5w6gsg",
+     "path": "/library/tables/nightstand/a-small-tall-threedrawer-nightstand-with-a-5w6gsg/",
+     "page": 1,
+     "why": "past --limit 2 in page order"
+    },
+    {
+     "slug": "a-compact-rectangular-bedside-cabinet-or-nightstand-mynevx",
+     "path": "/library/tables/nightstand/a-compact-rectangular-bedside-cabinet-or-nightstand-mynevx/",
+     "page": 1,
+     "why": "past --limit 2 in page order"
+    }
+   ]
+  },
+  {
+   "at": "2026-08-22T15:02:32+00:00",
+   "category": "beds/bed",
+   "pages": 1,
+   "dry_run": true,
+   "n_listed": 24,
+   "fetched": [],
+   "scale": {},
+   "hits": [
+    {
+     "slug": "a-modern-platform-bed-featuring-a-fully-yvj15j",
+     "path": "/library/beds/bed/a-modern-platform-bed-featuring-a-fully-yvj15j/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-upholstered-platform-bed-featuring-a-o03wvn",
+     "path": "/library/beds/bed/a-contemporary-upholstered-platform-bed-featuring-a-o03wvn/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-platform-bed-featuring-a-dark-8ivj2v",
+     "path": "/library/beds/bed/a-modern-platform-bed-featuring-a-dark-8ivj2v/",
+     "page": 1
+    },
+    {
+     "slug": "a-darkstained-wooden-bed-frame-featuring-an-2oz79n",
+     "path": "/library/beds/bed/a-darkstained-wooden-bed-frame-featuring-an-2oz79n/",
+     "page": 1
+    },
+    {
+     "slug": "a-white-painted-wooden-bed-frame-featuring-w5m5zy",
+     "path": "/library/beds/bed/a-white-painted-wooden-bed-frame-featuring-w5m5zy/",
+     "page": 1
+    },
+    {
+     "slug": "an-upholstered-platform-bed-featuring-a-clean-owhb6x",
+     "path": "/library/beds/bed/an-upholstered-platform-bed-featuring-a-clean-owhb6x/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-platform-bed-integrated-into-a-xo75kz",
+     "path": "/library/beds/bed/a-contemporary-platform-bed-integrated-into-a-xo75kz/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-upholstered-platform-bed-featuring-a-16hu65",
+     "path": "/library/beds/bed/a-modern-upholstered-platform-bed-featuring-a-16hu65/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-upholstered-platform-bed-with-an-7w1sf8",
+     "path": "/library/beds/bed/a-modern-upholstered-platform-bed-with-an-7w1sf8/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-upholstered-platform-bed-featuring-a-5z2she",
+     "path": "/library/beds/bed/a-contemporary-upholstered-platform-bed-featuring-a-5z2she/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-platform-bed-featuring-a-lowprofile-fsuj80",
+     "path": "/library/beds/bed/a-modern-platform-bed-featuring-a-lowprofile-fsuj80/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-upholstered-single-bed-featuring-an-g2fhgr",
+     "path": "/library/beds/bed/a-modern-upholstered-single-bed-featuring-an-g2fhgr/",
+     "page": 1
+    },
+    {
+     "slug": "a-bed-with-a-distinctive-curved-wooden-e4lv0j",
+     "path": "/library/beds/bed/a-bed-with-a-distinctive-curved-wooden-e4lv0j/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-lowprofile-bed-featuring-a-distinctive-1umur5",
+     "path": "/library/beds/bed/a-contemporary-lowprofile-bed-featuring-a-distinctive-1umur5/",
+     "page": 1
+    },
+    {
+     "slug": "a-dark-brown-upholstered-platform-bed-featuring-9ixntb",
+     "path": "/library/beds/bed/a-dark-brown-upholstered-platform-bed-featuring-9ixntb/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-upholstered-platform-bed-featuring-a-v76z4m",
+     "path": "/library/beds/bed/a-contemporary-upholstered-platform-bed-featuring-a-v76z4m/",
+     "page": 1
+    },
+    {
+     "slug": "a-long-horizontally-oriented-headboard-composed-of-p8vljq",
+     "path": "/library/beds/bed/a-long-horizontally-oriented-headboard-composed-of-p8vljq/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-upholstered-platform-bed-with-a-9jtrxq",
+     "path": "/library/beds/bed/a-modern-upholstered-platform-bed-with-a-9jtrxq/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-round-upholstered-platform-bed-featuring-trdi26",
+     "path": "/library/beds/bed/a-contemporary-round-upholstered-platform-bed-featuring-trdi26/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-platform-bed-featuring-an-integrated-1hmev1",
+     "path": "/library/beds/bed/a-modern-platform-bed-featuring-an-integrated-1hmev1/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-platform-bed-featuring-a-light-ldc8w9",
+     "path": "/library/beds/bed/a-contemporary-platform-bed-featuring-a-light-ldc8w9/",
+     "page": 1
+    },
+    {
+     "slug": "a-contemporary-platform-bed-featuring-a-generously-anj2jr",
+     "path": "/library/beds/bed/a-contemporary-platform-bed-featuring-a-generously-anj2jr/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-platform-bed-featuring-a-substantial-tuytl5",
+     "path": "/library/beds/bed/a-modern-platform-bed-featuring-a-substantial-tuytl5/",
+     "page": 1
+    },
+    {
+     "slug": "a-modern-platform-bed-featuring-a-dark-fu1r0d",
+     "path": "/library/beds/bed/a-modern-platform-bed-featuring-a-dark-fu1r0d/",
+     "page": 1
+    }
+   ],
+   "skipped": []
+  }
+ ]
+}

@@ -1,0 +1,11 @@
+{
+ "slug": "marble_01",
+ "dimensions_mm": [
+  1500.0,
+  1500.0
+ ],
+ "tile_m": 1.5,
+ "aspect": 1.0,
+ "source": "https://api.polyhaven.com/info/marble_01",
+ "note": "The world size of one repeat, as published. R8: scale is ASSERTED on ingest, never assumed."
+}

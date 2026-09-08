@@ -1,7 +1,8 @@
 # อนุกรมวิธานความรู้งานออกแบบภายใน / Industry & Professional Design-Domain Taxonomies
 
-> PROVENANCE: distilled from `knowledge/_inbox/id-project-corpus/Interior Design
-> Knowledge Structuring.pdf` (deep-research report, 17 pp., staged in the
+> PROVENANCE: distilled from
+> `knowledge/_inbox/id-project-corpus/Interior Design Knowledge Structuring.pdf`
+> (deep-research report, 17 pp., staged in the
 > id-project-corpus that informed the STUDIO-OS blueprint), date 2026-07-03,
 > tier REFERENCE. Page citations refer to that PDF. DR reports are NOT
 > Authority sources — see boxed warning in §4.

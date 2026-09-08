@@ -1,0 +1,164 @@
+{
+ "_what": "RESULTS of the Blendkit month — the slots qa/blenderkit-month-classes.json declares are 'filled IN ORDER', moved here so that FILLING them cannot edit the file the criteria digest protects. The criteria file stays byte-frozen; this file is never hashed. See the RESULTS comment in pipeline/scripts/blenderkit.py for the probe that forced the split.",
+ "_law": "A class in `classes` below is only C2 evidence if it is ALSO pre-registered in qa/blenderkit-month-classes.json. Anything else is OUT-OF-TEST: shopped for on the owner's ask, reported honestly, and explicitly not counted toward 'did the paid month make the work better'. Adding a class to the frozen file after seeing results is the flattering-scorer move the freeze exists to catch, and it still flips the digest to CHANGED if anyone does it.",
+ "_reading_order": "free_baseline is recorded BEFORE the first paid fetch in that class (the pass rule in the criteria file); paid_result after.",
+ "classes": {
+  "nightstand": {
+   "control": true,
+   "free_baseline": "IN THE FROZEN FILE — '1 of 8 fetched (341b04e0, 2 of 3 judges) from 27 size-window hits', 2026-08-22 (p2r57). Recorded before the clock started, so it is inside the snapshot and stays there.",
+   "paid_result": {
+    "when": "2026-08-24",
+    "shelf_at_the_drawn_size": "38 hits at dimensionX/Y 0.40-0.56 and Z 0.42-0.60 (the drawn 460x460 carcass, SR-09/SR-10 stroke re-measure, at the D-045 mattress datum): 13 free, 25 full_plan.",
+    "panel": "8 candidates through the frozen 3-judge panel (docs/blenderkit-month/style-panel-prompt.md), same 5 anchors as the 2026-08-23 bolzan run, incumbent hidden among them, deterministic sha1(id) shuffle. _private/deliv-001/style-panel-2026-08-24/nightstand/",
+    "paid_passes": 0,
+    "free_passes": 2,
+    "detail": "PAID: Wayfair 4 (452x452x505, the best GEOMETRY in the whole shelf at 1.8% plan / 1.0% height error) came back outside/outside/outside — 'chipped saturated-orange paint over grey distressed salvage timber'. Circular End Table Glass Top, Bedside Tables and Modern Bedside Table all edge x3. FREE: the INCUMBENT 341b04e0 'Modern Nightstand 02' is the only UNANIMOUS inside x3 ('matte greige lacquer with radiused corners ... the anchors' own built-in casework language'); L60 BIO-MBO passes 2 of 3.",
+    "verdict_for_C2": "The paid tier supplies ZERO panel-passing pieces in this control class, and the free piece already in the frame beats all eight. This is what a control class is for and the answer is recorded as it came.",
+    "what_it_does_NOT_say": "It does not say the nightstand in the frame is right. Its measured defects are dimensional, not stylistic: top 400 mm against a 519.8 mm mattress (D-045 wants 500), footprint 400x400 against a drawn 460x460, and the build shrinking a 450 mm model to 400. None of those is fixed by buying a different object."
+   }
+  },
+  "bench": {
+   "control": true,
+   "free_baseline": "IN THE FROZEN FILE — '1 of 2 fetched (5b8e98d7, unanimous)', 2026-08-22 (p2r57).",
+   "paid_result": {
+    "when": "2026-08-24",
+    "shelf_at_the_drawn_size": "SIX hits in the entire catalogue at the drawn 504x1008x410 window (Z 0.34-0.50, long axis 0.88-1.18, short 0.44-0.62): 3 free, 3 full_plan. Broadening to ottoman/pouf/upholstered adds one asset family in twelve colourways. THIS IS THE THINNEST SHELF OF ANY CLASS MEASURED TODAY — every other class returned 13 to 300.",
+    "panel": "6 candidates, same protocol. _private/deliv-001/style-panel-2026-08-24/bench/",
+    "paid_passes": 0,
+    "free_passes": 1,
+    "detail": "PAID: Cheetah Bench outside x3 ('turned baluster legs on brass castors ... leopard-print pile'); Venni Fabric Ottoman outside x3; Heim Studio FUJI edge x3. FREE: the INCUMBENT 5b8e98d7 'Minimal modern bench' is the only pass, unanimous inside. Small rustic bench — which has the BEST geometry of anything found (3.6% plan / 3.4% height error against the incumbent's 21.4% plan error) — is edge x3 on 'rustic wabi craft, a different register from their machined flat-plane oak'.",
+    "verdict_for_C2": "Zero paid passes. And the class's real problem is untouched by either tier: nothing on the shelf, free or paid, is BOTH the drawn 1:2.0 proportion AND inside the style envelope. ASK-024 stands, now with the paid tier measured instead of assumed.",
+    "makes_ASK_024_sharper": "The gap claim used to rest on a free-only search of 68 cached folders (D-074's error, 'unbought is not unavailable'). It now rests on the whole catalogue at the drawn size: 6 candidates, both tiers, one panel pass, zero that fix the 78.0% width."
+   }
+  },
+  "wall_art": {
+   "control": false,
+   "free_baseline": {
+    "when": "2026-09-02 (STUDY-D13-baselines)",
+    "panel_passing_of_seen": "3 of 20 free thumbnails (B, C, O) — >=2 of 3 blind judges answered `inside`",
+    "also_edge_or_better": "7 of 20 reached >=2 judges at inside-or-edge",
+    "selection": "the frozen queries for this class, --free-only, merged in the frozen query order, deduped, FIRST 20 taken from a pool of 157 — no size window and no builder ranking, so this is the free tier as the catalogue itself orders it",
+    "panel": "3 fresh blind judges, frozen prompt docs/blenderkit-month/style-panel-prompt.md, the SAME five anchors as the 2026-08-23 bolzan and 2026-08-24 runs, deterministic sha1(id) letters, judges told nothing of tier. _private/deliv-001/style-panel-2026-09-02/wall_art/ (_key.json = letter->asset, verdicts.json = all 60 verdicts)",
+    "passing_names": [
+     "Autumn Paths – 3D Visualization Series",
+     "Autumn Landscape Wall Art Set",
+     "Forest Wall Art Set nature"
+    ]
+   },
+   "paid_result": null
+  },
+  "plant": {
+   "control": false,
+   "free_baseline": {
+    "when": "2026-09-02 (STUDY-D13-baselines)",
+    "panel_passing_of_seen": "9 of 20 free thumbnails (C, E, F, I, J, O, P, R, S) — >=2 of 3 blind judges answered `inside`",
+    "also_edge_or_better": "18 of 20 reached >=2 judges at inside-or-edge",
+    "selection": "the frozen queries for this class, --free-only, merged in the frozen query order, deduped, FIRST 20 taken from a pool of 162 — no size window and no builder ranking, so this is the free tier as the catalogue itself orders it",
+    "panel": "3 fresh blind judges, frozen prompt docs/blenderkit-month/style-panel-prompt.md, the SAME five anchors as the 2026-08-23 bolzan and 2026-08-24 runs, deterministic sha1(id) letters, judges told nothing of tier. _private/deliv-001/style-panel-2026-09-02/plant/ (_key.json = letter->asset, verdicts.json = all 60 verdicts)",
+    "passing_names": [
+     "Indoor Table  Plant",
+     "Banana  Plants",
+     "Snake plant in a pot",
+     "Fiddle Leaf Plant",
+     "Banana  Plants",
+     "Indoor potted plant",
+     "Palm plant",
+     "Modular ficus plant",
+     "Small Monstera plant"
+    ]
+   },
+   "paid_result": null
+  },
+  "cushion_throw": {
+   "control": false,
+   "free_baseline": {
+    "when": "2026-09-02 (STUDY-D13-baselines)",
+    "panel_passing_of_seen": "4 of 20 free thumbnails (A, D, L, S) — >=2 of 3 blind judges answered `inside`",
+    "also_edge_or_better": "8 of 20 reached >=2 judges at inside-or-edge",
+    "selection": "the frozen queries for this class, --free-only, merged in the frozen query order, deduped, FIRST 20 taken from a pool of 127 — no size window and no builder ranking, so this is the free tier as the catalogue itself orders it",
+    "panel": "3 fresh blind judges, frozen prompt docs/blenderkit-month/style-panel-prompt.md, the SAME five anchors as the 2026-08-23 bolzan and 2026-08-24 runs, deterministic sha1(id) letters, judges told nothing of tier. _private/deliv-001/style-panel-2026-09-02/cushion_throw/ (_key.json = letter->asset, verdicts.json = all 60 verdicts)",
+    "passing_names": [
+     "3 cushion set",
+     "Cushion",
+     "Cushion",
+     "Cushion"
+    ]
+   },
+   "paid_result": null
+  },
+  "nightstand_objects": {
+   "control": false,
+   "free_baseline": {
+    "when": "2026-09-02 (STUDY-D13-baselines)",
+    "panel_passing_of_seen": "6 of 20 free thumbnails (C, H, K, M, P, R) — >=2 of 3 blind judges answered `inside`",
+    "also_edge_or_better": "9 of 20 reached >=2 judges at inside-or-edge",
+    "selection": "the frozen queries for this class, --free-only, merged in the frozen query order, deduped, FIRST 20 taken from a pool of 207 — no size window and no builder ranking, so this is the free tier as the catalogue itself orders it",
+    "panel": "3 fresh blind judges, frozen prompt docs/blenderkit-month/style-panel-prompt.md, the SAME five anchors as the 2026-08-23 bolzan and 2026-08-24 runs, deterministic sha1(id) letters, judges told nothing of tier. _private/deliv-001/style-panel-2026-09-02/nightstand_objects/ (_key.json = letter->asset, verdicts.json = all 60 verdicts)",
+    "passing_names": [
+     "Decpration Tray",
+     "Aluminum Tray",
+     "Wooden Serving Tray 38x25x4",
+     "Little Cloud Tray",
+     "Square Bamboo Tray",
+     "Rectangular Tray"
+    ]
+   },
+   "paid_result": null
+  },
+  "hung_garments": {
+   "control": false,
+   "free_baseline": null,
+   "free_baseline_status": "CANNOT BE RUN — CONTAMINATED, recorded as fact rather than left blank",
+   "why": "The frozen pass rule requires the free baseline BEFORE the first paid fetch in the class ('a class whose free baseline is not recorded before its first paid fetch does not count toward C2 — it was measured in the wrong order'). p2r86 fetched paid hung_garments before any baseline existed, so the order is already broken and no baseline taken now could repair it: this class is out of C2 permanently. Running one anyway would produce a number that LOOKS like the other four and is not the same measurement — which is why the D13 unit's own exam says to record it and run the remaining four.",
+   "when_recorded": "2026-09-02 (STUDY-D13-baselines)",
+   "paid_result": null
+  }
+ },
+ "out_of_test": {
+  "_why": "Owner ask 2026-08-24: six object classes he wants better. Four of them (table lamp, bench-top throw+books, wardrobe fill, headboard) are NOT pre-registered classes. They are shopped for on his ask and reported here, and they are NOT evidence for C2 — adding them to the frozen file after seeing paid results is precisely the move the freeze catches.",
+  "census_at_the_real_slot_sizes_2026_08_24": {
+   "table_lamp": {
+    "all": 212,
+    "free": 92,
+    "paid": 120
+   },
+   "books_stack": {
+    "all": 129,
+    "free": 42,
+    "paid": 87
+   },
+   "blanket_throw_folded": {
+    "all": 13,
+    "free": 2,
+    "paid": 11
+   },
+   "folded_clothes": {
+    "all": 67,
+    "free": 23,
+    "paid": 44
+   },
+   "basket_storage": {
+    "all": 119,
+    "free": 26,
+    "paid": 93
+   },
+   "plant_potted": {
+    "all": 300,
+    "free": 68,
+    "paid": 232
+   },
+   "vase_display": {
+    "all": 300,
+    "free": 138,
+    "paid": 162
+   },
+   "wall_art": {
+    "all": 300,
+    "free": 131,
+    "paid": 169
+   }
+  },
+  "note": "Counts are name-hits inside a server-side dimension window derived from each slot; `all` saturates at the page cap of 300 for the last three. The census is a claim about the SHELF, not about whether any of them passes a panel."
+ },
+ "_c2_arithmetic_2026_09_02": "READ THIS BEFORE SCORING C2. The pass rule frozen in qa/blenderkit-month-classes.json counts only NON-CONTROL classes 'whose free_baseline recorded 0 panel-passing pieces out of 20', and needs >= 3 of them. As of 2026-09-02 every one of the four classes measured today came back NON-ZERO (wall_art 3, plant 9, cushion_throw 4, nightstand_objects 6), and the fifth non-control class (hung_garments) was contaminated at p2r86 by a paid fetch taken before its baseline. There are therefore ZERO qualifying classes, and C2 CANNOT PASS as written. That is a RESULT, not a defect in the rule: the rule was frozen before the candidates were seen precisely so it could come out this way, and what it measured is that the FREE tier already supplies panel-passing pieces in all four fenced classes. Whether that verdict stands, and what it means for the subscription, is D-119's owner decision — the builder must not rewrite the rule to make it passable, which is the flattering-scorer defect this repo has already logged fourteen times."
+}

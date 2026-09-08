@@ -1,0 +1,1377 @@
+{
+ "_what": "DRW-1 ledger: every mass the drawing draws in the master-suite zone, reconciled against the BUILT scene. Consumed by pipeline/scripts/sheet_recon.py (--recon/--gate) and printed by plan_status.py at session open.",
+ "_law": [
+  "Rows never leave this file (ratchet). A wrong row is refuted in its note, never deleted.",
+  "The machine owns `match`/`verdict`/`warning` and recomputes them on every run from the CURRENT scene dump — a match that disappears un-matches itself.",
+  "`identity` and `gap` are HUMAN-SIGNED and the machine never invents them (two-layer law of the plan-extraction lane). A gap without reason+decider is refused; `pending` is refused by name.",
+  "Frustum UNKNOWN blocks the gate. Could-not-run exits 2 and must never print like clear.",
+  "Exit bar (owner เคาะ 2026-08-11): UNRESOLVED = 0 among rows in (or possibly in) the DELIV-001 camera frustum."
+ ],
+ "source_sheet": {
+  "pdf": "projects/PRJ-2026-002_c001-house/00_intake/raw-local/The City สาทร - สุขสวัสดิ์_Plan funiture 02.pdf",
+  "page": 1,
+  "provenance": "D-036: owner states (2026-08-11) the source drawing has since changed and no per-piece backup exists — this snapshot IS the drawing of record and outranks every derived doc, including any 'current' version of the source file."
+ },
+ "extract_params": {
+  "zone": [
+   -150,
+   -850,
+   5800,
+   8800
+  ],
+  "close_mm": 18,
+  "_audit_2026-08-11": "fresh run kept 7 loose clusters (tv_console, bench, armchair, 2 nightstands, 2 unaccounted at x=-132) and dropped one merged_blob spanning the whole zone — the built-in casework merges into one component at close_mm=18. The blob's content is resolved by the floor2 lane's BF-label reading (owner-confirmed labels, 2026-07-05), which is where rows SR-01..SR-06 come from. 22 'thin' drops are dimension ticks/leader lines by the extractor's own screen; surfaced in --extract output, not silently gone."
+ },
+ "rows": [
+  {
+   "id": "SR-01",
+   "key": "BF14_slat_wall",
+   "source": "BF label + floor2 scene-graph (owner-confirmed labels 2026-07-05: BF14=3250 was re-measured on his correction)",
+   "rect_mm": [
+    5200,
+    -275,
+    100,
+    3250
+   ],
+   "drawn_as": "ผนังระแนงหัวเตียง BF14.325x10x280",
+   "identity": {
+    "read": "slat feature wall behind bed head",
+    "by": "floor2 lane + owner label confirm",
+    "date": "2026-07-05"
+   },
+   "gap": null,
+   "note": "",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r64.scene.json",
+    "candidates": [
+     {
+      "assembly": "mill@2353,-450/mill__ผนังระแนงหัวเตียง_BF14__backer",
+      "kind": "part",
+      "coverage": 0.786,
+      "footprint_m2": 0.272,
+      "in_frustum": true
+     },
+     {
+      "assembly": "side_table@4803,2036/side_table__acq2",
+      "kind": "part",
+      "coverage": 0.079,
+      "footprint_m2": 0.201,
+      "in_frustum": true
+     },
+     {
+      "assembly": "side_table@4803,-184/side_table__acq2.001",
+      "kind": "part",
+      "coverage": 0.079,
+      "footprint_m2": 0.201,
+      "in_frustum": true
+     }
+    ],
+    "checked": "2026-08-24",
+    "in_frustum": true
+   },
+   "verdict": "matched",
+   "warning": null,
+   "spec_mass": "ผนังระแนงหัวเตียง BF14"
+  },
+  {
+   "id": "SR-02",
+   "key": "BF11_desk",
+   "source": "BF label + floor2 scene-graph",
+   "rect_mm": [
+    306,
+    2850,
+    498,
+    3250
+   ],
+   "drawn_as": "โต๊ะทำงาน built-in BF11.320x60x280",
+   "identity": {
+    "read": "โต๊ะเครื่องแป้ง (vanity) — OWNER RULED 2026-08-11, locked (R3). The floor2 lane read it as a work desk; his word ends the divergence.",
+    "by": "owner",
+    "date": "2026-08-11"
+   },
+   "gap": null,
+   "note": "RECT CORRECTED 2026-08-11 by vector measure (DRW-1b): the drawn band's principal verticals are x=306 (4399mm of ink) and x=804 (3799mm) — the canonical build (counter 306..804) was ink-true all along, and the refuted reading was the floor2 scene-graph's [0..600], which had placed the LABEL size against the wall instead of reading the strokes. My own low-zoom eyeball agreed with the wrong one; the histogram decided. Old rect [0,2900,600,3200] kept here for the record. Label-vs-drawn depth flag: BF11 label says 60cm, ink draws 498mm — same ป้าย≠วาด class the floor2 lane flagged on BF14/BF09-1.",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r64.scene.json",
+    "candidates": [
+     {
+      "assembly": "mill@306,2600/mill__โต๊ะเครื่องแป้ง_BF11__counter",
+      "kind": "part",
+      "coverage": 0.9,
+      "footprint_m2": 1.593,
+      "in_frustum": false
+     },
+     {
+      "assembly": "mill@306,2600",
+      "kind": "assembly",
+      "coverage": 0.9,
+      "footprint_m2": 7.806,
+      "in_frustum": false
+     },
+     {
+      "assembly": "mill@306,2600/mill__โต๊ะเครื่องแป้ง_BF11__cool_body1",
+      "kind": "part",
+      "coverage": 0.231,
+      "footprint_m2": 0.389,
+      "in_frustum": false
+     }
+    ],
+    "checked": "2026-08-24",
+    "in_frustum": false
+   },
+   "verdict": "matched",
+   "warning": null,
+   "spec_mass": "โต๊ะเครื่องแป้ง BF11"
+  },
+  {
+   "id": "SR-03",
+   "key": "BF09-3_overbed_wardrobe",
+   "source": "BF label + floor2 scene-graph",
+   "rect_mm": [
+    2352,
+    2800,
+    3301,
+    600
+   ],
+   "drawn_as": "ตู้เสื้อผ้าเหนือเตียง BF09-3.330x60x280",
+   "identity": {
+    "read": "wardrobe band north of bed zone",
+    "by": "floor2 lane",
+    "date": "2026-07-05"
+   },
+   "gap": null,
+   "note": "WEST-END ACCUSATION RETRACTED 2026-08-11, same night it was filed: the vector probe finds exactly ONE vertical in x[1300,2900] within the band — x=2352, len 600, the drawn west cap — and band edges y2800/y3400 with ~3.1m runs. The built band (x2353, 3301 long = label 330 to 1mm) is INK-EXACT. My low-zoom eyeball had read the pelmet/leader linework at ~x1750 as the band edge — third eyeball error of the night, third vector correction. Rect corrected from the floor2 scene-graph guess [1800,2950] to the ink; the scene-graph is now 0-for-3 on BF band placements (BF11, BF10, BF09-3).",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r64.scene.json",
+    "candidates": [
+     {
+      "assembly": "mill@2353,-450/mill__ตู้เสื้อผ้าเหนือเตียง_BF09-3__top",
+      "kind": "part",
+      "coverage": 1.0,
+      "footprint_m2": 1.981,
+      "in_frustum": false
+     },
+     {
+      "assembly": "mill@2353,-450/mill__ตู้เสื้อผ้าเหนือเตียง_BF09-3__plinth",
+      "kind": "part",
+      "coverage": 0.975,
+      "footprint_m2": 1.921,
+      "in_frustum": true
+     },
+     {
+      "assembly": "mill@2353,-450/mill__ตู้เสื้อผ้าเหนือเตียง_BF09-3__shelf_ni0",
+      "kind": "part",
+      "coverage": 0.275,
+      "footprint_m2": 0.518,
+      "in_frustum": true
+     }
+    ],
+    "checked": "2026-08-24",
+    "in_frustum": true
+   },
+   "verdict": "matched",
+   "warning": null,
+   "spec_mass": "ตู้เสื้อผ้าเหนือเตียง BF09-3"
+  },
+  {
+   "id": "SR-04",
+   "key": "ensuite_basin_counter",
+   "source": "BF label + floor2 scene-graph",
+   "rect_mm": [
+    650,
+    6050,
+    2500,
+    600
+   ],
+   "drawn_as": "เคาน์เตอร์อ่างล้างหน้าคู่ ensuite (วาดไว้ ไม่มีป้าย)",
+   "identity": {
+    "read": "double-basin vanity counter inside the ensuite (unlabeled fixture; the BF10 label belongs to the dressing band one wall south — now its own row SR-20)",
+    "by": "builder, from the label-leader read + vector split 2026-08-11",
+    "date": "2026-08-11"
+   },
+   "gap": null,
+   "note": "ROW NARROWED 2026-08-11: it had carried the basin counter AND the BF10 label in one rect (one row, two objects — R9's one-parameter defect in ledger form). The BF10 band is SR-20; this row keeps the drawn basin-counter rect.",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r64.scene.json",
+    "candidates": [
+     {
+      "assembly": "mill@77,5898",
+      "kind": "assembly",
+      "coverage": 0.761,
+      "footprint_m2": 3.111,
+      "in_frustum": false
+     },
+     {
+      "assembly": "mill@77,5898/mill__vanity_counter__counter",
+      "kind": "part",
+      "coverage": 0.722,
+      "footprint_m2": 1.38,
+      "in_frustum": false
+     },
+     {
+      "assembly": "mill@77,5898/mill__vanity_cabinet",
+      "kind": "part",
+      "coverage": 0.64,
+      "footprint_m2": 1.22,
+      "in_frustum": false
+     }
+    ],
+    "checked": "2026-08-24",
+    "in_frustum": false
+   },
+   "verdict": "matched",
+   "warning": null,
+   "spec_mass": "อ่างล้างหน้าคู่ (double vanity)"
+  },
+  {
+   "id": "SR-05",
+   "key": "BF09-1_north_leg",
+   "source": "BF label + floor2 scene-graph (owner option ก: L-wardrobe, no separate walk-in)",
+   "rect_mm": [
+    3254,
+    7974,
+    2400,
+    600
+   ],
+   "drawn_as": "ตู้เสื้อผ้า BF09-1 ขาเหนือ 2.4m",
+   "identity": {
+    "read": "wardrobe L north leg",
+    "by": "floor2 lane + owner option ก",
+    "date": "2026-07-05"
+   },
+   "gap": null,
+   "note": "",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r64.scene.json",
+    "candidates": [
+     {
+      "assembly": "mill@3254,4621/mill__bayBF09-1-0_top",
+      "kind": "part",
+      "coverage": 0.707,
+      "footprint_m2": 1.036,
+      "in_frustum": false
+     },
+     {
+      "assembly": "mill@3254,4621/mill__bayBF09-1-0_plinth",
+      "kind": "part",
+      "coverage": 0.671,
+      "footprint_m2": 1.005,
+      "in_frustum": false
+     },
+     {
+      "assembly": "mill@3254,4621/mill__bayBF09-1-1_carcass_blind4",
+      "kind": "part",
+      "coverage": 0.244,
+      "footprint_m2": 0.36,
+      "in_frustum": false
+     }
+    ],
+    "checked": "2026-08-24",
+    "in_frustum": false
+   },
+   "verdict": "matched",
+   "warning": null,
+   "spec_mass": "ตู้เสื้อผ้า BF09-1 ขาเหนือ (L 5.2m)"
+  },
+  {
+   "id": "SR-06",
+   "key": "BF09-1_east_leg",
+   "source": "BF label + floor2 scene-graph",
+   "rect_mm": [
+    5050,
+    6250,
+    600,
+    1724
+   ],
+   "drawn_as": "ตู้เสื้อผ้า BF09-1 ขาตะวันออก ~1.7m",
+   "identity": {
+    "read": "wardrobe L east leg",
+    "by": "floor2 lane + owner option ก",
+    "date": "2026-07-05"
+   },
+   "gap": null,
+   "note": "",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r64.scene.json",
+    "candidates": [
+     {
+      "assembly": "mill@3254,4621/mill__bayBF09-1-1_top",
+      "kind": "part",
+      "coverage": 1.0,
+      "footprint_m2": 2.024,
+      "in_frustum": false
+     },
+     {
+      "assembly": "mill@3254,4621/mill__bayBF09-1-1_plinth",
+      "kind": "part",
+      "coverage": 0.975,
+      "footprint_m2": 1.963,
+      "in_frustum": false
+     },
+     {
+      "assembly": "mill@3254,4621/mill__bayBF09-1-1_shelf_ni0",
+      "kind": "part",
+      "coverage": 0.5,
+      "footprint_m2": 0.518,
+      "in_frustum": false
+     }
+    ],
+    "checked": "2026-08-24",
+    "in_frustum": false
+   },
+   "verdict": "matched",
+   "warning": null,
+   "spec_mass": "ตู้เสื้อผ้า BF09-1 ขาตะวันออก (L 5.2m)"
+  },
+  {
+   "id": "SR-07",
+   "key": "bed",
+   "source": "STROKE RE-MEASURE 2026-08-24 (pen 0.60 quad x3204..5204 y51..2200); was the LABEL text '7'x6.5'' assigned to the wrong axes",
+   "rect_mm": [
+    3204,
+    51,
+    2000,
+    2149
+   ],
+   "drawn_as": "เตียง 7'x6.5' หัวตะวันออก",
+   "floor_standing": true,
+   "identity": {
+    "read": "bed, head east against BF14",
+    "by": "floor2 lane + owner points A-I",
+    "date": "2026-07-05"
+   },
+   "gap": null,
+   "note": "RECT RE-DERIVED 2026-08-24 (p2r62). Old value [3048,100,2134,1981], from the floor2 cluster + the label '7'x6.5''. THE NUMBERS WERE RIGHT AND THE AXES WERE SWAPPED: 7' = 2134 and 6.5' = 1981, and the row put 2134 in x and 1981 in y. The strokes put the LONG side across the sleeper: the drawn bed is ONE pen-0.60 quad x3204..5204 (2000 mm along the head axis) by y51..2200 (2149 mm across it), so 7' ≈ 2149 is the WIDTH and 6.5' ≈ 2000 is the LENGTH — label and ink agree to within 15/19 mm once the axes are assigned as drawn. This is R12's founding defect by name ('อ่านขนาดจาก LABEL แทนที่จะอ่าน stroke'), which was 0-for-3 on the BF bands and is now 0-for-3 on this zone too (SR-09, SR-10, SR-07). | WHAT IT CHANGES AND WHAT IT MUST NOT: `wholebed_bench.ink_bed_rect_m` reads this rect as (across=d, along=w), so the correction moves the cap from 1981 across / 2134 long to 2149 across / 2000 long. RE-SCORED against the four benched candidates without re-running the bench (frame_staged_mm from _private/deliv-001/bed-size-2026-08-22/bench-full-blenderkit/chunkD*): every full-size bed now busts the LENGTH axis — e2418055 (THE BED THE OWNER CHOSE, in the frame today) by 23 mm, 17aff0ff by 18, b4915f0a by 165; only the US-full set he rejected fits. The cap's own docstring argues one thing only, that the sheet draws 'the WIDEST frame this room takes', and on the corrected axes every candidate passes that test with 138 mm to spare. The length bound was never reasoned about; it arrived with the transposition. It binds at exactly the mattress length because the drawn 2000 mm rect INCLUDES the 60 mm headboard band (SR-18, x5143..5203, inside this rect), leaving 1940 for a bed — and ORD-2026-08-22-bed-standard-size-hug fixes the mattress at a STANDARD size, which 1940 is not. His order outranks a derived cap. Filed as D-128 + ASK-033; the bed is NOT swapped and the bench is NOT re-run on this row's authority. | PRIOR: ",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r64.scene.json",
+    "candidates": [
+     {
+      "assembly": "bed",
+      "kind": "assembly",
+      "coverage": 0.91,
+      "footprint_m2": 14.521,
+      "in_frustum": true
+     },
+     {
+      "assembly": "rug",
+      "kind": "assembly",
+      "coverage": 0.975,
+      "footprint_m2": 7.75,
+      "in_frustum": true
+     },
+     {
+      "assembly": "rug/rug__พรมใต้เตียง_(anti-monopoly_rug,_D1-A)",
+      "kind": "part",
+      "coverage": 0.975,
+      "footprint_m2": 7.75,
+      "in_frustum": true
+     }
+    ],
+    "checked": "2026-08-24",
+    "in_frustum": true
+   },
+   "verdict": "matched",
+   "warning": null,
+   "spec_mass": "เตียง 7'x6.5' หัวตะวันออก"
+  },
+  {
+   "id": "SR-08",
+   "key": "bench_foot_of_bed",
+   "source": "cluster 35 (snap 0mm) — fresh extraction reproduces at [2646,634,504,1002]",
+   "rect_mm": [
+    2646,
+    626,
+    504,
+    1008
+   ],
+   "drawn_as": "ม้านั่งปลายเตียง (bench)",
+   "floor_standing": true,
+   "identity": {
+    "read": "bench",
+    "by": "floor2 lane (organic cluster, identity a review call)",
+    "date": "2026-07-05"
+   },
+   "gap": null,
+   "note": "",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r64.scene.json",
+    "candidates": [
+     {
+      "assembly": "bench/bench__acq0",
+      "kind": "part",
+      "coverage": 0.775,
+      "footprint_m2": 0.393,
+      "in_frustum": true
+     },
+     {
+      "assembly": "bench",
+      "kind": "assembly",
+      "coverage": 0.775,
+      "footprint_m2": 0.632,
+      "in_frustum": true
+     },
+     {
+      "assembly": "bench/bench__acq1",
+      "kind": "part",
+      "coverage": 0.46,
+      "footprint_m2": 0.239,
+      "in_frustum": true
+     }
+    ],
+    "checked": "2026-08-24",
+    "in_frustum": true
+   },
+   "verdict": "matched",
+   "warning": null,
+   "spec_mass": "ม้านั่งปลายเตียง (bench)"
+  },
+  {
+   "id": "SR-09",
+   "key": "nightstand_N",
+   "source": "STROKE RE-MEASURE 2026-08-24 (pen 0.12 carcass x4724..5184 y2219..2679); was cluster 27, which is the LAMP CIRCLE not the nightstand — see note",
+   "rect_mm": [
+    4724,
+    2219,
+    460,
+    460
+   ],
+   "drawn_as": "โต๊ะข้างเตียง เหนือ",
+   "floor_standing": true,
+   "identity": {
+    "read": "nightstand NE of bed head",
+    "by": "floor2 lane",
+    "date": "2026-07-05"
+   },
+   "gap": null,
+   "note": "RECT RE-DERIVED 2026-08-24 — the stored rect was the LAMP, not the piece. Old value [4794,2306,300,300], kept here because rows never leave this file and a wrong row is refuted in its note. That 300x300 is the round lamp symbol: plan_cluster returns it with curve=True and fill=0.08, and it is the ONLY cluster the extractor keeps in this pocket, because the real carcass is drawn at pen 0.12, touches the casework web, and is fused by close_mm=18 into the whole-zone merged_blob the size screen drops. So the row was seeded from the one thing the extractor could see. Read off the strokes instead: carcass x4724..5184 y2219..2679 = 460x460, sitting inside a pen-0.60 niche x4702..5203 y2200..2698 = 501x498. R12 — the conflict reopens the derivation, never the sheet. The spec's own note had already recorded the NICHE ('INK x4701.8-5203.2 y2200.1-2698.4 (~501x498, was spec 300x300)'), so this ledger and the canonical spec have disagreed about the same drawn object since p2r27 — the reconciler built to catch two readers of one drawing was itself carrying the stale reading. | PRIOR NOTE: UNRESOLVED SINCE 2026-08-23, and NOT drift — this row is the recon catching an OWNER-ORDERED move it cannot know about. p2r56 (d91bf43) carried out ORD-2026-08-22-bed-standard-size-hug / D-114 in his own words — 'หาขนาดเตียงมาตรฐานแล้วขนาดให้เท่านั้นแล้วปรับของรอบ ๆ ให้มาชิดเตียงเอา' — so the bed became a standard size inside the oversized drawn rectangle and the two nightstands moved IN to hug it; p2r57 (7202397, D-115) then swapped the pieces themselves. Measured now: drawn [4794,2306,300,300] against a built [4803,2005,400,400] — 301 mm off on the y the order moved, 100 mm larger in plan, coverage 0.317. The stored verdict read `matched` until today only because it was frozen against p2r41, sixteen rounds before the move — the session opener has been printing '21 matched | 0 blocking' over a live gate that exits 1. DELIBERATELY LEFT UNRESOLVED RATHER THAN SIGNED: signing it is a drawing call and R12 says the drawing crop must be open beside the element before that call is made, which is a round with the sheet, not a ledger edit. What it must NOT become is a silent `matched`.",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r64.scene.json",
+    "candidates": [
+     {
+      "assembly": "side_table@4803,2036/side_table__acq2",
+      "kind": "part",
+      "coverage": 0.474,
+      "footprint_m2": 0.201,
+      "in_frustum": true
+     },
+     {
+      "assembly": "side_table@4803,2036",
+      "kind": "assembly",
+      "coverage": 0.474,
+      "footprint_m2": 0.24,
+      "in_frustum": true
+     },
+     {
+      "assembly": "nightstand@4877,2110/nightstand__lamp_shade",
+      "kind": "part",
+      "coverage": 0.276,
+      "footprint_m2": 0.09,
+      "in_frustum": true
+     }
+    ],
+    "checked": "2026-08-24",
+    "in_frustum": true
+   },
+   "verdict": "superseded",
+   "warning": null,
+   "spec_mass": "โต๊ะข้างเตียง เหนือ (มีโคมไฟ)",
+   "superseded": {
+    "reason": "OWNER-ORDERED MOVE, not drift. Drawn carcass y2219..2679 (pen 0.12, inside a pen-0.60 niche y2200..2698); built y2005..2405, i.e. 214 mm south, into the bed. Coverage 0.330 against the corrected rect and it cannot reach COVER_MIN at any legitimate hug distance — a 10 mm gap off the built bed frame still only reaches ~0.43 — so this row can never go `matched` again while the order stands, and leaving it UNRESOLVED would put a permanent red on the gate. The drawn POSITION is superseded; nothing else about the row is. His order is the class: 'หาขนาดเตียงมาตรฐานแล้วขนาดให้เท่านั้นแล้วปรับของรอบ ๆ ให้มาชิดเตียงเอา', and its recorded commands name these two pieces by name ('the surrounding pieces (two side tables, foot bench) move in to hug the bed instead of holding their drawn positions around the 7-ft slot'). R13's hierarchy puts an owner order above the sheet, so this is not R12 being bent — it is the one thing that outranks R12. WHAT IS *NOT* SUPERSEDED, and is filed as a live defect rather than hidden inside this signature: the piece is built 400x400 against a drawn 460x460 carcass (60 mm short on both axes). Size was never in his order — he moved things, he did not shrink them — so the shortfall stays visible as a dimension question against the acquired model (341b04e0), not as part of this supersession.",
+    "decided_by": "builder",
+    "by_order": "ORD-2026-08-22-bed-standard-size-hug",
+    "built_as": "side_table__acq0",
+    "signed_date": "2026-08-24",
+    "sheet_crop_seen": "3000 dpi crop of the drawing of record over the pocket, 100 mm grid, drawn/niche/built rects painted — R12's precondition, met before this signature and not before the previous session's, which is why that session left the row UNRESOLVED on purpose"
+   }
+  },
+  {
+   "id": "SR-10",
+   "key": "nightstand_S",
+   "source": "STROKE RE-MEASURE 2026-08-24 (pen 0.12 carcass x4724..5184 y-428..29); was cluster 39, which is the LAMP CIRCLE — see note",
+   "rect_mm": [
+    4724,
+    -428,
+    460,
+    457
+   ],
+   "drawn_as": "โต๊ะข้างเตียง ใต้ (SE wall niche)",
+   "floor_standing": true,
+   "identity": {
+    "read": "nightstand in SE niche",
+    "by": "floor2 lane",
+    "date": "2026-07-05"
+   },
+   "gap": null,
+   "note": "RECT RE-DERIVED 2026-08-24 — same mechanism as its NE twin SR-09, same evidence. Old value [4794,-340,300,294] = the round lamp symbol (curve=True, fill=0.08). Strokes: carcass x4724..5184 y-428..29 = 460x457, inside a pen-0.60 niche x4702..5203 y-450..51 = 501x501. | PRIOR NOTE: UNRESOLVED SINCE 2026-08-23, and NOT drift — this row is the recon catching an OWNER-ORDERED move it cannot know about. p2r56 (d91bf43) carried out ORD-2026-08-22-bed-standard-size-hug / D-114 in his own words — 'หาขนาดเตียงมาตรฐานแล้วขนาดให้เท่านั้นแล้วปรับของรอบ ๆ ให้มาชิดเตียงเอา' — so the bed became a standard size inside the oversized drawn rectangle and the two nightstands moved IN to hug it; p2r57 (7202397, D-115) then swapped the pieces themselves. Measured now: drawn [4794,-340,300,294] against a built [4803,-210,400,400] — 130 mm off on the y the order moved, 100 mm larger in plan, coverage 0.536. The stored verdict read `matched` until today only because it was frozen against p2r41, sixteen rounds before the move — the session opener has been printing '21 matched | 0 blocking' over a live gate that exits 1. DELIBERATELY LEFT UNRESOLVED RATHER THAN SIGNED: signing it is a drawing call and R12 says the drawing crop must be open beside the element before that call is made, which is a round with the sheet, not a ledger edit. What it must NOT become is a silent `matched`.",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r64.scene.json",
+    "candidates": [
+     {
+      "assembly": "side_table@4803,-184/side_table__acq2.001",
+      "kind": "part",
+      "coverage": 0.392,
+      "footprint_m2": 0.201,
+      "in_frustum": true
+     },
+     {
+      "assembly": "side_table@4803,-184",
+      "kind": "assembly",
+      "coverage": 0.392,
+      "footprint_m2": 0.24,
+      "in_frustum": true
+     },
+     {
+      "assembly": "nightstand@4877,-109/nightstand__lamp_shade.001",
+      "kind": "part",
+      "coverage": 0.195,
+      "footprint_m2": 0.09,
+      "in_frustum": true
+     }
+    ],
+    "checked": "2026-08-24",
+    "in_frustum": true
+   },
+   "verdict": "superseded",
+   "warning": null,
+   "spec_mass": "โต๊ะข้างเตียง ใต้ (มีโคมไฟ)",
+   "superseded": {
+    "reason": "OWNER-ORDERED MOVE, not drift — twin of SR-09, same order, same evidence. Drawn carcass y-428..29 (pen 0.12, inside a pen-0.60 niche y-450..51); built y-210..190, i.e. 218 mm north, into the bed. Coverage 0.433 against the corrected rect. The drawn POSITION is superseded; nothing else about the row is. His order is the class: 'หาขนาดเตียงมาตรฐานแล้วขนาดให้เท่านั้นแล้วปรับของรอบ ๆ ให้มาชิดเตียงเอา', and its recorded commands name these two pieces by name ('the surrounding pieces (two side tables, foot bench) move in to hug the bed instead of holding their drawn positions around the 7-ft slot'). R13's hierarchy puts an owner order above the sheet, so this is not R12 being bent — it is the one thing that outranks R12. WHAT IS *NOT* SUPERSEDED, and is filed as a live defect rather than hidden inside this signature: the piece is built 400x400 against a drawn 460x460 carcass (60 mm short on both axes). Size was never in his order — he moved things, he did not shrink them — so the shortfall stays visible as a dimension question against the acquired model (341b04e0), not as part of this supersession.",
+    "decided_by": "builder",
+    "by_order": "ORD-2026-08-22-bed-standard-size-hug",
+    "built_as": "side_table__acq0.001",
+    "signed_date": "2026-08-24",
+    "sheet_crop_seen": "3000 dpi crop of the drawing of record over the pocket, 100 mm grid, drawn/niche/built rects painted — R12's precondition, met before this signature and not before the previous session's, which is why that session left the row UNRESOLVED on purpose"
+   }
+  },
+  {
+   "id": "SR-11",
+   "key": "chair_at_BF11",
+   "source": "cluster 18 (snap 0mm) — fresh extraction reproduces at [852,4000,546,516]",
+   "rect_mm": [
+    870,
+    3980,
+    510,
+    546
+   ],
+   "drawn_as": "เก้าอี้ (หันเข้า BF11, ตะวันตก)",
+   "floor_standing": true,
+   "identity": {
+    "read": "chair pulled up to BF11 (drawn armchair; built as vanity stool — rides SR-02's desk-vs-vanity divergence)",
+    "by": "floor2 lane",
+    "date": "2026-07-05"
+   },
+   "gap": null,
+   "note": "with BF11 owner-ruled as vanity (SR-02), the drawn chair pulled up to it is a vanity seat — the built stool (D-023 tub chair) is the consistent identity, not a divergence.",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r64.scene.json",
+    "candidates": [
+     {
+      "assembly": "stool",
+      "kind": "assembly",
+      "coverage": 0.796,
+      "footprint_m2": 0.49,
+      "in_frustum": false
+     },
+     {
+      "assembly": "stool/stool__acq2",
+      "kind": "part",
+      "coverage": 0.775,
+      "footprint_m2": 0.236,
+      "in_frustum": false
+     },
+     {
+      "assembly": "stool/stool__acq1",
+      "kind": "part",
+      "coverage": 0.574,
+      "footprint_m2": 0.157,
+      "in_frustum": false
+     }
+    ],
+    "checked": "2026-08-24",
+    "in_frustum": false
+   },
+   "verdict": "matched",
+   "warning": null,
+   "spec_mass": "สตูลโต๊ะเครื่องแป้ง (หันเข้า BF11)"
+  },
+  {
+   "id": "SR-12",
+   "key": "tv_console_west",
+   "source": "cluster 31 (snap 0mm) — fresh extraction reproduces at [306,130,600,2052]",
+   "rect_mm": [
+    306,
+    128,
+    600,
+    2046
+   ],
+   "drawn_as": "ตู้/ชั้นวางทีวี ผนังตะวันตก",
+   "floor_standing": true,
+   "identity": {
+    "read": "TV console the bed foot faces (canonical built it as a BOOKSHELF, 'ex-TV' — a decided divergence, element2/canonical corrections)",
+    "by": "floor2 lane; canonical derivation differs deliberately",
+    "date": "2026-07-05"
+   },
+   "gap": null,
+   "note": "owner may overrule the ex-TV decision from the image; the drawn symbol is a low console, the build is a 1.8m-tall shelf",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r64.scene.json",
+    "candidates": [
+     {
+      "assembly": "mill@306,248",
+      "kind": "assembly",
+      "coverage": 0.9,
+      "footprint_m2": 6.264,
+      "in_frustum": false
+     },
+     {
+      "assembly": "mill@306,248/mill__ชั้นหนังสือ/โชว์_ผนังตะวันตก_(ex-TV)__shelf1_1",
+      "kind": "part",
+      "coverage": 0.3,
+      "footprint_m2": 0.346,
+      "in_frustum": false
+     },
+     {
+      "assembly": "mill@306,248/mill__ชั้นหนังสือ/โชว์_ผนังตะวันตก_(ex-TV)__shelf2_1",
+      "kind": "part",
+      "coverage": 0.3,
+      "footprint_m2": 0.346,
+      "in_frustum": false
+     }
+    ],
+    "checked": "2026-08-24",
+    "in_frustum": false
+   },
+   "verdict": "matched",
+   "warning": null,
+   "spec_mass": "ชั้นหนังสือ/โชว์ ผนังตะวันตก (ex-TV)"
+  },
+  {
+   "id": "SR-13",
+   "key": "toilet",
+   "source": "floor2 scene-graph (ensuite fixtures)",
+   "rect_mm": [
+    190,
+    5995,
+    380,
+    690
+   ],
+   "drawn_as": "โถสุขภัณฑ์ WC (SW corner)",
+   "floor_standing": true,
+   "identity": {
+    "read": "toilet",
+    "by": "floor2 lane",
+    "date": "2026-07-05"
+   },
+   "gap": null,
+   "note": "",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r64.scene.json",
+    "candidates": [
+     {
+      "assembly": "fix@55,6079",
+      "kind": "assembly",
+      "coverage": 0.688,
+      "footprint_m2": 0.561,
+      "in_frustum": false
+     },
+     {
+      "assembly": "fix@55,6079/fix__wc_bowl",
+      "kind": "part",
+      "coverage": 0.574,
+      "footprint_m2": 0.229,
+      "in_frustum": false
+     },
+     {
+      "assembly": "fix@55,6079/fix__wc_seat",
+      "kind": "part",
+      "coverage": 0.574,
+      "footprint_m2": 0.229,
+      "in_frustum": false
+     }
+    ],
+    "checked": "2026-08-24",
+    "in_frustum": false
+   },
+   "verdict": "matched",
+   "warning": null,
+   "spec_mass": "โถสุขภัณฑ์ WC"
+  },
+  {
+   "id": "SR-14",
+   "key": "bathtub",
+   "source": "floor2 scene-graph (ensuite fixtures)",
+   "rect_mm": [
+    1560,
+    7560,
+    1360,
+    870
+   ],
+   "drawn_as": "อ่างอาบน้ำ (ผนังเหนือ)",
+   "floor_standing": true,
+   "identity": {
+    "read": "bathtub",
+    "by": "floor2 lane",
+    "date": "2026-07-05"
+   },
+   "gap": null,
+   "note": "",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r64.scene.json",
+    "candidates": [
+     {
+      "assembly": "fix@1125,7596",
+      "kind": "assembly",
+      "coverage": 0.95,
+      "footprint_m2": 2.004,
+      "in_frustum": false
+     },
+     {
+      "assembly": "fix@1125,7596/fix__tub_floor",
+      "kind": "part",
+      "coverage": 0.825,
+      "footprint_m2": 1.349,
+      "in_frustum": false
+     },
+     {
+      "assembly": "mill@55,7320/mill__tub_deck_s__counter",
+      "kind": "part",
+      "coverage": 0.15,
+      "footprint_m2": 0.263,
+      "in_frustum": false
+     }
+    ],
+    "checked": "2026-08-24",
+    "in_frustum": false
+   },
+   "verdict": "matched",
+   "warning": null,
+   "spec_mass": "อ่างอาบน้ำ (bathtub)"
+  },
+  {
+   "id": "SR-15",
+   "key": "shower",
+   "source": "floor2 scene-graph (ensuite fixtures)",
+   "rect_mm": [
+    120,
+    7550,
+    780,
+    950
+   ],
+   "drawn_as": "ที่อาบน้ำฝักบัว (NW glass)",
+   "floor_standing": true,
+   "identity": {
+    "read": "shower enclosure",
+    "by": "floor2 lane",
+    "date": "2026-07-05"
+   },
+   "gap": null,
+   "note": "",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r64.scene.json",
+    "candidates": [
+     {
+      "assembly": "mill@55,7320",
+      "kind": "assembly",
+      "coverage": 1.0,
+      "footprint_m2": 2.03,
+      "in_frustum": false
+     },
+     {
+      "assembly": "mill@55,7320/mill__shower_tray__cool",
+      "kind": "part",
+      "coverage": 1.0,
+      "footprint_m2": 1.365,
+      "in_frustum": false
+     }
+    ],
+    "checked": "2026-08-24",
+    "in_frustum": false
+   },
+   "verdict": "matched",
+   "warning": null,
+   "spec_mass": "ฝักบัว (shower)"
+  },
+  {
+   "id": "SR-16",
+   "key": "ink@-132,5008",
+   "source": "fresh extraction 2026-08-11 (plan_cluster) — unaccounted ink, never in any prior reading",
+   "rect_mm": [
+    -132,
+    5008,
+    186,
+    600
+   ],
+   "drawn_as": null,
+   "floor_standing": true,
+   "identity": {
+    "read": "window/glazing symbol on the west facade — the built scene has a glass assembly exactly there (glass@-105,4994 cov 0.57), and the rect sits centred on the facade line",
+    "by": "builder, from the recon match evidence",
+    "date": "2026-08-11"
+   },
+   "gap": null,
+   "note": "186x600 outside the wall face (x<0) — window symbols draw on the facade's outside; matched to built glazing, so the ink is accounted for",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r64.scene.json",
+    "candidates": [
+     {
+      "assembly": "glass@-105,4994",
+      "kind": "assembly",
+      "coverage": 0.575,
+      "footprint_m2": 0.067,
+      "in_frustum": false
+     },
+     {
+      "assembly": "glass@-105,4994/glass__5_2",
+      "kind": "part",
+      "coverage": 0.575,
+      "footprint_m2": 0.067,
+      "in_frustum": false
+     },
+     {
+      "assembly": "wall_5s2",
+      "kind": "assembly",
+      "coverage": 0.575,
+      "footprint_m2": 0.067,
+      "in_frustum": false
+     }
+    ],
+    "checked": "2026-08-24",
+    "in_frustum": false
+   },
+   "verdict": "matched",
+   "warning": null,
+   "spec_mass": null
+  },
+  {
+   "id": "SR-17",
+   "key": "ink@-132,2908",
+   "source": "fresh extraction 2026-08-11 (plan_cluster) — unaccounted ink, never in any prior reading",
+   "rect_mm": [
+    -132,
+    2908,
+    186,
+    600
+   ],
+   "drawn_as": null,
+   "floor_standing": true,
+   "identity": {
+    "read": "window/glazing symbol on the west facade, twin of SR-16 one bay south — built glass assembly matched (glass@-105,2893 cov 0.57)",
+    "by": "builder, from the recon match evidence",
+    "date": "2026-08-11"
+   },
+   "gap": null,
+   "note": "twin of SR-16 one bay south",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r64.scene.json",
+    "candidates": [
+     {
+      "assembly": "glass@-105,2893",
+      "kind": "assembly",
+      "coverage": 0.575,
+      "footprint_m2": 0.067,
+      "in_frustum": false
+     },
+     {
+      "assembly": "glass@-105,2893/glass__5_3",
+      "kind": "part",
+      "coverage": 0.575,
+      "footprint_m2": 0.067,
+      "in_frustum": false
+     },
+     {
+      "assembly": "wall_5s3",
+      "kind": "assembly",
+      "coverage": 0.575,
+      "footprint_m2": 0.067,
+      "in_frustum": false
+     }
+    ],
+    "checked": "2026-08-24",
+    "in_frustum": false
+   },
+   "verdict": "matched",
+   "warning": null,
+   "spec_mass": null
+  },
+  {
+   "id": "SR-18",
+   "key": "headboard_band",
+   "source": "STROKE RE-MEASURE 2026-08-24 (pen 0.60 front face x5143, y80..2168); was a hand ink-read that ran through both niches",
+   "rect_mm": [
+    5143,
+    80,
+    60,
+    2088
+   ],
+   "drawn_as": "แผงหัวเตียง ~6ซม. หน้า BF14 ระหว่าง nightstand ทั้งสอง",
+   "floor_standing": true,
+   "identity": {
+    "read": "upholstered headboard panel (height 1.10m is D-034's declared assumption — plan carries no z)",
+    "by": "owner order 2026-08-11 + builder ink read",
+    "date": "2026-08-11"
+   },
+   "gap": null,
+   "note": "RECT RE-DERIVED 2026-08-24. Old value [5140,-46,60,2352] — right thickness, wrong extent: it ran 126 mm past the panel's south end and 138 mm past its north end, straight THROUGH both nightstand niches. The strokes end the panel cleanly at each pocket: front face pen 0.60 at x5143 spanning y80..2168 (2088 mm), against the wall face x5203 spanning y51..2200 (2149 mm = the drawn bed slot). So the drawn panel is a 60 mm band 2088 mm long BETWEEN the two niches — it is architecture bounded by the pockets, not a part of the bed. THAT DISTINCTION IS THE WHOLE POINT and it is now measurable: the build derives this band's length from the MATTRESS (`emit(\"bed__headboard\", ... across ...)`, build_room.py:6862), so when ORD-2026-08-22-bed-standard-size-hug narrowed the bed 2149 -> 1800 the panel silently narrowed with it and is 288 mm short of the ink. One parameter carrying two things: `across` means 'mattress width' and was asked to mean 'distance between the niches'. They were the same number when the band was authored at p2r11 (drawn slot 2149 ~ panel 2088) and have not been the same number since 2026-08-22. | PRIOR NOTE: the row that exists because eight blind critics and the drawing agreed while our element doc disagreed",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r64.scene.json",
+    "candidates": [
+     {
+      "assembly": "bed/bed__headboard_welt_top",
+      "kind": "part",
+      "coverage": 0.85,
+      "footprint_m2": 0.13,
+      "in_frustum": true
+     },
+     {
+      "assembly": "bed/bed__headboard",
+      "kind": "part",
+      "coverage": 0.829,
+      "footprint_m2": 0.108,
+      "in_frustum": true
+     },
+     {
+      "assembly": "side_table@4803,-184/side_table__acq2.001",
+      "kind": "part",
+      "coverage": 0.1,
+      "footprint_m2": 0.201,
+      "in_frustum": true
+     }
+    ],
+    "checked": "2026-08-24",
+    "in_frustum": true
+   },
+   "verdict": "matched",
+   "warning": null,
+   "spec_mass": "bed__headboard (emitted in _build_bed, not a spec mass — D-034)"
+  },
+  {
+   "id": "SR-19",
+   "key": "BF09-2_unit",
+   "source": "ink label BF09-2.150x60x280CM (vertical, at x~3620-3700, y~5350-6800) — revived from the floor2 lane's OWN July pending: \"เห็นป้ายแต่ผนังยังไม่ชัด → ไม่วางมั่ว รอ owner ชี้\" — the pending fell out of every queue for five weeks",
+   "rect_mm": [
+    3302,
+    5199,
+    502,
+    1498
+   ],
+   "drawn_as": "ตู้เสื้อผ้า BF09-2.150x60x280CM",
+   "identity": {
+    "read": "wardrobe BF09-2, the cool closed anchor of the dressing gallery (D-E7-4) — INK-TRUED by element 7 on 2026-07-21: drawn length 1498.1 matches the label to 1.9mm; position derived from ink_faces (47.6mm off the party-wall bay face, the ensuite door slide lane)",
+    "by": "element7 refinement-wardrobe-dressing-gallery_2026-07-22.md, adopted into this row 2026-08-11",
+    "date": "2026-07-21"
+   },
+   "gap": null,
+   "note": "GAP RETRACTED 2026-08-11, two hours after it was signed. The July \"รอ owner ชี้\" pending WAS resolved — by element 7 on 07-21, with a 1.9mm label re-proof — and the unit is BUILT (8 mill parts at x3302-3803). My re-read failed to find it because I searched for a 600-deep rect; x=3302/len 2097 was the TOP LINE of my own histogram and I read past it. What actually fell out of the queues was only the floor2 README cross-reference. The real open half survives narrower: drawn depth 501.5 vs label 600 — the spec's own recorded \"designer question, never machine-resolved\", paired with BF11's 498-vs-600 (rides the DRW-2 eye-pack). #9c RESOLVED 2026-08-11: BF10 ink-trued to [804,5200,2498,600] (D-038) — its east face now lands on this unit's west face exactly as the ink draws.",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r64.scene.json",
+    "candidates": [
+     {
+      "assembly": "mill@306,2600/mill__bayBF09-2-2_plinth__cool",
+      "kind": "part",
+      "coverage": 0.975,
+      "footprint_m2": 0.724,
+      "in_frustum": false
+     },
+     {
+      "assembly": "mill@306,2600/mill__bayBF09-2-2_carcass__cool",
+      "kind": "part",
+      "coverage": 0.95,
+      "footprint_m2": 0.721,
+      "in_frustum": false
+     }
+    ],
+    "checked": "2026-08-24",
+    "in_frustum": false
+   },
+   "verdict": "matched",
+   "warning": null,
+   "spec_mass": "ตู้เสื้อผ้า BF09-2"
+  },
+  {
+   "id": "SR-20",
+   "key": "BF10_dressing_band",
+   "source": "vector measure 2026-08-11: horizontals y5200 (2596mm run) / y5800 (wall face), verticals x804 (1349mm, = BF11 front plane) / x3302 (= BF09-2 west face) — band 2498x600 reproduces the BF10.250x60x280CM label to 2mm both axes",
+   "rect_mm": [
+    804,
+    5200,
+    2498,
+    600
+   ],
+   "drawn_as": "ตู้/ชั้น BF10.250x60x280CM (dressing band, ป้ายชี้ที่นี่)",
+   "identity": {
+    "read": "BF10 dressing cabinet band — the mass the BF label leader attaches to; code meaning still D-037 tier (guess), geometry label-true",
+    "by": "builder, vector measure + label leader",
+    "date": "2026-08-11"
+   },
+   "gap": null,
+   "note": "the row whose absence made SR-04 carry two objects; canonical BF10 ink-trued to this rect the same hour (D-038)",
+   "spec_mass": "ตู้/ชั้น BF10 (dressing)",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r64.scene.json",
+    "candidates": [
+     {
+      "assembly": "mill@306,2600",
+      "kind": "assembly",
+      "coverage": 1.0,
+      "footprint_m2": 7.806,
+      "in_frustum": false
+     },
+     {
+      "assembly": "mill@306,2600/mill__ตู้/ชั้น_BF10_(dressing)__carcass",
+      "kind": "part",
+      "coverage": 0.975,
+      "footprint_m2": 1.449,
+      "in_frustum": false
+     },
+     {
+      "assembly": "mill@306,2600/mill__ตู้/ชั้น_BF10_(dressing)__plinth",
+      "kind": "part",
+      "coverage": 0.975,
+      "footprint_m2": 1.454,
+      "in_frustum": false
+     }
+    ],
+    "checked": "2026-08-24",
+    "in_frustum": false
+   },
+   "verdict": "matched",
+   "warning": null
+  },
+  {
+   "id": "SR-21",
+   "key": "wet_dry_glass_partition",
+   "source": "element 4 ink-read 2026-07-18 (ink x1124.7-1134.2, y7329.3-8595.7) — re-verified by vector probe 2026-08-11: verticals x1124/x1134 present, run ~1276mm, exactly the canonical rect",
+   "rect_mm": [
+    1124,
+    7329,
+    10,
+    1267
+   ],
+   "drawn_as": "เส้นกระจกกั้นเปียก/แห้ง ระหว่างฝักบัว (W) กับอ่าง (E)",
+   "floor_standing": true,
+   "identity": {
+    "read": "frameless wet/dry glass partition (glass-vs-stud = render-tier per element 4; h2000 stays a declared [est] — see the DRW-2 ladder)",
+    "by": "element 4 ink-read + vector re-verify",
+    "date": "2026-07-18"
+   },
+   "gap": null,
+   "spec_mass": "ผนังกระจกกั้นเปียก/แห้ง (wet/dry glass partition)",
+   "note": "the last backfill-debt mass to get a measured row — board and ratchet both close to zero debt with it",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r64.scene.json",
+    "candidates": [
+     {
+      "assembly": "glass@1125,7329",
+      "kind": "assembly",
+      "coverage": 0.9,
+      "footprint_m2": 0.015,
+      "in_frustum": false
+     },
+     {
+      "assembly": "glass@1125,7329/glass__wet_partition",
+      "kind": "part",
+      "coverage": 0.9,
+      "footprint_m2": 0.015,
+      "in_frustum": false
+     }
+    ],
+    "checked": "2026-08-24",
+    "in_frustum": false
+   },
+   "verdict": "matched",
+   "warning": null
+  }
+ ],
+ "heights": {
+  "_what": "DRW-2 height ladder — the z a plan cannot give. Source ladder: bf_label (owner-confirmed printed labels) > owner_sign (signed element decision) > ergonomics_band (named band in knowledge/, value inside it) > ASSUMPTION (a typed number with no artifact behind it — legal only when declared). Traced+adversarially verified 2026-08-11 (workflow: 5 trace + 5 verify agents; one trace verdict was overturned by its verifier — bench).",
+  "_headline": "11 of 19 sourced / 8 assumptions. Of the 8, two are worse than unsourced: nightstands 520 sit OUTSIDE the vault side-table band 380-480 that does exist, and the stool 750 equals the BF11 counter height it serves.",
+  "rows": [
+   {
+    "mass": "เตียง (bed)",
+    "h_mm": 600,
+    "tier": "owner_sign",
+    "source": "element3-bed_DD-2026-07-18.md D3-1 (~300 plinth + ~300 mattress, owner-signed)",
+    "note": "numeric root was a takeoff literal (gen_floor2_specs.py:288); the signature fixes it forward — DD itself admits the vault has no bed-height band"
+   },
+   {
+    "mass": "ม้านั่งปลายเตียง (bench)",
+    "h_mm": 450,
+    "tier": "ergonomics_band",
+    "source": "knowledge/ergonomics/tv-viewing-and-furniture-dimensions.md:36 seat band 400-450",
+    "note": "trace filed none; VERIFY OVERTURNED it by finding the band — the verify rung paying for itself"
+   },
+   {
+    "mass": "โต๊ะข้างเตียง เหนือ",
+    "h_mm": 520,
+    "tier": "ASSUMPTION",
+    "source": "typed literal, gen_floor2_specs.py:303 (takeoff 6b670d8)",
+    "note": "OUTSIDE the vault side/end-table band 380-480 (ergonomics_ref side_table agrees); FFE note says most nightstands 590-650; P2i already measured the top 80mm BELOW the mattress top — three artifacts disagree, a DESIGN question owned by P2i, in-frustum"
+   },
+   {
+    "mass": "โต๊ะข้างเตียง ใต้",
+    "h_mm": 520,
+    "tier": "ASSUMPTION",
+    "source": "typed literal, gen_floor2_specs.py:305 (twin inheritance)",
+    "note": "same as the N twin"
+   },
+   {
+    "mass": "สตูลโต๊ะเครื่องแป้ง (stool)",
+    "h_mm": 750,
+    "tier": "ASSUMPTION",
+    "source": "typed literal, v4/gen_floor2_v4_specs.py:355",
+    "note": "750 (backrest) == BF11 counter 750 — no doc reconciles the tuck-under; off-camera today, surfaces when the vanity enters a frame"
+   },
+   {
+    "mass": "BF14",
+    "h_mm": 2800,
+    "tier": "bf_label",
+    "source": "label BF14.325x10x280CM (canonical note reproduces it to 0.2mm)",
+    "note": ""
+   },
+   {
+    "mass": "BF09-3",
+    "h_mm": 2800,
+    "tier": "bf_label",
+    "source": "label BF09-3.330x60x280CM (run reproduces to 1mm)",
+    "note": ""
+   },
+   {
+    "mass": "BF11",
+    "h_mm": 750,
+    "tier": "owner_sign",
+    "source": "element2 DD D2-2 owner-signed low vanity; band 711-762 contains it (casework §4.1)",
+    "note": "the label's 280 full-height default explicitly overridden by the owner re-type"
+   },
+   {
+    "mass": "BF10",
+    "h_mm": 2800,
+    "tier": "bf_label",
+    "source": "floor2-README BF label law (สูง 2800, owner-confirmed)",
+    "note": ""
+   },
+   {
+    "mass": "ชั้นหนังสือ ex-TV",
+    "h_mm": 1800,
+    "tier": "owner_sign",
+    "source": "owner-set TALL 2026-07-06 (v4 generator records \"height owner-set\"); reach band 1800-2100 ratifies",
+    "note": ""
+   },
+   {
+    "mass": "อ่างล้างหน้าคู่",
+    "h_mm": 850,
+    "tier": "ergonomics_band",
+    "source": "element4 DD §7: standing-lavatory band 850-904 (residential-clearances.md:104)",
+    "note": ""
+   },
+   {
+    "mass": "โถสุขภัณฑ์ WC",
+    "h_mm": 800,
+    "tier": "ASSUMPTION",
+    "source": "typed cistern estimate; spec declares wall-hung/cistern config an owner/MEP [GAP]",
+    "note": "v4 had h=400 — the number has already silently doubled once; off-camera"
+   },
+   {
+    "mass": "อ่างอาบน้ำ",
+    "h_mm": 560,
+    "tier": "ASSUMPTION",
+    "source": "ink-read claude_reco \"tub deck ~550-600 [est], owner-vetoable\"",
+    "note": "self-declared [est] in the spec — the honest form; off-camera"
+   },
+   {
+    "mass": "ฝักบัว (enclosure)",
+    "h_mm": 2200,
+    "tier": "ASSUMPTION",
+    "source": "typed literal, v4 generator; every other 2200 in 03_layout is a casement head",
+    "note": "off-camera"
+   },
+   {
+    "mass": "ผนังกระจกเปียก/แห้ง",
+    "h_mm": 2000,
+    "tier": "ASSUMPTION",
+    "source": "spec self-declares h2000 [est]",
+    "note": "off-camera"
+   },
+   {
+    "mass": "BF09-1 ขาเหนือ",
+    "h_mm": 2800,
+    "tier": "bf_label",
+    "source": "label BF09-1.520x60x280CM + label law",
+    "note": ""
+   },
+   {
+    "mass": "BF09-1 ขาตะวันออก",
+    "h_mm": 2800,
+    "tier": "bf_label",
+    "source": "same label (one label, one L-run)",
+    "note": ""
+   },
+   {
+    "mass": "BF09-2",
+    "h_mm": 2800,
+    "tier": "bf_label",
+    "source": "label BF09-2.150x60x280CM (H unquestioned; W/D are the Q1 designer question)",
+    "note": ""
+   },
+   {
+    "mass": "bed__headboard",
+    "h_mm": 1100,
+    "tier": "ASSUMPTION",
+    "source": "D-034 declared assumption; chair-band analogy (asset_scale \"back to ~1100\")",
+    "note": "verify graded the citation PARTIAL: the ~1100 lives only in asset_scale's comment — residential-clearances.md contains no 1100. The assumption is DECLARED, which is its legal form; owner knob stands"
+   }
+  ]
+ },
+ "spec_ratchet": {
+  "_what": "DRW-3: a mass NEW or EDITED versus this baseline must carry sheet_ref (an SR-id in this ledger, or \"not-in-drawing: <reason>\"). Grandfathered masses are counted as backfill debt until a ledger row maps them — zone by zone, never big-bang.",
+  "spec_path": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+  "seeded": "2026-08-11",
+  "baseline": {
+   "พรมใต้เตียง (anti-monopoly rug, D1-A)": [
+    2200,
+    -350,
+    3100,
+    2500,
+    null
+   ],
+   "เตียง 7'x6.5' หัวตะวันออก": [
+    3204,
+    51,
+    2000,
+    2149,
+    600
+   ],
+   "ม้านั่งปลายเตียง (bench)": [
+    2654,
+    626,
+    498,
+    1000,
+    450
+   ],
+   "โต๊ะข้างเตียง เหนือ (มีโคมไฟ)": [
+    4702,
+    2200,
+    501,
+    498,
+    520
+   ],
+   "โต๊ะข้างเตียง ใต้ (มีโคมไฟ)": [
+    4702,
+    -450,
+    501,
+    501,
+    520
+   ],
+   "สตูลโต๊ะเครื่องแป้ง (หันเข้า BF11)": [
+    870,
+    3982,
+    510,
+    546,
+    750
+   ],
+   "ผนังระแนงหัวเตียง BF14": [
+    5203,
+    -450,
+    100,
+    3250,
+    2800
+   ],
+   "ตู้เสื้อผ้าเหนือเตียง BF09-3": [
+    2353,
+    2800,
+    3301,
+    600,
+    2800
+   ],
+   "โต๊ะเครื่องแป้ง BF11": [
+    306,
+    2600,
+    498,
+    3199,
+    750
+   ],
+   "ตู้/ชั้น BF10 (dressing)": [
+    804,
+    5200,
+    2498,
+    600,
+    2800
+   ],
+   "ชั้นหนังสือ/โชว์ ผนังตะวันตก (ex-TV)": [
+    306,
+    248,
+    600,
+    1800,
+    1800
+   ],
+   "อ่างล้างหน้าคู่ (double vanity)": [
+    1077,
+    5923,
+    2047,
+    654,
+    850
+   ],
+   "โถสุขภัณฑ์ WC": [
+    55,
+    6031,
+    685,
+    609,
+    800
+   ],
+   "อ่างอาบน้ำ (bathtub)": [
+    1125,
+    7596,
+    2000,
+    978,
+    560
+   ],
+   "ฝักบัว (shower)": [
+    55,
+    7320,
+    1070,
+    1276,
+    2200
+   ],
+   "ผนังกระจกกั้นเปียก/แห้ง (wet/dry glass partition)": [
+    1125,
+    7329,
+    12,
+    1266,
+    2000
+   ],
+   "อุปกรณ์ Purist + ผ้า (towels/mat/accessories)": [
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "ตู้เสื้อผ้า BF09-1 ขาเหนือ (L 5.2m)": [
+    3254.4,
+    7995.8,
+    1799.7,
+    599.9,
+    2800
+   ],
+   "ตู้เสื้อผ้า BF09-1 ขาตะวันออก (L 5.2m)": [
+    5054.1,
+    4621.9,
+    599.9,
+    3973.8,
+    2800
+   ],
+   "ตู้เสื้อผ้า BF09-2": [
+    3302.0,
+    5199.5,
+    501.5,
+    1498.1,
+    2800
+   ]
+  },
+  "backfill_debt": [
+   "ผนังกระจกกั้นเปียก/แห้ง (wet/dry glass partition)",
+   "พรมใต้เตียง (anti-monopoly rug, D1-A)",
+   "อุปกรณ์ Purist + ผ้า (towels/mat/accessories)"
+  ],
+  "_debt_note": "known residuals: glass partition (drawn as one stroke, needs its own measured row), bath accessories + rug (styling decisions — will take not-in-drawing refs when their masses are next edited)."
+ }
+}

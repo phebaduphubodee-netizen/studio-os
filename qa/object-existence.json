@@ -1,0 +1,979 @@
+{
+ "_what": "R10 AS ROWS. One row per OBJECT IN THE FRAME: what it is, whether anything outside this lane says it should be there, whether it could be built and used, and the verdict. Consumed by pipeline/scripts/existence_check.py, which is spawned by build_room after every render and BLOCKS the build.",
+ "_law": [
+  "The object list is DERIVED FROM THE BUILT SCENE (sheet_recon.assemblies_from_dump), never kept here — R9b: a rule that names the objects it applies to will always exempt the next one.",
+  "IDENTITY IS SIGNED, CONSEQUENCES ARE MEASURED. No program can look at a box and know it is a drawer, so the row declares; the checker then holds the declaration to the scene — a named support must exist and touch, a claimed reveal must measure, a 'remove' must actually be gone.",
+  "`pending` is refused BY NAME. So are `tbd`, `todo` and `later`.",
+  "The unrowed backlog RATCHETS and may only fall. A machine that hard-fails every historical instance on day one gets switched off and joins them (R13).",
+  "Rows never leave the ledger."
+ ],
+ "_why_it_exists": "R8 governs HOW an object is made and R9 governs WHERE it goes. R10 was written 2026-08-05 because nothing governed WHETHER IT SHOULD EXIST, and on 2026-08-17 two independent critics filed three defects of exactly that class against p2r47 — a foot bench with no load path, drawer fronts with no way to open them, and a room with no skirting, sockets or switches. The round's own triage accepted all three with the same sentence: no instrument in this repo can see it.",
+ "baseline_unrowed": 0,
+ "required_elements": [
+  {
+   "element": "skirting",
+   "why_required": "A plastered wall meeting a wood floor is not finished without a skirting or a recessed shadow gap; the junction is drawn on every interior elevation. C2 p2r47 item 10: 'no skirting or shadow-gap where wall meets floor on ANY wall'. Height and projection are DR-sourced for the 2700-3200 mm ceiling band (knowledge/_inbox/nlm-th-bedroom-services).",
+   "present_as": "skirt",
+   "min_parts": 4
+  },
+  {
+   "element": "wall services (switch plates and sockets)",
+   "why_required": "The sconces over the bed are LIT, so something must switch them from somewhere reachable, and a bedroom has sockets. C2 p2r47 item 10: 'no switch plate anywhere, including beside the bed for the sconces; no sockets'. Heights are DR-sourced (door switch 1200-1250 AFFL, bedside switch 600-700, concealed bedside socket 300-350).",
+   "present_as": "svc",
+   "min_parts": 3
+  }
+ ],
+ "objects": [
+  {
+   "assembly": "e5_trim_bf14_wash_0",
+   "identity": "Trim ring of the BF14 slat-wall wash luminaire, in the ceiling plane at z~2.79 m.",
+   "exists": "not-in-drawing: element 5 RCP — same tier as every other luminaire in this room; a furniture plan carries no reflected ceiling",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "INHERITED DEBT, discharged here rather than absorbed silently. These two arrived in the frame in an earlier round (they are already listed unrowed in the p2r93b build log, before P2r-38 touched anything) and the ratchet has been printing them since. Rowing them is carrying the rule out, not hiding a miss: they are the trim ring and aperture disc of the BF14 slat-wall WASH fixture, the same two-part construction every downlight in this room already carries a row for (e5_trim_dl*/e5_lens_dl*), and the wash they belong to is the light that explains the graze down the battens — the brightest thing in the upper frame would otherwise come from nowhere."
+  },
+  {
+   "assembly": "e5_lens_bf14_wash_0",
+   "identity": "Emitting aperture disc of the BF14 slat-wall wash luminaire, inside its trim ring.",
+   "exists": "not-in-drawing: element 5 RCP — same tier as every other luminaire in this room; a furniture plan carries no reflected ceiling",
+   "held_by": "e5_trim_bf14_wash_0",
+   "operable": false,
+   "verdict": "keep",
+   "why": "INHERITED DEBT, discharged here rather than absorbed silently. These two arrived in the frame in an earlier round (they are already listed unrowed in the p2r93b build log, before P2r-38 touched anything) and the ratchet has been printing them since. Rowing them is carrying the rule out, not hiding a miss: they are the trim ring and aperture disc of the BF14 slat-wall WASH fixture, the same two-part construction every downlight in this room already carries a row for (e5_trim_dl*/e5_lens_dl*), and the wash they belong to is the light that explains the graze down the battens — the brightest thing in the upper frame would otherwise come from nowhere."
+  },
+  {
+   "assembly": "pelmet",
+   "identity": "แผ่นบังราง (curtain header / pelmet) — a board hung from the ceiling at the room edge of the 250 mm curtain pocket, on each of the three legs of the glass-L. It is what the curtain hangs BEHIND: the thing that gives the fabric a top.",
+   "exists": "not-in-drawing: the drawing of record is a FURNITURE PLAN — it carries no elevation, and draws no track along the south facade at all (only the S1 west and S2 east curtain symbols). `curtains.still_owner` names pelmet height and track cross-section as supplier/RCP questions, so no height is read from ink. What the sheet DOES carry is the 250 mm pocket itself, ink-measured at three legs (west 250.8 / south 247.6 / east 250.8, agreeing within one 15.87 mm ink stroke), and the spec's own makeup_decision cites the NITAS recessed-pocket tier for it — a pocket whose declared purpose is to CONCEAL a track implies the board that conceals it. DECLARED ASSUMPTION at render tier (D-193): drop 150 mm x section 18 mm, --pelmet-drop= brackets it, printed every build, and his sentence on the image replaces the [est].",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "R10 SENSE is satisfiable without the sheet here, and the absence was the bigger lie. Six of six sighted judges across two frames, plus C2 (three items) and C3 (one), read the fabric as hanging from nothing — and the frame agrees on measurement, not taste: 455 of 706 sheer columns run off the top frame edge, and 233 of the remaining 251 meet the ceiling with a zero-row junction whose luma step is the WRONG SIGN. A board 150 mm deep at the pocket edge is manufacturable, is held by the slab it hangs from, and consumes no pocket depth the fabric uses (the return that would have was CAPPED by measurement to 6 mm and dropped — see glazing_header._return_cap). It leaves the frame the moment he says so: one flag, or one line in build_room."
+  },
+  {
+   "assembly": "wall_4",
+   "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
+   "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. R10's question is whether a mass was invented to satisfy a structure; a wall the drawing draws is the structure."
+  },
+  {
+   "assembly": "wall_3z",
+   "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
+   "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. R10's question is whether a mass was invented to satisfy a structure; a wall the drawing draws is the structure."
+  },
+  {
+   "assembly": "wall_s0_0",
+   "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
+   "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. R10's question is whether a mass was invented to satisfy a structure; a wall the drawing draws is the structure."
+  },
+  {
+   "assembly": "wall_s1_1",
+   "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
+   "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. R10's question is whether a mass was invented to satisfy a structure; a wall the drawing draws is the structure."
+  },
+  {
+   "assembly": "wall_1z",
+   "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
+   "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. R10's question is whether a mass was invented to satisfy a structure; a wall the drawing draws is the structure."
+  },
+  {
+   "assembly": "wall_s1_2",
+   "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
+   "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. R10's question is whether a mass was invented to satisfy a structure; a wall the drawing draws is the structure."
+  },
+  {
+   "assembly": "wall_3l0",
+   "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
+   "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. R10's question is whether a mass was invented to satisfy a structure; a wall the drawing draws is the structure."
+  },
+  {
+   "assembly": "wall_s1_3z",
+   "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
+   "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. R10's question is whether a mass was invented to satisfy a structure; a wall the drawing draws is the structure."
+  },
+  {
+   "assembly": "wall_3p0",
+   "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
+   "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. R10's question is whether a mass was invented to satisfy a structure; a wall the drawing draws is the structure."
+  },
+  {
+   "assembly": "wall_s0_1p0",
+   "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
+   "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. R10's question is whether a mass was invented to satisfy a structure; a wall the drawing draws is the structure."
+  },
+  {
+   "assembly": "wall_2",
+   "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
+   "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. R10's question is whether a mass was invented to satisfy a structure; a wall the drawing draws is the structure."
+  },
+  {
+   "assembly": "floor",
+   "identity": "The floor slab, outline polygon from -100 to 0. Oak boards are its material, not a separate mass.",
+   "exists": "sheet:outline",
+   "held_by": "self",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture, from the same outline as the walls."
+  },
+  {
+   "assembly": "ceiling",
+   "identity": "The ceiling slab at 2800, added to stop the HDRI leaking over the wall tops. Flat: the RCP's cove is a separate mass (e5_cove_pelmet).",
+   "exists": "not-in-drawing: a FURNITURE plan draws no ceiling; the height 2800 comes from room.ceiling_mm and the RCP work is element 5",
+   "held_by": "wall_4",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture; and without it the room is lit by an HDRI through an open top."
+  },
+  {
+   "assembly": "bed",
+   "identity": "The bed: the ACQUIRED whole bed f52472c1 (P2r-52, D-106/D-107 — platform frame with integral side ledges, fitted mattress, one duvet field, 2 pillows + 3 shams, all re-dressed in the six studio bed materials), the sheet-drawn headboard band with welts (R12, stays built), and a measured pillowstop closing the head-end strip. 2000 x 2149 footprint, ink-true.",
+   "exists": "sheet:SR-07",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Ink-trued and owner-confirmed; footprint is the client's own drawing (R12). The assembly's construction is acquired per his class order (D-104); the acquired parts group under this row by the bed__ prefix."
+  },
+  {
+   "assembly": "bench",
+   "identity": "Foot-of-bed bench — ONE acquired mesh (BlenderKit 5b8e98d7, asserted bench_seat 409.1 mm on z, D-114/D-115 hug: 8.6 mm gap to the bed foot rail). Identity refreshed 2026-08-25; the previous text named Ottoman_01 at 501 mm, stale since the 08-22 model swap.",
+   "exists": "sheet:SR-08",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "fix",
+   "fix_by": "Give it a visible load path or replace the mesh. Both critics read it as two stacked cushions with nothing to carry the load to the legs, and that is TRUE of this mesh — an upholstered block on an upholstered block. R8 sends the FRAME to the builder (rail + apron + leg = boxes with radii) while the cushion stays acquired; ASK-024 carries the other route, which is a bench of the drawn 498 x 1000 (1:2.0) proportion that the free shelf does not hold.",
+   "why": "PARTLY REFUTED WITH A MEASUREMENT, and the surviving half is real. C2's 'a seat at mattress height is not a seat' does not hold: the bench top measures 501 mm and the mattress top 600 mm, so it sits 99 mm BELOW the sleeping plane and inside the 400-500 mm seat band it cites. The load-path half stands and no number refutes it."
+  },
+  {
+   "assembly": "rug",
+   "identity": "Acquired rug (BlenderKit 0fd746ae Carpet, panel 2026-08-25c inside 3/3 — greige tonal texture), natural 2427x3024 filling the drawn 2500x3100 at 0.97 with NO stretch; vendor weave kept per his item 5 \"พรมยังไม่สวย หาจาก blendkit มา\". Replaced the hand-built ring/pile rug at p2r75 (that build is the loud fallback). Previous identity (hand-built, D-028 box-test keep) superseded by his eye.",
+   "exists": "not-in-drawing: D1-A, an owner-signed styling decision (the anti-monopoly rug); the furniture plan draws no rug",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Signed, and its size is derived from the bed it sits under."
+  },
+  {
+   "assembly": "deco_books",
+   "identity": "Acquired book stack on the bench (e96bf8f6, panel inside 3/3, vendor covers kept — a book IS its printed matter), resting on the measured bench top (R9). Split from the old combined deco row at p2r74: distinct tags ended the item-id stem collision review B caught.",
+   "exists": "not-in-drawing: element 8 styling; a furniture plan draws no books",
+   "held_by": "bench",
+   "operable": false,
+   "verdict": "keep",
+   "why": "His item 1. D-138."
+  },
+  {
+   "assembly": "mill@3254,4621",
+   "identity": "BF09-1, the wardrobe run: north leg (SR-05) and east leg (SR-06) as one connected carcass — gables, backs, shelves, brass hang rails, two three-drawer towers with microcement fronts, plinths, a niche mirror.",
+   "exists": "sheet:SR-05 + SR-06",
+   "held_by": "floor",
+   "operable": true,
+   "opens_by": {
+    "push_to_open": "D-097"
+   },
+   "verdict": "keep",
+   "why": "Drawn, ink-trued, owner-confirmed. The drawer fronts carry no pull BY THE SIGNED DESIGN (D6-A: 'flat handleless microcement'), which is why the answer to the critics' item is to NAME the mechanism rather than to add a handle that would contradict the owner's own decision — see D-097."
+  },
+  {
+   "assembly": "mill@2353,-450",
+   "identity": "BF09-3, the open dressing wardrobe over the bed (SR-03), joined to the BF14 bed-head slat wall (SR-01/SR-18) and carrying the folded-linen styling stacks on its shelves.",
+   "exists": "sheet:SR-03 + SR-01",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "BF09-3 is signed OPEN (owner 2026-07-16, ref image #3: 'oak veneer carcass, brass hang rails, floating drawers, open shelves - NO doors'), so it has no leaf to open and `operable` is false as a fact about the design, not an omission."
+  },
+  {
+   "assembly": "mill@306,2600",
+   "identity": "BF10 dressing cabinet (SR-20) joined to BF09-2 (SR-19), whose three double-leaf doors are the only hinged fronts in the room.",
+   "exists": "sheet:SR-20 + SR-19",
+   "held_by": "floor",
+   "operable": true,
+   "opens_by": {
+    "push_to_open": "D-097"
+   },
+   "verdict": "keep",
+   "why": "Drawn and ink-trued. Same handleless mechanism as the drawer fronts; one decision covers the room so two cabinets cannot drift apart."
+  },
+  {
+   "assembly": "mill@77,5898",
+   "identity": "The ensuite fit-out reaching into this frustum: the double vanity carcass and its acquired towels and accessories.",
+   "exists": "sheet:SR-04",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Drawn. It is in the frustum only as a sliver past the wardrobe bay."
+  },
+  {
+   "assembly": "side_table",
+   "identity": "BOTH bedside tables, acquired (BlenderKit 24c65eb4 Asta, panel 2026-08-25b inside 3/3 — the only candidate inside the D-045 top band; replaced 1cf77b3a on his p2r73 verdict 'ผมไม่ชอบอันนี้', CLASS≠INSTANCE). Natural 479x430x480 at scale 1.0 (slot opened to natural — the old 450 slot forced 0.938 and broke the datum), top 480 = plane-40 inside the D-045 band. Positions DERIVED, never typed (R9): hug + re-seat along the acquired 2059 headboard band to clear its wings — the drawn pockets' own composition (SR-09/SR-10, p2r74). FAMILY ROW by design: coordinate-keyed rows chased every derived re-seat and went stale twice in one day.",
+   "exists": "sheet:SR-09,SR-10",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Drawn both sides. Swapped + re-seated per ORD-2026-08-25-six-items items 5-6; the family form is stricter on held_by per existence_check's own docstring."
+  },
+  {
+   "assembly": "nightstand",
+   "identity": "Two acquired bedside lamps (BlenderKit 18d17256 Kendra — turned wood base + linen drum shade, panel 2026-08-25b inside 3/3), resting on the measured Asta table tops (R9), each with its own 12 W practical at bulb height derived from the placed shade bbox. Replaced the built spun-brass dome pair at p2r74 on his item 2; the brass build (with its p2r72 lining) remains as the loud fallback in code. Every lamp mesh is shadow-transparent — the declared trade that keeps the practical out of the vendor-opaque shade trap; the cost (no lamp silhouette/contact shadow) is recorded in the p2r74 gate.",
+   "exists": "not-in-drawing: element 8 / D3 styling — the furniture plan draws a 300 mm lamp circle on each bedside carcass (pen 0.12, measured from the strokes 2026-08-24) but carries no elevation, so the lamp is IN the drawing in plan and its form is ours",
+   "held_by": "side_table",
+   "operable": false,
+   "verdict": "keep",
+   "why": "His item 2 (2026-08-25). D-138; D3-3 brass-accent supersession noted in the gate."
+  },
+  {
+   "assembly": "e5_cove_pelmet",
+   "identity": "The cove pelmet that hides the BF14 wall-wash strip: a 20 mm blade standing off the slat wall at 2650-2790.",
+   "exists": "not-in-drawing: element 5 RCP; a furniture plan carries no lighting",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "It exists to conceal a real source that is in the frame; a wall-wash cove without a pelmet shows its own lamp."
+  },
+  {
+   "assembly": "e5_cove_pelmet_ret_n",
+   "identity": "The pelmet's north return, closing its end against the wall.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "A pelmet with an open end shows the strip from the side."
+  },
+  {
+   "assembly": "e5_cove_pelmet_ret_s",
+   "identity": "The pelmet's SOUTH return, closing its other end against the wall — the mirror of e5_cove_pelmet_ret_n, which has carried a row since the pelmet was built.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Same reason as the north return: a pelmet with an open end shows the strip from the side. IT ARRIVED WITH THE CAMERA, NOT WITH A BUILD — this part has existed since the cove was built and had no row because no frame ever showed it; the p2r78 room_contained leg puts the ceiling in frame and the ratchet caught it on its first run (\"an object new to the frame must arrive with its justification\"). Worth keeping the sentence: widening a camera can add unjustified objects to a frame without anyone building anything."
+  },
+  {
+   "assembly": "e5_trim_dl5",
+   "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it."
+  },
+  {
+   "assembly": "e5_trim_dl8",
+   "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it."
+  },
+  {
+   "assembly": "e5_trim_dl9",
+   "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it."
+  },
+  {
+   "assembly": "e5_trim_dl16",
+   "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it."
+  },
+  {
+   "assembly": "e5_trim_dl17",
+   "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it."
+  },
+  {
+   "assembly": "e5_trim_bf14_wash_3",
+   "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it."
+  },
+  {
+   "assembly": "e5_lens_dl5",
+   "identity": "The emitting aperture disc inside a downlight trim.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it. This row rides its trim and carried its height."
+  },
+  {
+   "assembly": "e5_lens_dl8",
+   "identity": "The emitting aperture disc inside a downlight trim.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it. This row rides its trim and carried its height."
+  },
+  {
+   "assembly": "e5_lens_dl9",
+   "identity": "The emitting aperture disc inside a downlight trim.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it. This row rides its trim and carried its height."
+  },
+  {
+   "assembly": "e5_lens_dl16",
+   "identity": "The emitting aperture disc inside a downlight trim.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it. This row rides its trim and carried its height."
+  },
+  {
+   "assembly": "e5_lens_dl17",
+   "identity": "The emitting aperture disc inside a downlight trim.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it. This row rides its trim and carried its height."
+  },
+  {
+   "assembly": "e5_lens_bf14_wash_3",
+   "identity": "The emitting aperture disc inside a downlight trim.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it. This row rides its trim and carried its height."
+  },
+  {
+   "assembly": "bf14_sconce_0",
+   "identity": "Wall sconce on the BF14 slat wall above the bed, 60 mm cylinder at 1480-1620 mm.",
+   "exists": "not-in-drawing: element 5 RCP; the furniture plan carries no fittings",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Mounted on the slat wall it lights. C2's related item — that they are LIT and nothing switches them — is answered by the bedside switch plate this round adds, not by removing the sconce."
+  },
+  {
+   "assembly": "bf14_sconce_1",
+   "identity": "Wall sconce on the BF14 slat wall above the bed, 60 mm cylinder at 1480-1620 mm.",
+   "exists": "not-in-drawing: element 5 RCP; the furniture plan carries no fittings",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Mounted on the slat wall it lights. C2's related item — that they are LIT and nothing switches them — is answered by the bedside switch plate this round adds, not by removing the sconce."
+  },
+  {
+   "assembly": "bf14_sconce_0_lens_up",
+   "identity": "The up/down emitting aperture disc of a sconce.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "A cylinder sconce emits from its two open ends; without the discs the body is a lit tube with no aperture."
+  },
+  {
+   "assembly": "bf14_sconce_0_lens_dn",
+   "identity": "The up/down emitting aperture disc of a sconce.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "A cylinder sconce emits from its two open ends; without the discs the body is a lit tube with no aperture."
+  },
+  {
+   "assembly": "bf14_sconce_1_lens_up",
+   "identity": "The up/down emitting aperture disc of a sconce.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "A cylinder sconce emits from its two open ends; without the discs the body is a lit tube with no aperture."
+  },
+  {
+   "assembly": "bf14_sconce_1_lens_dn",
+   "identity": "The up/down emitting aperture disc of a sconce.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "A cylinder sconce emits from its two open ends; without the discs the body is a lit tube with no aperture."
+  },
+  {
+   "assembly": "skirt",
+   "identity": "Skirting: a 100 x 15 mm painted band where a plastered wall meets the oak floor, run along the room outline and stopped at every doorway and at every floor-standing mass that backs onto that wall.",
+   "exists": "not-in-drawing: the wall-floor junction is an interior-elevation detail and this is a FURNITURE plan; the dimensions are read off a DR of Thai residential practice for the 2700-3200 mm ceiling band (D-098)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "C2 p2r47 item 10 filed its absence on every wall. It is skirting rather than the contemporary recessed shadow gap because a skirting is a BOX and a shadow gap is a CUT into the wall prism — R8's test sends the box to the builder, and the gap stays available as this row's named reversal."
+  },
+  {
+   "assembly": "svc",
+   "identity": "Wall services: an 86 x 86 mm faceplate beside the bedroom door at 1225 mm AFFL (the room switch), and per bedside a switch at 700 mm and a socket plate at 325 mm on the bed-head wall.",
+   "exists": "not-in-drawing: a furniture plan carries no electrical; heights are DR-sourced Thai residential practice (D-098's same unit)",
+   "held_by": "wall",
+   "operable": false,
+   "verdict": "fix",
+   "why": "C2 p2r47 item 10, and its grounding is the sharpest R10 sentence either critic wrote: the sconces over the bed are LIT, so they must be switched from somewhere reachable. Every position is derived from the opening or the nightstand it serves, so moving the door moves the switch. The carrier is named as the CLASS 'wall' and not as one mass because the three plates sit on three DIFFERENT walls — the door switch on the east wall, the two bedside plates on the BF14 slat wall standing in front of it. The checker refused the first draft of this row, which named wall_4: the plate is nowhere near it. NOTE p2r49: filed as FIX on the day it was built — the blind critic caught the mounting detail in the first frame it appeared in, which is the ladder working rather than a defect surviving.",
+   "fix_by": "Give each faceplate a flat MOUNTING BLOCK behind it. C2 filed it against the very object this round added (p2r49 item 16: \"the switch plate floats on the slat wall with no mounting block, recess or shadow\") and it is right as construction: the plate spans x5193-5203, i.e. it lands flush with the slat faces and bridges the gaps between them, and you cannot screw a faceplate to a slat. A real installation cuts the slats back to a flat plaster or ply pad. The pad is a box with radii, so R8 sends it to the builder."
+  },
+  {
+   "assembly": "unidentified_ceiling_wire_topleft",
+   "identity": "RESOLVED 2026-08-24 - not a wire and not a separate object: the vertical SHADOW REVEAL between the millwork tall unit's end panel and the painted wall, at the frame's extreme left. Named from p2r54's OWN MATMASK (the probe that filed this row used the idmask, whose roster was bed-focused and returned id 0): 84 of the line's 106 pixels carry material id 39 = m_millwork_oak_veneer_photo, the remainder antialiasing between palette levels, with ceiling_paint (id 14) in the adjacent column x=21. The small metallic cone just below it at x~17 y~94 is a THIRD material, e5_trim_dark (id 20) - the E5 pelmet trim. Both surfaces belong to assemblies this ledger already carries.",
+   "exists": "not-in-drawing: a shadow gap is a millwork DETAIL rather than a mass, so no sheet rect can correspond to it; it is there because the tall unit's end panel stops short of the wall, which is the reveal the millwork is built with",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "R10 question 1 is answered and the answer changes the verdict: nothing here is an unexplained mass. C2 (p2r54, blind-local) was RIGHT about the pixels - a thin dark line descending from the top edge - and wrong only about what makes them, which is what a blind critic is for. What failed was the BUILDER's probe. Two errors, both measurable today: (1) its recorded coordinates do not hold the feature. It wrote 'a black angular mass ~40 px at x 30-45, y 150-230 of 2400x1800'; that window in p2r54 measures min luma 0.6549, mean 0.6799, and contains ZERO pixels below 0.10. The real feature is a ONE-PIXEL-WIDE column at x=22 spanning y 0-105 - 100 px below 0.10, all in a single column, which is why an 'angular mass' was the wrong shape to look for. (2) it asked the idmask, got id 0 over the region, and stopped - while the MATMASK for the same frame sat beside it on disk and names the material in one query. The hanger-hook hypothesis it reached instead is refuted: no hanger is within 1500 mm of the frame's left margin, and the pixels are oak veneer. VERDICT keep: a shadow reveal between millwork and wall is a deliberate detail, the millwork run stands on the floor, and there is nothing to remove. NOT A CLAIM THAT WE FIXED IT: the feature is absent from p2r62 and p2r64 only because the eye camera MOVED after p2r55 (floor_poly_mm differs between the p2r54 and p2r58 dumps), so it is out of frame, not corrected. If the camera returns to p2r54's station the reveal returns with it, and it is legitimate when it does. The assembly key keeps its filed name so the history stays greppable (law 4: rows never leave the ledger). Filed p2r54, mis-probed p2r55, resolved from the matmask 2026-08-24.",
+   "since": "2026-08-18"
+  },
+  {
+   "assembly": "glass@-105,-802",
+   "identity": "The east glazed opening's glass panes — the window/slider glazing the spec's room.openings declares, built as thin glass quads in the opening the wall prism is cut by. Entered the eye frame 2026-08-22 when the camera of record moved to the bed-foot axis (D-118): the old NE-corner framing never looked east.",
+   "exists": "sheet:openings — the east glazing is a declared opening (room.openings), not a discretionary object; the wall is cut for it",
+   "held_by": "wall",
+   "operable": false,
+   "verdict": "keep",
+   "why": "R10's question is whether a mass was invented to satisfy a structure; glazing in a drawn opening is the structure. New-to-frame by camera move, not by build."
+  },
+  {
+   "assembly": "curtain",
+   "identity": "The window curtain sets (privacy + blackout pairs per glazed opening) the spec's curtains block declares — built 2026-07-17 (curtain build, eye_camera_variants provenance note) and present in every scene since; the bed-foot camera is simply the first eye framing that faces them.",
+   "exists": "sheet:openings + spec curtains block — dressing a declared opening; class order soft-goods-acquired governs their cloth, and their per-window presence is spec-declared",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "A drawn opening in a bedroom carries window dressing; absence would be the invented thing. New-to-frame by camera move, not by build."
+  },
+  {
+   "assembly": "juliet",
+   "identity": "The juliet guard bars at the glazed slider (juliet__glz-slider_*, steel flats) — the fall-protection a full-height openable glazed panel requires, declared with the slider in the spec's openings.",
+   "exists": "sheet:openings — the glz-slider is drawn/declared; a full-height opening panel above ground carries a guard as constructed reality",
+   "held_by": "wall",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Holds a real load path (guard spanning the opening, anchored at jambs); removing it would make the slider the invented object. New-to-frame by camera move, not by build."
+  },
+  {
+   "assembly": "Sheet",
+   "identity": "The flat sheet of the ACQUIRED Metropol bed set (e2418055) — the layer between the mattress and the blanket. 1,354,622 polys, the heaviest single object in the scene (the duvet is 388k), plan x3273..3849 y78..2157 z81..541.",
+   "exists": "not-in-drawing: element 3 bedding — the furniture plan draws the bed, not the layers of a made bed (same ground as the pillows and duvet)",
+   "held_by": "bed",
+   "operable": false,
+   "verdict": "fix",
+   "since": "2026-08-24",
+   "fix_by": "Give it a ROLE in wholebed_rules so it takes a signed bedding material. Today it is the set's one UNCLASSIFIED part and build_room prints that at every build — 'UNCLASSIFIED part Sheet keeps its imported material' — so it renders a stranger's `Brown textured fabric` against D3-1's signed greige linen family, which is exactly the defect the _CASE_GOODS material policy was written for at p2r37 (*มันใส่วัสดุของตัวเองมา*). MEASURED, so the urgency is not overstated: the duvet's AABB encloses it on every axis except ~28 mm at the hem and ~26-41 mm at the sides, and no brown band is separable in the p2r59q frame — the warm-pixel share of the bed-foot band is 0.84%, which is floor edge. So this is a latent material defect on a part that is currently almost entirely hidden, plus a real 1.35M-poly cost for it.",
+   "why": "ROWED 2026-08-24, and it is a backlog row rather than a new object: existence_check exits 0 on the p2r57 dump and 1 on p2r58, so the Metropol bed brought this part in at p2r58 (d57ea4f) and that round was committed with this blocking gate failing. Rowing it is not approving it — the verdict is `fix` and the action is named."
+  },
+  {
+   "assembly": "wardrobe",
+   "identity": "Acquired soft storage on the wardrobe shelves (p2r74, ORD-2026-08-25-six-items item 4, panel 2026-08-25b all >=2/3 inside): canvas storage box c590fee3, rattan basket 90a1129e, rattan tray 7302438e, slippers 4152f818 — one piece per bay, resting on MEASURED shelf tops (R9), vendor materials kept (natural fibre IS the read). EXTENDED p2r80 (ORD-2026-08-26-builtin-contents-unnatural, his 'ของในตู้ built-in ยังไม่เป็นธรรมชาติ' on p2r78rc): the EYE-VISIBLE open wardrobe BF09-3 now carries its narrative shelf story — sienna doctor bag f8573a9c at niche eye level ni1 ('ของชิ้นโปรดวางแบบเห็น', hero alone: ni0/ni2 stay air), lidded rattan basket 90a1129e (2nd and last instance) low at fl (laundry line), canvas box c590fee3 (2nd and last instance) high at fh (seasonal line); tw0 left DELIBERATELY empty (>=1 empty cell per column, the narrative's own warehouse-guard). Cells resolved from _STYLE_ANCHORS by kind, never a name prefix (the mill__bay filter that had exempted BF09-3 was the R9b allowlist class).",
+   "exists": "not-in-drawing: wardrobe styling per his item 4 + the ORD-25c narrative shelf-story lines (styling-narrative-2026-08-25.md) — a furniture plan draws no shelf contents",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "His orders (item 4 + 08-26 builtin verdict) ask for cabinet contents where the camera looks; every id passed a blind panel, rests on a measured face, and each B3 site cites its narrative line."
+  },
+  {
+   "assembly": "deco_throw",
+   "identity": "Acquired folded throw on the bench (b89bc1af, panel 2026-08-25 inside 3/3, dressed in the signed bed_duvet — D-137), resting on the measured bench top. NOT PLACED SINCE p2r78: one cloth per adjacent surface. Two folded grey cloths sat 30 cm apart in the frame and a sighted panel read them as a duplicated story beat; the shopping list's own E1 line had already written the rule ('ม้านั่งลดเหลือของแบน' once a woven throw lands on the bed). The id's 3/3 panel win is untouched — the SITE is no longer styled with cloth. --bench-throw restores it.",
+   "exists": "not-in-drawing: bench styling; a furniture plan draws no throw",
+   "held_by": "bench",
+   "operable": false,
+   "verdict": "remove",
+   "why": "R10's own words: an object that cannot justify its place leaves the frame as a declared decision, and the absent thing is honest. D-137 still stands for the ID (b89bc1af won its 3-judge panel); what p2r78 removes is the SITE's cloth, because two folded grey cloths 30 cm apart read as prop inventory. The row stays in the ledger because rows never leave it, and --bench-throw puts the mesh back. (First cut of this row said verdict 'keep-but-not-placed' and the R10 gate refused it by name — an enum with four states does not get a fifth because a builder wanted a softer word.)"
+  },
+  {
+   "assembly": "deco_plant",
+   "identity": "Acquired ficus floor plant (BlenderKit 878fa112, panel 2026-08-25c inside 3/3 — muted olive foliage, plain charcoal pot), 807x803x1271 natural, standing at (2.20,0.62) — the first CLEAR floor spot of a deterministic tested ring (R9: position tested against the built scene, never typed). ORD-2026-08-25b item 4: his GO on lived-in styling.",
+   "exists": "not-in-drawing: styling per his item 4 — a furniture plan draws no plant",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "His order; vendor foliage kept (a plant IS its leaves)."
+  },
+  {
+   "assembly": "deco_bedthrow",
+   "identity": "Acquired folded WOOL throw at the bed foot (91685141 since p2r78; was the woven plaid 0623e2fd, ensemble panel 2026-08-25d IN x3), laid at 15 deg on the duvet's own measured surface, weighted to the window side; material renamed acq_bed_throw so BEDPX classifies it BEDDING. SWAPPED on two measurements: the frame carried no designed dark (4.31% of pixels under L60 against delivered anchors at 9.87% and 19.96%), and of every folded-cloth id in our cache the wool's base-colour texture is the darkest — 99.3 against the outgoing plaid's 133.0. --throw-plaid returns the plaid.",
+   "exists": "not-in-drawing: bed styling; the vignette rule every reference frame repeats (one throw breaks the made-bed grid at the foot, never twins)",
+   "held_by": "bed",
+   "operable": false,
+   "verdict": "keep",
+   "why": "ORD-2026-08-25c styling narrative (her-side story) + vignette-reading doc rule 4; id chosen p2r78 by the shopping list's E1 line (greige x charcoal woven) and the measured value floor."
+  },
+  {
+   "assembly": "bookshelf_display",
+   "identity": "Display objects on the ex-TV west bookshelf (p2r80, ORD-2026-08-26-builtin-contents-unnatural): the unit's own spec prose — 'odd groupings (3/5), one sculptural object per bay, light objects high' — had ZERO consumers, so all 18 built faces rendered bare while the prose read as decided. Five pieces now sit in an X-pattern per knowledge/styles/decor-placement-grammar.md S5: book stacks 6afdfecd (L1/B0) and 55486511 (L2/B1) on the low diagonal, vase ac0d7cbf (L3/B0) and carved bowl 265d7b9b (L4/B1, 2nd and last instance) on the opposite diagonal, shallow tray 8d6dd7a7 alone at L0/B2 — the garden bay keeps one low silhouette so the through-view stays the point. 13 of 18 faces stay AIR by grammar (>=25% face empty, books <=1/3, most cells empty on a see-through unit). Every placement z derives from its built board face (R9); fit and occupancy fail closed.",
+   "exists": "not-in-drawing: display styling per the builtin's own signed design.decision (D2-1 option B display prose) + ORD-2026-08-26; a furniture plan draws no shelf contents",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "His 08-26 verdict names the built-ins' contents; the spec's own display prose finally has a consumer; ids are month-fetched scale-asserted, ensemble panel judges them on this round's frames (a losing verdict changes an id, never re-opens a build)."
+  },
+  {
+   "assembly": "wardrobe_bag",
+   "identity": "Sienna doctor bag f8573a9c at BF09-3 niche eye level ni1 — narrative line 'กระเป๋าหนังภรรยา (ของชิ้นโปรดวางแบบเห็น)'; hero alone (ni0/ni2 closed to air); front-pulled 50 mm from the cell's front edge, front derived toward the furniture-items centroid (p2r80b measured the outline-centroid version pulling it INTO the niche, y3.026->3.202, hidden). Same physical object as the 'wardrobe' umbrella row's bag — the per-item tag (p2r80b, so D7 can group a multi-mesh import) made it its own assembly, and this row is that name's justification.",
+   "exists": "not-in-drawing: styling per ORD-2026-08-26 + narrative shelf story — a furniture plan draws no bag",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Panel-passed id (25d triage runner-up after the cognac tote failed at hero distance); rests on the measured ni1 face; the displayed-favourite story line is the reason it exists where the camera looks."
+  },
+  {
+   "assembly": "wardrobe_basket",
+   "identity": "Lidded rattan basket 90a1129e (2nd and last instance; 1st sits in the walk-in) at BF09-3 fl — narrative line 'ตะกร้าหวายมีฝา ผ้ารอส่งซัก อยู่ชั้นล่าง'. Per-item tag p2r80b; same acquisition as the 'wardrobe' umbrella row's basket.",
+   "exists": "not-in-drawing: styling per ORD-2026-08-26 + narrative shelf story",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Panel-passed id, measured shelf face, vendor rattan kept (natural fibre IS the read); a laundry basket low in an open wardrobe is the lived-in beat the narrative wrote."
+  },
+  {
+   "assembly": "wardrobe_box",
+   "identity": "Canvas storage box c590fee3 (2nd and last instance) at BF09-3 fh (z2.5, above the eye camera's frustum by design) — narrative line 'กล่องผ้าเก็บตามฤดู วางชั้นสูงเพราะนาน ๆ หยิบ'. Per-item tag p2r80b.",
+   "exists": "not-in-drawing: styling per ORD-2026-08-26 + narrative shelf story",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "The seasonal-storage story line puts it high on purpose; wardrobe cameras see it, the eye camera does not, and both are the story working."
+  },
+  {
+   "assembly": "bookshelf_books0",
+   "identity": "Book stack 6afdfecd at ex-TV bookshelf L1/B0 (X-pattern low band, north bay) — decor-placement-grammar S5 + the unit's own signed display prose. Per-item tag p2r80b.",
+   "exists": "not-in-drawing: display styling per the builtin's signed design.decision (D2-1 B) + ORD-2026-08-26",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Month-fetched, scale-asserted; books low = weight low, the grammar's cited rule; panel judges on frame."
+  },
+  {
+   "assembly": "bookshelf_books1",
+   "identity": "Book stack 55486511 at ex-TV bookshelf L2/B1 (X-pattern low band, centre bay). Per-item tag p2r80b.",
+   "exists": "not-in-drawing: display styling per D2-1 B + ORD-2026-08-26",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Second book beat sits diagonal to the first (grammar S5: similar pieces stagger, never stack in a column)."
+  },
+  {
+   "assembly": "bookshelf_vase",
+   "identity": "Vase ac0d7cbf at ex-TV bookshelf L3/B0 (sculptural diagonal, upper north). Per-item tag p2r80b.",
+   "exists": "not-in-drawing: display styling per D2-1 B ('one sculptural object per bay') + ORD-2026-08-26",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "The prose asked for a sculptural per bay; month-fetched, scale-asserted, matte ceramic inside the style matrix bounds."
+  },
+  {
+   "assembly": "bookshelf_bowl",
+   "identity": "Carved wooden shallow bowl 265d7b9b (2nd and last instance; 1st is the walk-in vessel pair's low half) at ex-TV bookshelf L4/B1. Per-item tag p2r80b.",
+   "exists": "not-in-drawing: display styling per D2-1 B + ORD-2026-08-26",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Sculptural beat on the opposite diagonal to the vase; low organic silhouette, style-matrix material (raw wood)."
+  },
+  {
+   "assembly": "bookshelf_tray",
+   "identity": "Shallow tray 8d6dd7a7 alone at ex-TV bookshelf L0/B2 — the garden bay keeps ONE low piece so the through-view stays the point (the bay's signed job). Per-item tag p2r80b.",
+   "exists": "not-in-drawing: display styling per D2-1 B + ORD-2026-08-26",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "One low silhouette against the glass; more would defeat the see-through bay the owner chose in D2-1 option B."
+  },
+  {
+   "assembly": "wardrobe_vase",
+   "identity": "Speckled stoneware vase ae43e44c, the TALL half of the walk-in vessel pair, moved into the camera-visible BF09-3 at niche cell ni2 (p2r84, ORD-2026-08-26-builtin-contents-unnatural). Per-item tag so D7 can name it — the third prefix of the p2r79/p2r80b blindness class.",
+   "exists": "not-in-drawing: shelf contents per ORD-2026-08-26 + the ORD-25c narrative shelf story — a furniture plan draws no vessels",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "MEASURED IN THE FRAME at p2r84: 3,211 px on the material mask, against 0 px for the same pair the round before, when the pair matched the WALK-IN's ni2 by alphabetical host order and was placed where no camera looks. It rests on the ni2 board face derived from the built geometry (R9). ROW OWED SINCE p2r84 AND WRITTEN AT p2r85: the tag arrived without its justification and this rung failed the build for it — see the p2r85 gate on why two rounds shipped anyway."
+  },
+  {
+   "assembly": "wardrobe_bowl",
+   "identity": "Carved wooden shallow bowl 265d7b9b, the LOW half of the same vessel pair, beside the vase at BF09-3 ni2 — tall-BESIDE-low at a 50 mm front setback, not depth-stacked (the ray says only the front ~200 mm of a 600 mm cell is visible from the record camera).",
+   "exists": "not-in-drawing: shelf contents per ORD-2026-08-26 + the narrative shelf story",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "413 px on the p2r84 material mask. One cell, one idea (332 vs 66 mm): the pair is a single composed beat, and the 2nd-and-last-instance rule for this bowl id is satisfied by the bookshelf_bowl row naming the other one. Rests on the measured ni2 face. Row owed since p2r84, written at p2r85."
+  },
+  {
+   "assembly": "wardrobe_shoes",
+   "identity": "Chestnut derbies 8e006d2e on the BF09-3 low shelf (fl) — the boot/basket shelf the p2r27 full-hang fit-out was designed to carry, dressed at p2r84 with a per-item tag.",
+   "exists": "not-in-drawing: shelf contents per ORD-2026-08-26; the drawing carries the shelf, not what stands on it",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "11,979 px in frame at p2r84 — the largest single content the wardrobe gained that round. Shoes on the lowest shelf of a full-hang cell is what that shelf is FOR (millwork's own comment: 'a real full-hang cell is finished with a boot/basket shelf under the drop'). Bare-prefix row: the assembly name carries coordinates and the two shoes are two spatial components of one placement. Row owed since p2r84, written at p2r85."
+  },
+  {
+   "assembly": "e5_casestrip_case_ตู้เสื้อผ้าเหนือเตียง_BF09-3",
+   "identity": "Casework LED strips inside BF09-3 (D-156, p2r83): a 10x4 mm 8 W/m 2700 K strip in the PH-03 family, one per cell that actually holds something, its box derived from the cell's own geometry and its occupancy read from the scene AFTER styling.",
+   "exists": "not-in-drawing: lighting layer per D-156, the rule read off 50 delivered built-in frames of the friend pool; an RCP draws no casework strip",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "A lit niche with a dark neighbour is the delivered-work grammar the rule was cut from, and the strip is what makes the light have a source. Bare-prefix row because a strip's assembly name carries the cell coordinate and the SET changes with the contents — the count is derived, so a row per instance would go stale on every styling move. ROW OWED SINCE p2r83, and the reason it matters: this rung has failed the build since p2r83 (1 unrowed) and p2r84 (3), and both frames shipped and closed gates with no line about it."
+  },
+  {
+   "assembly": "wardrobe_bookslean",
+   "identity": "Leaning book stack 9c2e5e24 (263x364x103 mm asserted) on the drawer tower's upper shelf `tw1`, sharing with the folded stack already there.",
+   "exists": "not-in-drawing: shelf contents per ORD-2026-08-26 + the ORD-25c narrative shelf story (หนังสือกองเอียงบนชั้นหอคอย ข้างกองผ้าพับ) — a furniture plan draws no books or blankets",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "PAID piece, same buy and the same door. Scale ASSERTED (103.4 mm vs 40-350). Panel 2/3 inside — palette called it `edge` for a primary-colour jacket graphic facing the room rather than a spine, which is a real cost and it is recorded here rather than argued away: it is ONE jacket in a stack of cream boards, and the two other lenses read it inside on the board material and on the off-square stacking."
+  },
+  {
+   "assembly": "mill@55,-450",
+   "identity": "NOT ONE OBJECT — one connected-component KEY covering the room's chained fixed millwork after D-164: the BF14 bed-head slat wall (77 battens merged to one mesh, D-164; slats x5203-5215, backer 5215-5303, y-450..2800), the BF09-3 open dressing wardrobe over the bed (33 parts, formerly rowed as mill@2353,-450), the BF09-1 wardrobe run north+east legs (69 bayBF09 parts, formerly rowed as mill@3254,4621), the 97 mill__style_* hangers/garments hung inside those runs, and — chained through plan-adjacency across the ensuite north strip — the shower tray/curb/head, the tub stone deck + brass filler, and the party-jamb robe hooks/robes. 216 parts, footprint-sum 158.101 m2. The key changed because the merged batten mesh and the garments' wide AABBs fused formerly separate components; min corner = shower tray x55 + BF14 jamb y-450.",
+   "exists": "sheet:SR-01 + SR-03 + SR-05 + SR-06 + SR-14 (tub deck) + SR-15 (shower) — an adjacency AGGREGATE of already-justified drawn masses; no new mass entered the scene, only the grouping fused. The members' full sheet grounds live in the retained rows mill@2353,-450 and mill@3254,4621 (rows never leave the ledger); the robes/style contents are the E6/E8 not-in-drawing classes their own rows carry.",
+   "held_by": "floor",
+   "operable": true,
+   "opens_by": {
+    "push_to_open": "D-097"
+   },
+   "verdict": "keep",
+   "why": "Every member is drawn, ink-trued or separately rowed; what is new is only the KEY. operable/push_to_open is carried forward from the stale mill@3254,4621 row so the p2r47 handleless-drawer-front answer (D-097, D6-A flat microcement) keeps a live, checkable home — that row now names nothing in the built scene. An exact-key row is kept (not a bare 'mill' family row) because two wardrobes are not one row (existence_check's own docstring), and mill@306,2600 / mill@77,5898 keep their exact rows; the cost is that THIS key goes stale on the next regroup, recorded here so the next ratchet hit is a rename, not a mystery."
+  },
+  {
+   "assembly": "fix@1125,7596",
+   "identity": "The bathtub carcass (SR-14): four porcelain apron walls (fix__tub_apron_e/n/s/w, 110 mm TUB_WALL) + the tub floor (fix__tub_floor), 2000x978 at x1125-3125 y7596-8574, z 0-560 — bathroom.py tub_parts massing of the OWNER-AUTHORED ink (element4 ink read 2026-07-18: deck x1125-3124, E end at the party wall ~28 reveal). The stone deck + brass filler ride on it as mill__tub_deck_* / mill__tub_filler (grouped into mill@55,-450).",
+   "exists": "sheet:SR-14 — the drawn bathtub, ink-trued and owner-authored (อ่างอาบน้ำ, NE on the north wall)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Drawn fixture, ink-true footprint. New-to-frame by camera move (D-175 camera B looks into the ensuite), not by build — same class as the glass@-105,-802 and e5_cove_pelmet_ret_s precedents."
+  },
+  {
+   "assembly": "stool",
+   "identity": "The BF11 vanity stool (สตูลโต๊ะเครื่องแป้ง): ACQUIRED tub chair tub_chair_c (3D Warehouse, Trimble GML — render use permitted, mesh gitignored, never committed; R8 ACQUIRE P2a/P2f 2026-08-10: a wrap-back upholstered shell is free form), 3 meshes stool__acq0-2, built 440x545x719 in the drawn 510x546x750 slot at x870 y3982, facing DERIVED toward_wall W into BF11's kneehole (placement.face_rot; native front measured 0 deg, front_probe 2026-08-26 — the p2r77 fail-open model_rot defect is closed for this mesh).",
+   "exists": "sheet:SR-11 — the drawn chair pulled up to BF11 (drawn armchair, built as vanity stool per SR-02's owner-ruled vanity identity)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Drawn seat serving a drawn table; acquired per R8 (the hand-built _build_tub_chair remains the routed fallback). New-to-frame by camera move (D-175), not by build."
+  },
+  {
+   "assembly": "mill@484,6770",
+   "identity": "The bath mat (mill__acc_bath_mat0, 'towel' role): ONE flat greige terry mat, 799x500, z 0-20, at the shower entry in the DRAWN dry strip (x484-1283 y6770-7270, just south of the shower curb y7320) — its centre DERIVED from the built screen geometry (bathroom.shower_entry_gap, never a typed x), per D-E6-4.",
+   "exists": "not-in-drawing: element 6 D-E6-4 (element6-textiles_DD-2026-07-21.md) — a furniture plan draws no textiles; mat-not-rug is the decided suite role split, and no-textile-in-the-wet-zone (D-E6-5) is why it stands at the entry, not in the spray",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Decided element-6 accessory with a derived position; a shower entry with no mat is the p2r47 bare-junction class. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "fix@1336,6070",
+   "identity": "Vessel basin 0 of the double vanity (fix__vanity_basin0): porcelain, 480x360, rim 120 above the 850 counter (built z 850-970), centred at the INK basin centre x1576.9 (design.basin_ctr_x_mm, 1050 c/c > 914 min) — bathroom.py vanity_parts.",
+   "exists": "sheet:SR-04 — the drawn double-basin vanity counter (ensuite_basin_counter); the vessel basin is the drawn fixture's own bowl",
+   "held_by": "mill@77,5898",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Drawn, ink-trued (D-E4-1 signature vanity). It rests on the vanity counter, so held_by names the vanity assembly (mill@77,5898, still its own component at p2r91) rather than the floor — measured touch: basin y6070-6429 inside counter y5898-6577, z 850 = counter top. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "fix@2387,6070",
+   "identity": "Vessel basin 1 of the double vanity (fix__vanity_basin1): porcelain, 480x360, rim 120 above the 850 counter (built z 850-970), centred at the INK basin centre x2627.5 (design.basin_ctr_x_mm) — bathroom.py vanity_parts.",
+   "exists": "sheet:SR-04 — the drawn double-basin vanity counter; the vessel basin is the drawn fixture's own bowl",
+   "held_by": "mill@77,5898",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Twin of fix@1336,6070, same drawn ground and same measured counter contact. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "wall_s0_2",
+   "identity": "A segment of the ENSUITE subroom's wall — a prism extruded from subrooms[ensuite].outline_mm (edge 2, the north run y8650, x -5..3154) by wall_thk_mm, built by the same poly_walls_bpy that builds the envelope (prefix s0_). MEASURED 2000 mm high under the 2800 ceiling: build_room.py:12136 defaults sr.get('ceiling_mm', 2000) and the ensuite subroom declares no ceiling_mm, while its own outline_note says 'Ceiling 2800 = z-tier'. It is also coplanar-doubled with the envelope's wall_4 on the same y8645 band (the subroom builder builds its full perimeter).",
+   "exists": "sheet:outline — the ensuite outline is ink-trued and owner-adopted (element4-ensuite_ink-read-2026-07-18.json; north interior face y8595.7)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture the ink draws; same ground as the eleven wall rows already in this ledger (wall_s0_0 is this wall family's precedent, same measured 2000 height). The 2000-under-2800 default and the doubled leaf are recorded here as facts for the main session — a wall the drawing draws is kept; its HEIGHT source being a code default rather than a decision is a candidate D-row, not a reason to remove the wall."
+  },
+  {
+   "assembly": "wall_s0_1z",
+   "identity": "A segment of the ENSUITE subroom's wall — the east/party edge (edge 1, x3145-3255) piece NORTH of the sliding-door opening (rough y6596-7596): the closing z-run y7591-8655, z 0-2000. Same poly_walls_bpy s0_ build and the same measured 2000 mm height from the sr.get('ceiling_mm', 2000) default as wall_s0_2.",
+   "exists": "sheet:outline — ensuite outline + door-ensuite opening, ink-trued 2026-07-18 (east interior face x3152.8; door rough y6596.1-7595.9)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture: the pier the drawn sliding-door opening leaves standing. Same 2000-height default recorded as for wall_s0_2. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "wall_s1_3p0",
+   "identity": "A segment of the WARDROBE-BAY subroom's wall — the west edge (x3045-3155) full-height pier y7591-8655, z 0-2800, left standing beside the walk-in doorway (rough ~y6703-7591); poly_walls_bpy s1_ build at the bay's declared 2800.",
+   "exists": "sheet:outline — the wardrobe-bay subroom outline (x3150 shared boundary), owner-adopted; the doorway it flanks is the bay's declared door",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture; the dressing-gallery sequence (bedroom -> bay -> ensuite) needs exactly this pier. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "wall_s1_3l0",
+   "identity": "The LINTEL over the walk-in doorway in the wardrobe bay's west wall (x3045-3155): y6693-7601, z 2100-2800 — the header piece poly_walls_bpy cuts above a door with head 2100.",
+   "exists": "sheet:outline — the bay's declared doorway; a cut opening carries a header as constructed reality",
+   "held_by": "wall",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. held_by is 'wall', not the ledger's wall-row habit 'floor': this piece's zmin is 2100 and its real load path is bearing on the piers either side (wall_s1_3p0 / wall_s1_3z) — the class token is the honest answer for a header, and the R10 SENSE question is exactly what a 'floor' answer would have skipped. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "glass@1125,7329",
+   "identity": "The wet/dry frameless glass partition (glass__wet_partition): 12 mm pane at x1125 (ink x1124.7-1134.2), from the N wall south to y7329.3, h 2000 (built z 0-2000), dividing shower (W) from tub (E) — bathroom.py, GLASS_T/GLASS_H constants, SR-21.",
+   "exists": "sheet:SR-21 — drawn, ink-trued, MISSING FROM the v4 spec and recovered by the element-4 ink read (spec fixtures kind glass_partition carries sheet_ref SR-21)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Drawn wet-zone divider standing on the floor (z starts at 0). New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_trim_dl11",
+   "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane — ensuite ambient grid, dry strip near the vanity front (x1527-1623, y6502-6598).",
+   "exists": "not-in-drawing: element 5 RCP; an RCP is ours, a furniture plan carries no lighting",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Same class as the five rowed dl trims; heights inherit the p2r49/p2r50 flush fix and measure so in this dump (trim 2794-2800 under the 2800 soffit, lens 2790-2793). New-to-frame by camera move (D-175 camera B puts the ensuite ceiling in frustum), not by build."
+  },
+  {
+   "assembly": "e5_trim_dl12",
+   "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane — ensuite ambient grid, dry strip (x2577-2673, y6502-6598).",
+   "exists": "not-in-drawing: element 5 RCP; an RCP is ours, a furniture plan carries no lighting",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Same class as the rowed dl trims; flush heights measure in this dump (2794-2800 under 2800). New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_trim_dl14",
+   "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane — ensuite grid, OVER THE WET ZONE (x1527-1623, y7902-7998, above the tub deck).",
+   "exists": "not-in-drawing: element 5 RCP; an RCP is ours, a furniture plan carries no lighting",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Same class, flush heights measure. Over a wet zone the real fitting must be IP-rated — a stage-5 spec/SKU note, not a geometry defect; recorded so the FF&E pass inherits it. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_trim_dl15",
+   "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane — ensuite grid, over the wet zone (x2577-2673, y7902-7998, above the tub deck).",
+   "exists": "not-in-drawing: element 5 RCP; a furniture plan carries no lighting",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Twin of e5_trim_dl14, same IP-rating spec note. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_trim_tub_wash_0",
+   "identity": "Recessed accent trim ring, 96 mm, in the ceiling plane over the ensuite DRY strip (x1577-1673, y6900-6996) — the aimed tub-wash fixture (D-E5-8): its row_y is DERIVED between the vanity front (y6577) and the first wet edge (min of shower y7320 / partition y7329 / tub y7596), and its cone aims into the tub centre at deck height, element5_lighting accent_spots.",
+   "exists": "not-in-drawing: element 5 RCP (D-E5-8, the decided E4 layer-3 accent); a furniture plan carries no lighting",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Decided accent with a derived dry-strip position (deliberately NOT over the wet zone); flush trim heights measure in this dump. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_trim_tub_wash_1",
+   "identity": "Recessed accent trim ring, 96 mm, over the ensuite dry strip (x2577-2673, y6900-6996) — second of the two derived tub-wash fixtures (D-E5-8), aimed into the tub centre.",
+   "exists": "not-in-drawing: element 5 RCP (D-E5-8); a furniture plan carries no lighting",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Twin of e5_trim_tub_wash_0, same derivation. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_trim_bf14_wash_2",
+   "identity": "Recessed accent trim ring, 96 mm, in the bedroom ceiling plane (x4221-4317, y1484-1579) — third of the four BF14 wall-wash fixtures standing off the slat face at the derived setback, washing the bed-head slat wall.",
+   "exists": "not-in-drawing: element 5 RCP; a furniture plan carries no lighting",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Same fixture family as the rowed e5_trim_bf14_wash_3; flush heights measure (2794-2800 under 2800). New-to-frame by camera move (D-175 camera B), not by build — its three siblings 0/1 stay out of frustum and correctly need no row yet."
+  },
+  {
+   "assembly": "e5_lens_dl11",
+   "identity": "The emitting aperture disc inside a downlight trim (ensuite dl11).",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Rides its trim (e5_trim_dl11) and carries its height — lens 2790-2793 measures recessed above the 2794-2800 flush trim, the p2r49/p2r50 geometry. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_lens_dl12",
+   "identity": "The emitting aperture disc inside a downlight trim (ensuite dl12).",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Rides its trim; heights measure. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_lens_dl14",
+   "identity": "The emitting aperture disc inside a downlight trim (ensuite dl14, over the wet zone).",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Rides its trim; the wet-zone IP note lives on the trim's row. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_lens_dl15",
+   "identity": "The emitting aperture disc inside a downlight trim (ensuite dl15, over the wet zone).",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Rides its trim. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_trim_dl2",
+   "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane (east row, dl2).",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "IT ARRIVED WITH THE CAMERA, NOT WITH A BUILD (the e5_cove_pelmet_ret_s sentence, second instance): dl2 is the east-row recessed can at (4.70, 0.11) m, in the ceiling plane at z 2794-2800 like dl5/dl8/dl9/dl16/dl17 (same _recessed_trim, same p2r49/p2r50 fix, aabb read off the p2r93a_q scene dump). It had no row because no frame ever showed it: the p2r93 camera (P2r-34 leg 2, candidate A) keeps the D-152 axis and takes the lens from 21 to 20 mm so the top edge and the bench contact sit 0.05 v inside the frame, and the wider field admits this can at the frame's top-right. Same fixture family as the five rowed cans; nothing new was built."
+  },
+  {
+   "assembly": "e5_lens_dl2",
+   "identity": "The emitting aperture disc inside downlight trim dl2.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "IT ARRIVED WITH THE CAMERA, NOT WITH A BUILD (the e5_cove_pelmet_ret_s sentence, second instance): dl2 is the east-row recessed can at (4.70, 0.11) m, in the ceiling plane at z 2794-2800 like dl5/dl8/dl9/dl16/dl17 (same _recessed_trim, same p2r49/p2r50 fix, aabb read off the p2r93a_q scene dump). It had no row because no frame ever showed it: the p2r93 camera (P2r-34 leg 2, candidate A) keeps the D-152 axis and takes the lens from 21 to 20 mm so the top edge and the bench contact sit 0.05 v inside the frame, and the wider field admits this can at the frame's top-right. Same fixture family as the five rowed cans; nothing new was built. This row rides its trim."
+  },
+  {
+   "assembly": "e5_lens_tub_wash_0",
+   "identity": "The emitting aperture disc inside the tub-wash accent trim 0 (ensuite dry strip).",
+   "exists": "not-in-drawing: element 5 RCP (D-E5-8)",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Rides its trim; without the disc the aimed accent is a lit hole with no aperture. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_lens_tub_wash_1",
+   "identity": "The emitting aperture disc inside the tub-wash accent trim 1 (ensuite dry strip).",
+   "exists": "not-in-drawing: element 5 RCP (D-E5-8)",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Rides its trim. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_lens_bf14_wash_2",
+   "identity": "The emitting aperture disc inside the third BF14 wall-wash trim (bedroom ceiling).",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Rides its trim, twin of the rowed e5_lens_bf14_wash_3. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "bf14_sconce_0_canopy",
+   "identity": "The wall canopy of sconce 0: a 40 mm deep, 90x90 plate at the sconce's derived z (built x5173-5213, y231-321, z1703-1793), let 10 mm INTO the BF14 slat face (slat face x5203) with 30 mm proud, overlapping the brass body's back by 15 mm — the fixing that cantilevers the body off the wall. Added at p2r91 (3b6f429 area) after carry_check refused p2r89/p2r90: D-164's batten merge left the body 'touching two masses with a carries-relation to neither', and the canopy is the carry relation said in geometry (build_room.py sconce block).",
+   "exists": "not-in-drawing: element 5 RCP — a sconce's canopy is its mounting anatomy, the same class as the trim ring of a downlight; a real wall sconce cannot exist without one (the standing 'lamps with no anatomy' critic item, P2r-29c)",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "It exists so the sconce's load path is real instead of asserted — removing it re-opens the exact carry_check refusal it closed. Let into the slat wall (mill), which is why held_by names the millwork, not the sconce."
+  },
+  {
+   "assembly": "bf14_sconce_1_canopy",
+   "identity": "The wall canopy of sconce 1: same 40 mm deep, 90x90 plate (built x5173-5213, y1931-2020, z1703-1793), let 10 mm into the BF14 slat face, carrying the cantilevered body — twin of bf14_sconce_0_canopy, added at p2r91 for the same carry_check refusal.",
+   "exists": "not-in-drawing: element 5 RCP — mounting anatomy of the rowed sconce",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Twin of canopy 0, same load-path reason, same D-164 provenance."
+  },
+  {
+   "assembly": "mill@55,7320",
+   "identity": "The SHOWER assembly, standing as its own component again after the p2r91 instrument fix: mill__shower_tray__cool (1060x1280 tray, z 0-40) + mill__shower_curb__cool (curb at y7320-7410, z 0-110) + the towel-bar post and the two hung bath towels chained by adjacency (x55-1120, y6830-8600). It was a member of the fused mill@55,-450 aggregate while the CURVE hangers' fabricated AABBs bridged components; honest to_mesh bounds (p2r91) broke the bridge and this drawn cluster got its own key back.",
+   "exists": "sheet:SR-15 — the drawn shower (ฝักบัว, NW corner), ink-trued; the towels are the E6 not-in-drawing accessory class their mill__acc_ carry-ledger row already governs",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Drawn wet-zone fixture on the floor. The KEY is new, the masses are not — same regroup class as mill@55,-450's own row records; when the next regroup renames it, the rename is the finding."
+  },
+  {
+   "assembly": "mill@3020,7796",
+   "identity": "The party-jamb ROBE CLUSTER chained to the BF09-1-0 wardrobe leg: two brass robe hooks + two hanging robes (x3020-3150, y7800-8130, z 900-1690) adjacency-chained through the bay filler/plinth/top/gable/rails and the two garment sets hung on that leg (through x3250-5050, y8000-8650). Split from the fused mill@55,-450 aggregate by the p2r91 honest-bounds fix, same as mill@55,7320.",
+   "exists": "sheet:SR-05 — the drawn BF09-1 wardrobe run (the bay leg is drawn millwork); the robes/hooks are the E6 not-in-drawing class (a dressing gallery's robe hooks, decided element 6), the garments the E8 contents class",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Drawn casework + decided accessories; only the grouping key changed. New-to-ledger by regroup, not by build."
+  },
+  {
+   "assembly": "wardrobe_perfume",
+   "identity": "ONE acquired perfume bottle (BlenderKit b4d3ed11, FREE tier, royalty-free; 4 meshes wardrobe_perfume__acq0-3: glass body, cap, label), 60x60x138 mm, scale-asserted in the vase band (138.4 vs 80-900). Placed by the B3 story block as a share companion — the PERSONAL-EFFECTS debut: ASK-035's survey read 'ไม่มีคลาสของใช้ส่วนตัวเลยสักชิ้น' as one of two severity-3 findings, and this is the first mass of that class in the scene.",
+   "exists": "not-in-drawing: element 8 styling contents — a furniture plan draws no personal effects; the class ground is the 51-frame friend survey (severity-3 absence) and the owner's D-169 denser-fill order",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "The one class the survey says a lived-in built-in cannot lack. First placement (sh) measured occluded=True in its own dump and was moved to ni2 before any frame shipped — the occlusion column doing P2r-33's job."
+  }
+ ],
+ "_baseline_note": "0 on the day this shipped: 44 rows over the 44 in-frame assemblies of p2r47. It is a HIGH-WATER MARK, not a target — the ratchet only lets it fall, so any object new to the frame must arrive with its justification."
+}

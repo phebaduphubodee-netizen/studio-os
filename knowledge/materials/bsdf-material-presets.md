@@ -10,15 +10,24 @@
 
 ## ลำดับอำนาจ / Authority + precedence — READ BEFORE USING A NUMBER
 
-- **Authoring / QA bounds are NOT set here.** The channel limits — albedo band,
-  binary metalness, the "avoid absolute 0.0 / 1.0 roughness" rule, dielectric F0
-  — live in `knowledge/materials/pbr-material-behavior.md §2,4`. This file gives
-  *plausible per-material defaults*; that file gives the *bounds they must sit
-  inside*. On conflict, the bounds win.
-- `render-defaults.md` §7 explicitly lists **per-material-family roughness bands**
-  and **dielectric F0 tables** as GAPs that "come from lint rules via PR, never
-  from a reference." So these presets are a **convenience starting point, not a
-  gate**: a value here **must not gate a client deliverable** until it is either
+- **Authoring / QA bounds are NOT set here.** The channel limits that these presets
+  must sit inside — the albedo band, binary metalness, and the "avoid absolute
+  0.0 / 1.0 roughness" rule — live in `knowledge/materials/pbr-material-behavior.md`
+  **§2**. This file gives *plausible per-material defaults*; that file gives the
+  *bounds they must sit inside*. On conflict, the bounds win.
+- **Dielectric F0 is NOT one of those bounds — no studio F0 value exists anywhere.**
+  `pbr-material-behavior.md` §2 declares dielectric F0 an explicit **GAP**; it carries
+  no F0 number, and neither does any other vault file (checked 2026-07-13). What the
+  vault does carry is **IOR**, a different parameterization:
+  `knowledge/rendering/render-defaults.md` **§1** (dielectric default IOR ≈ 1.5;
+  water 1.33; glass ~1.52 — single-source), and the per-material **IOR (Specular
+  level)** column in §1 below. Cite IOR as IOR; do not cite it as an F0 bound.
+- `render-defaults.md` §7 lists **per-material-family roughness bands** and **dielectric
+  F0 tables** among its GAPs / do-not-invent — those "come from lint rules via PR, never
+  from this reference" (its composite cite `pbr-material-behavior.md §2,4` points at
+  where those GAPs are *declared*: the channel GAPs at §2, the numeric emissive-bounds
+  GAP at §4 — not at any value). So these presets are a **convenience starting point, not
+  a gate**: a value here **must not gate a client deliverable** until it is either
   confirmed by the material lint rules or promoted via PR with a named source.
 - Any statutory geometry a material sits on is still governed by
   `knowledge/codes-th/`; a preset never overrides that.
@@ -54,9 +63,14 @@ dielectric / 1 metal).
   rust/dust (`render-defaults.md` §1).
 - **Glass is Transmission, not a dark low-roughness surface** — Base Color is the
   tint, Transmission = 1.0, IOR 1.52; without transmission you get a grey pane.
-- **Albedo bounds still apply** — keep base colours inside the `albedo_plausible`
-  band (~0.04–0.94; `build_room.py`, `pbr-material-behavior.md §2`); never pure
-  0 / 255. The DR's own paint row already obeys this (`#F5F3EE`, not `#FFFFFF`).
+- **Albedo bounds still apply — but mind which band you are quoting.** Two live in the
+  studio, in different units, and they are *not* a conversion of each other:
+  `pbr-material-behavior.md` §2 gives **30–240 sRGB** (0–255 encoded texel values), while
+  `build_room.py`'s `albedo_plausible()` flags base-color **floats** outside
+  **~0.04–0.94**. Both say the same thing about *these* presets — never pure 0 / 255 —
+  so the DR's own paint row already obeys them (`#F5F3EE`, not `#FFFFFF`). The
+  reconciliation between the two bands is OPEN (`pbr-material-behavior.md` §5,
+  `render-defaults.md` §1); do not convert one into the other here.
 - **Texture scale is a realism factor** — the "(texture)" rows only read right at
   correct real-world UV scale (grain matches plank width; `render-defaults.md` §4,
   `pbr-material-behavior.md §4`). A preset value on a mis-scaled map still looks
@@ -74,7 +88,7 @@ dielectric / 1 metal).
   should carry so the beauty pass matches the clay's material story.
 
 ## Cross-refs
-- `knowledge/materials/pbr-material-behavior.md` — the authoring/QA **bounds** these defaults must obey (owner of channel limits, F0, do-not-invent).
+- `knowledge/materials/pbr-material-behavior.md` §2 — the authoring/QA **bounds** these defaults must obey (owner of the channel limits + the do-not-invent GAPs; it declares dielectric F0 a GAP rather than carrying a value).
 - `knowledge/rendering/render-defaults.md` §1 — the §8.1 PBR summary this file details per-material.
 - `knowledge/brand-standards/render-quality.md` — the 6-rule studio photoreal standard + gate evidence.
 - `knowledge/materials/residential-materials.md`, `millwork-casework.md` — the physical materials these render presets depict.

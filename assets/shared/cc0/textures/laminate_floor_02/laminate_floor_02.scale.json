@@ -1,0 +1,11 @@
+{
+ "slug": "laminate_floor_02",
+ "dimensions_mm": [
+  1699.9999284744263,
+  1700.0000476837158
+ ],
+ "tile_m": 1.7,
+ "aspect": 1.0,
+ "source": "https://api.polyhaven.com/info/laminate_floor_02",
+ "note": "The world size of one repeat, as published. R8: scale is ASSERTED on ingest, never assumed."
+}

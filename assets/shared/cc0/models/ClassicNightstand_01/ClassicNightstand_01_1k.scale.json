@@ -1,0 +1,23 @@
+{
+ "file": "ClassicNightstand_01_1k.gltf",
+ "class": "nightstand",
+ "axis": "z",
+ "measured_mm": 700.0,
+ "band_mm": [
+  300.0,
+  800.0
+ ],
+ "ok": true,
+ "in_band": true,
+ "thinnest_over_longest": 0.606,
+ "min_ratio_for_class": 0.2,
+ "planar_refusal": null,
+ "bbox_mm": {
+  "x_mm": 567.8,
+  "y_mm": 424.2,
+  "z_mm": 700.0
+ },
+ "prims": 1,
+ "source": "master-suite.CANONICAL.spec.json items[3..4] h=580 + knowledge/ergonomics/residential-clearances.md (a bedside surface sits at or just above the mattress top)",
+ "in_band_under": null
+}

@@ -1,0 +1,1756 @@
+{
+ "schema": "interior-ai/flag-localization@0.1",
+ "n_specs": 2,
+ "classes": [
+  "facing_flip_directional",
+  "kind_change_unsigned",
+  "kind_change_vs_signature",
+  "size_implausible",
+  "size_off_prior_band",
+  "rot_stripped_directional",
+  "zone_below_grade_unsigned",
+  "facing_flip_box"
+ ],
+ "per_class": {
+  "facing_flip_directional": {
+   "n_mutations": 5,
+   "n_skipped": 21,
+   "n_hit": 5,
+   "n_caught_by_expected": 5,
+   "n_severity_match": 5,
+   "n_new_flags_total": 7,
+   "n_new_flags_on_target": 5,
+   "misses": [],
+   "overfires": [],
+   "hits": [
+    {
+     "item": "เตียง 7'x6.5' หัวตะวันออก",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "CRITICAL"
+     ]
+    },
+    {
+     "item": "เก้าอี้ทำงาน (หันเข้าโต๊ะ W)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "CRITICAL"
+     ]
+    },
+    {
+     "item": "โซฟา 3 ที่นั่ง",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "CRITICAL"
+     ]
+    },
+    {
+     "item": "เก้าอี้ tub ซ้าย (เลานจ์ริมกระจก หันชมสวน)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "CRITICAL"
+     ]
+    },
+    {
+     "item": "เก้าอี้ tub ขวา (เลานจ์ริมกระจก หันชมสวน)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "CRITICAL"
+     ]
+    }
+   ]
+  },
+  "kind_change_unsigned": {
+   "n_mutations": 26,
+   "n_skipped": 0,
+   "n_hit": 26,
+   "n_caught_by_expected": 26,
+   "n_severity_match": 26,
+   "n_new_flags_total": 28,
+   "n_new_flags_on_target": 26,
+   "misses": [],
+   "overfires": [],
+   "hits": [
+    {
+     "item": "ผนังระแนงหัวเตียง BF14 (325x10x280)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้เสื้อผ้าเหนือเตียง BF09-3 (330x60x280)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะทำงาน built-in BF11 (320x60x280)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้/ชั้น BF10 (250x60x280)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "เตียง 7'x6.5' หัวตะวันออก",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ม้านั่งปลายเตียง (bench)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะข้างเตียง เหนือ (มีโคมไฟ)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะข้างเตียง ใต้ (มีโคมไฟ)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "เก้าอี้ทำงาน (หันเข้าโต๊ะ W)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้ทีวีสูง ผนังตะวันตก",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "อ่างล้างหน้าคู่ (ในห้องน้ำ)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โถสุขภัณฑ์ WC",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "อ่างอาบน้ำ (bathtub)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ฝักบัว (shower)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้เสื้อผ้า BF09-1 ขาเหนือ (L 5.2m)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้เสื้อผ้า BF09-1 ขาตะวันออก (L 5.2m)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้เสื้อผ้า BF09-2 (150x60x280)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้โชว์ BF12-1 (157.5x40x280)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้สูง BF12-2 (70x40x280)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ชั้นวางทีวี ผนังตะวันออก BF13 (410x30x50)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โซฟา 3 ที่นั่ง",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "เก้าอี้ tub ซ้าย (เลานจ์ริมกระจก หันชมสวน)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "เก้าอี้ tub ขวา (เลานจ์ริมกระจก หันชมสวน)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะกลม (ระหว่างเก้าอี้)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะกลม (ข้างโซฟา)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะวางกล้วยไม้ (console)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    }
+   ]
+  },
+  "kind_change_vs_signature": {
+   "n_mutations": 26,
+   "n_skipped": 0,
+   "n_hit": 26,
+   "n_caught_by_expected": 26,
+   "n_severity_match": 0,
+   "n_new_flags_total": 28,
+   "n_new_flags_on_target": 26,
+   "misses": [],
+   "overfires": [],
+   "hits": [
+    {
+     "item": "ผนังระแนงหัวเตียง BF14 (325x10x280)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้เสื้อผ้าเหนือเตียง BF09-3 (330x60x280)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะทำงาน built-in BF11 (320x60x280)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้/ชั้น BF10 (250x60x280)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "เตียง 7'x6.5' หัวตะวันออก",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ม้านั่งปลายเตียง (bench)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะข้างเตียง เหนือ (มีโคมไฟ)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะข้างเตียง ใต้ (มีโคมไฟ)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "เก้าอี้ทำงาน (หันเข้าโต๊ะ W)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้ทีวีสูง ผนังตะวันตก",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "อ่างล้างหน้าคู่ (ในห้องน้ำ)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โถสุขภัณฑ์ WC",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "อ่างอาบน้ำ (bathtub)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ฝักบัว (shower)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้เสื้อผ้า BF09-1 ขาเหนือ (L 5.2m)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้เสื้อผ้า BF09-1 ขาตะวันออก (L 5.2m)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้เสื้อผ้า BF09-2 (150x60x280)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้โชว์ BF12-1 (157.5x40x280)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้สูง BF12-2 (70x40x280)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ชั้นวางทีวี ผนังตะวันออก BF13 (410x30x50)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โซฟา 3 ที่นั่ง",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "เก้าอี้ tub ซ้าย (เลานจ์ริมกระจก หันชมสวน)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "เก้าอี้ tub ขวา (เลานจ์ริมกระจก หันชมสวน)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะกลม (ระหว่างเก้าอี้)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะกลม (ข้างโซฟา)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะวางกล้วยไม้ (console)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "rebuild_diff"
+     ],
+     "expected": [
+      "rebuild_diff"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "CRITICAL",
+     "got_severity": [
+      "HIGH"
+     ]
+    }
+   ]
+  },
+  "size_implausible": {
+   "n_mutations": 20,
+   "n_skipped": 6,
+   "n_hit": 20,
+   "n_caught_by_expected": 20,
+   "n_severity_match": 20,
+   "n_new_flags_total": 20,
+   "n_new_flags_on_target": 20,
+   "misses": [],
+   "overfires": [],
+   "hits": [
+    {
+     "item": "ตู้เสื้อผ้าเหนือเตียง BF09-3 (330x60x280)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "เตียง 7'x6.5' หัวตะวันออก",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ม้านั่งปลายเตียง (bench)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะข้างเตียง เหนือ (มีโคมไฟ)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะข้างเตียง ใต้ (มีโคมไฟ)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "เก้าอี้ทำงาน (หันเข้าโต๊ะ W)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้ทีวีสูง ผนังตะวันตก",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "อ่างล้างหน้าคู่ (ในห้องน้ำ)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โถสุขภัณฑ์ WC",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "อ่างอาบน้ำ (bathtub)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ฝักบัว (shower)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้เสื้อผ้า BF09-1 ขาเหนือ (L 5.2m)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้เสื้อผ้า BF09-1 ขาตะวันออก (L 5.2m)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้เสื้อผ้า BF09-2 (150x60x280)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โซฟา 3 ที่นั่ง",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "เก้าอี้ tub ซ้าย (เลานจ์ริมกระจก หันชมสวน)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "เก้าอี้ tub ขวา (เลานจ์ริมกระจก หันชมสวน)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะกลม (ระหว่างเก้าอี้)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะกลม (ข้างโซฟา)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะวางกล้วยไม้ (console)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    }
+   ]
+  },
+  "size_off_prior_band": {
+   "n_mutations": 0,
+   "n_skipped": 26,
+   "n_hit": 0,
+   "n_caught_by_expected": 0,
+   "n_severity_match": 0,
+   "n_new_flags_total": 0,
+   "n_new_flags_on_target": 0,
+   "misses": [],
+   "overfires": [],
+   "hits": []
+  },
+  "rot_stripped_directional": {
+   "n_mutations": 1,
+   "n_skipped": 25,
+   "n_hit": 1,
+   "n_caught_by_expected": 1,
+   "n_severity_match": 0,
+   "n_new_flags_total": 3,
+   "n_new_flags_on_target": 2,
+   "misses": [],
+   "overfires": [],
+   "hits": [
+    {
+     "item": "เตียง 7'x6.5' หัวตะวันออก",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "confidence",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "confidence"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": null,
+     "got_severity": [
+      "LOW"
+     ]
+    }
+   ]
+  },
+  "zone_below_grade_unsigned": {
+   "n_mutations": 26,
+   "n_skipped": 0,
+   "n_hit": 26,
+   "n_caught_by_expected": 26,
+   "n_severity_match": 26,
+   "n_new_flags_total": 52,
+   "n_new_flags_on_target": 52,
+   "misses": [],
+   "overfires": [],
+   "hits": [
+    {
+     "item": "ผนังระแนงหัวเตียง BF14 (325x10x280)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้เสื้อผ้าเหนือเตียง BF09-3 (330x60x280)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะทำงาน built-in BF11 (320x60x280)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้/ชั้น BF10 (250x60x280)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "เตียง 7'x6.5' หัวตะวันออก",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ม้านั่งปลายเตียง (bench)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะข้างเตียง เหนือ (มีโคมไฟ)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะข้างเตียง ใต้ (มีโคมไฟ)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "เก้าอี้ทำงาน (หันเข้าโต๊ะ W)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้ทีวีสูง ผนังตะวันตก",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "อ่างล้างหน้าคู่ (ในห้องน้ำ)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โถสุขภัณฑ์ WC",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "อ่างอาบน้ำ (bathtub)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ฝักบัว (shower)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้เสื้อผ้า BF09-1 ขาเหนือ (L 5.2m)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้เสื้อผ้า BF09-1 ขาตะวันออก (L 5.2m)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้เสื้อผ้า BF09-2 (150x60x280)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้โชว์ BF12-1 (157.5x40x280)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ตู้สูง BF12-2 (70x40x280)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "ชั้นวางทีวี ผนังตะวันออก BF13 (410x30x50)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โซฟา 3 ที่นั่ง",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "เก้าอี้ tub ซ้าย (เลานจ์ริมกระจก หันชมสวน)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "เก้าอี้ tub ขวา (เลานจ์ริมกระจก หันชมสวน)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะกลม (ระหว่างเก้าอี้)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะกลม (ข้างโซฟา)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    },
+    {
+     "item": "โต๊ะวางกล้วยไม้ (console)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "cross_signal",
+      "rebuild_diff"
+     ],
+     "expected": [
+      "cross_signal"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "HIGH",
+     "got_severity": [
+      "HIGH"
+     ]
+    }
+   ]
+  },
+  "facing_flip_box": {
+   "n_mutations": 19,
+   "n_skipped": 7,
+   "n_hit": 0,
+   "n_caught_by_expected": 0,
+   "n_severity_match": 0,
+   "n_new_flags_total": 0,
+   "n_new_flags_on_target": 0,
+   "misses": [],
+   "overfires": [],
+   "hits": []
+  }
+ },
+ "summary": {
+  "macro_recall": 1.0,
+  "macro_recall_by_expected": 1.0,
+  "precision_on_target": 0.949,
+  "blind_classes": [],
+  "unwired_classes": [
+   "size_off_prior_band"
+  ],
+  "backstopped_classes": [],
+  "n_should_flag_classes": 7,
+  "n_exercised_classes": 6,
+  "overfire_mutations": 0
+ },
+ "coverage": {
+  "cross_signal": {
+   "status": "READ",
+   "per_spec": [
+    "READ",
+    "READ"
+   ],
+   "note": null
+  },
+  "anomaly": {
+   "status": "READ",
+   "per_spec": [
+    "READ",
+    "READ"
+   ],
+   "note": null
+  },
+  "confidence": {
+   "status": "READ",
+   "per_spec": [
+    "READ",
+    "READ"
+   ],
+   "note": null
+  },
+  "prior_band": {
+   "status": "UNWIRED",
+   "note": "no kind-priors artifact -- the corpus tier is unwired; size_off_prior_band skips every item (reported unwired, never a silent pass)"
+  },
+  "rebuild_diff": {
+   "status": "READ",
+   "shared_rooms": [
+    "bedroom_suite",
+    "sitting_room"
+   ],
+   "note": "F7 supplies the prior round synthetically (unmutated base) per mutation; a REAL prior reading round is absent on this single-round project -- the diff lane is exercised, not idle"
+  }
+ }
+}

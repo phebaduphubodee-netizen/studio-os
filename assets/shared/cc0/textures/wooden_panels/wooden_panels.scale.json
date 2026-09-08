@@ -1,0 +1,11 @@
+{
+ "slug": "wooden_panels",
+ "dimensions_mm": [
+  2099.9999046325684,
+  2099.9999046325684
+ ],
+ "tile_m": 2.1,
+ "aspect": 1.0,
+ "source": "https://api.polyhaven.com/info/wooden_panels",
+ "note": "The world size of one repeat, as published. R8: scale is ASSERTED on ingest, never assumed."
+}

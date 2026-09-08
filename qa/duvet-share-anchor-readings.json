@@ -1,0 +1,231 @@
+{
+ "_what": "DUVET SHARE, read off delivered work. The derivation of record behind bedcloth_rules.DUVET_SHARE_CUT (R4b: anchors judge, a cut is never typed).",
+ "_method": "Three fresh-context sighted local readers (R10b rung: local-only, no egress). Each was given six of the friend's delivered bedroom renders plus our own p2r47 frame, UNLABELLED and in a different position per reader, and one written method: of the VISIBLE sleeping surface (pillows and the area under them, headboard, bed base and all drape below the mattress-top line excluded), what share carries the TOP BEDDING LAYER - a duvet, comforter, quilt, coverlet or bedspread with visible loft and folds - as opposed to a tight/fitted sheet, a protector, or bare mattress. Answers to the nearest 5%.",
+ "_sample": "18 delivered bedroom renders, selected by filename token 'bedroom' over the 658-frame pool of record; none is from a reproduction-quarantined project (trained-anchors.json). 7 of the 18 frame a sleeping surface legibly enough to measure; the other 11 are wardrobe/dressing elevations or crops where the bed is clipped, and every reader marked those bed_visible=false rather than guessing.",
+ "_the_honest_limit": "The readers measure IMAGE area; bedcloth_rules measures PLAN area, by ray. Nothing here rectifies one to the other, and one reader priced the difference unprompted on our own frame: 30% image vs about 45% plan. So the cut below is the delivered MINIMUM in image area and is only approximately the delivered floor in plan. It does not decide anything today - our frame fails it by 35 points either way - but a candidate landing between 0.75 and 0.85 would need that ambiguity resolved before the cut could refuse it. cut_thresholds() in this repo refuses a percentile under 30 frames; this is not a percentile, it is a MINIMUM printed with its n.",
+ "_privacy": "Anchor paths are hashed (the same non-reversible token style as style_fingerprint._safe_ref). The full-path version lives in _private/deliv-001/duvet-share/readings.json and never enters git.",
+ "date": "2026-08-17",
+ "round": "p2r49",
+ "readers": 3,
+ "delivered": [
+  {
+   "reader": "A",
+   "ref": "private:dd2200df77b9",
+   "share_pct": 100,
+   "state": "made",
+   "confidence": "high",
+   "runner_or_throw": true,
+   "what_i_saw": "Bed seen from the foot-left corner; the head end runs off the right frame edge, so the denominator is the roughly two-thirds of the sleeping surface that is in frame. Every part of that top plane is lofted cloth: a cream duvet with deep rounded folds turned over the foot end, and a taupe crinkled blanket laid as a band lengthwise on top of it, with the cream duvet visible again beyond it. At 3x zoom I could not find one patch of flat, tight, loft-free plane, so I put it at 100 rather than 95."
+  },
+  {
+   "reader": "A",
+   "ref": "private:be0fcc7a7006",
+   "share_pct": null,
+   "state": "no-bed",
+   "confidence": "high",
+   "runner_or_throw": false,
+   "what_i_saw": "Dressing/wardrobe corner: vanity with mirror, lit display shelving, tall white wardrobe doors, drum stool. No bed and no mattress anywhere in frame."
+  },
+  {
+   "reader": "A",
+   "ref": "private:b1ba934acda8",
+   "share_pct": null,
+   "state": "no-bed",
+   "confidence": "high",
+   "runner_or_throw": false,
+   "what_i_saw": "Narrow dressing lobby: fluted vanity with dried flowers, glass-fronted wardrobe with a storage box on a shelf, flush white closet doors, drum stool. No bed in frame."
+  },
+  {
+   "reader": "A",
+   "ref": "private:721c5647f947",
+   "share_pct": null,
+   "state": "no-bed",
+   "confidence": "high",
+   "runner_or_throw": false,
+   "what_i_saw": "Walk-in closet / dressing area: hanging rail with a robe and towel, drawer unit, vanity, drum stool. Spare pillows and a grey cushion are stored on a high closet shelf, but there is no bed and no mattress."
+  },
+  {
+   "reader": "A",
+   "ref": "private:dcd39547b708",
+   "share_pct": null,
+   "state": "no-bed",
+   "confidence": "high",
+   "runner_or_throw": false,
+   "what_i_saw": "Walk-in closet interior: empty hanging bays, storage boxes on a shelf, panelled drawer chest, vanity at left, drum stool. Folded pillows on a top shelf; no bed in frame."
+  },
+  {
+   "reader": "A",
+   "ref": "private:4fcd60da63be",
+   "share_pct": 100,
+   "state": "made",
+   "confidence": "medium",
+   "runner_or_throw": true,
+   "what_i_saw": "Straight-on view of the desk wall with only the foot end of the bed intruding along the bottom edge — roughly the last fifth of the bed, seen almost end-on; head end and pillows are entirely out of frame. Every bit of sleeping surface that IS visible is lofted cloth: a cream duvet with heavy soft folds and a deep central crumple, with a taupe blanket band across the very foot. No flat tight plane anywhere in the strip. I read this as 100 rather than declaring it unmeasurable because the visible strip is unambiguous, but the reading covers that strip only."
+  },
+  {
+   "reader": "B",
+   "ref": "private:62d6aa1f0735",
+   "share_pct": 95,
+   "state": "made",
+   "confidence": "high",
+   "runner_or_throw": true,
+   "what_i_saw": "A thick white duvet with heavy loft and deep rumpled folds covers the sleeping surface from just below the pillows all the way over the foot end, where it slumps onto the floor; on top of it lie a grey quilted blanket and a fringed grey houndstooth throw running lengthwise down the bed. The only non-duvet cloth on the top plane is a small folded flat-sheet band peeking out between the pillows and the duvet's head edge on the right, which is why I read 95 rather than 100."
+  },
+  {
+   "reader": "B",
+   "ref": "private:bf21aebc70db",
+   "share_pct": null,
+   "state": "no-bed",
+   "confidence": "high",
+   "runner_or_throw": false,
+   "what_i_saw": "The frame is a wardrobe elevation; only the extreme far edge of a cream quilted comforter and one pillow intrude along the bottom edge. Neither the head end nor the foot end of the mattress is in frame, so no sleeping surface is legible and there is nothing to take a denominator from. (I used bed_state \"no-bed\" only because the enum has no \"not measurable\" value.)"
+  },
+  {
+   "reader": "B",
+   "ref": "private:9b20ec881228",
+   "share_pct": null,
+   "state": "no-bed",
+   "confidence": "high",
+   "runner_or_throw": false,
+   "what_i_saw": "A vanity/wardrobe elevation; the only bedding is the crown of a white lofted mass filling the bottom-left corner, seen almost edge-on. No head end, no foot end, no readable top plane. (bed_state \"no-bed\" is standing in for \"not measurable\".)"
+  },
+  {
+   "reader": "B",
+   "ref": "private:a4cdde8d9d47",
+   "share_pct": 80,
+   "state": "made",
+   "confidence": "medium",
+   "runner_or_throw": false,
+   "what_i_saw": "Head at the left, foot at the right; a warm greige box-quilted comforter with clear loft and stitch grid runs from a crisp fold line near the head all the way over the foot end, where it drapes down. A stretched white flat sheet is turned back at the head end and occupies roughly a fifth of the visible top plane (it looks larger than its true share because it is the part nearest the camera). The comforter is the whole rest of the surface."
+  },
+  {
+   "reader": "B",
+   "ref": "private:91b0b6d827a4",
+   "share_pct": 90,
+   "state": "made",
+   "confidence": "low",
+   "runner_or_throw": true,
+   "what_i_saw": "Dim blue-lit frame; the bed runs along the bottom with the rounded foot corner at the left and round cushions at the head to the right. What I can see of the surface is a white lofted duvet with a rolled crown and one long fold seam, draping over the foot corner onto the base; a flatter, taut white area shows to the right of the cushions which I read as sheet. A navy fur throw lies across the bed between camera and the cushions. Two readings were defensible on whether the near band is duvet or sheet; I took the duvet reading because the mass has visible body and drapes over the corner, but the top plane is severely foreshortened and cropped, hence low confidence."
+  },
+  {
+   "reader": "B",
+   "ref": "private:59e04bbe3173",
+   "share_pct": 95,
+   "state": "made",
+   "confidence": "high",
+   "runner_or_throw": false,
+   "what_i_saw": "A beige box-quilted comforter with visible loft, puffed panels and soft folds covers the sleeping surface from the pillow line down past the bottom of frame at the foot; its hemmed edge sits at the mattress's right edge, and the smooth unquilted beige beyond it is hanging down the side below mattress-top level, so it is excluded. A flat sheet is visible only against the headboard behind the pillows and as a sliver at the pillow line. No separate runner or throw — the band at the quilt's perimeter is the quilt's own hem."
+  },
+  {
+   "reader": "C",
+   "ref": "private:9346195b8e1d",
+   "share_pct": null,
+   "state": "no-bed",
+   "confidence": "high",
+   "runner_or_throw": null,
+   "what_i_saw": "Tall portrait detail crop of the nightstand and the head corner of the bed: headboard, a white sham and a navy pillow, and white bedding with real loft and soft rolled folds sweeping into the bottom-right of the frame. The foot end is entirely out of frame, so the sleeping surface is not legible head-to-foot and no share can be measured; what is visible is lofted white cloth, not a tight sheet."
+  },
+  {
+   "reader": "C",
+   "ref": "private:0cc6529261b4",
+   "share_pct": 100,
+   "state": "made",
+   "confidence": "high",
+   "runner_or_throw": true,
+   "what_i_saw": "Full frontal room view, whole bed legible from pillows to foot. The entire sleeping surface carries lofted soft goods: a smooth greige duvet with a turned edge below the pillows and rounded body down both sides, with a diamond-quilted taupe coverlet laid over roughly the middle two-thirds of the width, running from below the pillows past the foot. No stretched sheet or bare mattress shows anywhere on the top plane, so 100%. I read the smooth cream layer as a duvet rather than a flat sheet because it has visible thickness and rolls at its edges instead of lying flat."
+  },
+  {
+   "reader": "C",
+   "ref": "private:f63aa6b5ec9b",
+   "share_pct": null,
+   "state": "no-bed",
+   "confidence": "high",
+   "runner_or_throw": null,
+   "what_i_saw": "Elevation-style view of the wardrobe wall and door. Only a sliver of the bed intrudes along the bottom edge — a corner of quilted taupe coverlet and a pillow at bottom right. Neither head end nor foot end of the sleeping surface is readable."
+  },
+  {
+   "reader": "C",
+   "ref": "private:65822fe972e1",
+   "share_pct": null,
+   "state": "no-bed",
+   "confidence": "high",
+   "runner_or_throw": null,
+   "what_i_saw": "Night view of the TV wall. The bed appears only as a bottom-right corner: white bedding, a pale bolster and a strip of blue cloth. The mattress top plane is cut off by the frame; no head-to-foot reading is possible."
+  },
+  {
+   "reader": "C",
+   "ref": "private:a675774ad1e2",
+   "share_pct": null,
+   "state": "no-bed",
+   "confidence": "high",
+   "runner_or_throw": null,
+   "what_i_saw": "Portrait detail of the three-globe floor lamp and desk. The bed is only a soft out-of-focus white mass across the very bottom edge — no mattress plane, no head or foot end."
+  },
+  {
+   "reader": "C",
+   "ref": "private:be6d28c14c99",
+   "share_pct": null,
+   "state": "no-bed",
+   "confidence": "high",
+   "runner_or_throw": null,
+   "what_i_saw": "Portrait view into the blue walk-in wardrobe. The bed enters at the bottom-right: I can see the foot end and a cream/white duvet with clear loft and a rolled fold, plus the platform base, but the head end and pillows are outside the frame at right, so the surface is not legible head-to-foot."
+  }
+ ],
+ "ours": [
+  {
+   "reader": "A",
+   "ref": "pipeline/output/room_bedroom_suite_eye_p2r47.png",
+   "share_pct": 30,
+   "state": "half-made",
+   "confidence": "medium",
+   "runner_or_throw": false,
+   "what_i_saw": "A grey duvet with genuine loft and folds lies as a diagonal band over the far half, running from beside the far pillow down and over the foot-far edge. The whole near half — from under the near pillow, across the middle, to the foot-near corner — is a smooth tight pale plane with no loft that wraps the rounded corner and continues unbroken down the side face: a fitted sheet / mattress cover, so by rule it is not the top layer. A second strip of that same tight plane also shows on the FAR side at the foot, past the duvet's edge, which is what pushed my figure down. 30 vs 40 were both arguable; I took 30 because the tight plane is the largest single region of the visible top plane and appears on both sides of the duvet band. Only bedding on the bed itself was counted — the folded grey throw at the foot sits on the bench, not on the mattress."
+  },
+  {
+   "reader": "B",
+   "ref": "pipeline/output/room_bedroom_suite_eye_p2r47.png",
+   "share_pct": 25,
+   "state": "half-made",
+   "confidence": "high",
+   "runner_or_throw": false,
+   "what_i_saw": "The mattress is sheathed in a taut, smooth pale sheet with no loft and no folds — it reads as a fitted sheet/mattress cover, wrapping the whole foot half and the entire near side and turning crisply down the mattress edges. The only lofted bedding is a grey duvet bunched along the far edge, running from the pillows toward the foot and mostly slumping off the far side onto the floor; it covers only a tapering band of the sleeping surface, widest at the head and reaching nothing at the foot. Pillows are stacked neatly and nothing is rumpled, so this is not slept-in — it is a made-up mattress with the top layer only reaching part way."
+  },
+  {
+   "reader": "C",
+   "ref": "pipeline/output/room_bedroom_suite_eye_p2r47.png",
+   "share_pct": 40,
+   "state": "half-made",
+   "confidence": "medium",
+   "runner_or_throw": false,
+   "what_i_saw": "Our render. Bed fully in frame, head at the slat wall on the right, foot toward the lower left with the ottoman in front of it. A grey lofted duvet with folds lies across the far/upper portion, reaching from just below the pillows toward the foot-left where it bunches and hangs over the end. The rest — the whole near side and the foot area, a wide unbroken expanse running from in front of the pillows down to the bottom-right corner of the mattress — is a tight, creaseless white plane with zero loft, i.e. a sheet or protector stretched over the mattress. I make the tight white the larger share, so I call the duvet ~40%; a defensible alternative is 35%, since the near white plane is closest to camera and so takes disproportionate pixel area, but I did not push it toward 50 because there is nothing lofted on the near half at all."
+  }
+ ],
+ "summary": {
+  "delivered_legible_n": 7,
+  "delivered_values_pct": [
+   80,
+   90,
+   95,
+   95,
+   100,
+   100,
+   100
+  ],
+  "delivered_min_pct": 80,
+  "delivered_median_pct": 95,
+  "delivered_states": [
+   "made"
+  ],
+  "delivered_not_legible_n": 11,
+  "ours_p2r47_values_pct": [
+   25,
+   30,
+   40
+  ],
+  "ours_p2r47_states": [
+   "half-made"
+  ],
+  "cut_adopted": 0.8,
+  "cut_is": "the delivered MINIMUM, not a percentile and not a preference"
+ }
+}

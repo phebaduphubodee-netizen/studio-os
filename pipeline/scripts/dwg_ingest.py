@@ -1,4 +1,6 @@
 """
+
+CLI-ONLY: run by hand on every DXF/DWG ingest (sheet-first lane); the reachability checker names this module as its own declaration example — triage 2026-08-25.
 dwg_ingest.py — INTERIOR-AI DWG/DXF ingest (read the friend's real CAD files).
 
 The friend works in CAD; her deliverables arrive as DWG (AutoCAD binary). ezdxf cannot

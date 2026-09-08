@@ -2,15 +2,32 @@
   "verdict": "REVIEW",
   "gated_target": "floor2_v4-manifest.json",
   "inputs": {
-    "floor2_v4-manifest.json": "be62dc3431bf090e5c434303a42bdb96dea2e023",
-    "scene-graph.master_bedroom.json": "2416474c3e98c10b392f1c0afdc9b66c1f0ec282",
-    "scene-graph.sitting_room.json": "78d16e30e0b4a4335cee563b9453c25ba6ba6ea9",
-    "floor2-walls-mm.json": "89548257129e9718a9ef9a89a49ce75a04efeda2",
-    "placement-review.json": "98efc3736f5a4d8d28ee82062ee5e9b11ca88ff0"
+    "floor2_v4-manifest.json": "4803deb29b0bbda65f5c477313ba263f6a170b31",
+    "scene-graph.master_bedroom.json": "47f451df2693b109cb8523253da6dc3bb0374bc0",
+    "scene-graph.sitting_room.json": "31bfb49fd0923580f566b6ab77f7b67e290d2b75",
+    "floor2-walls-mm.json": "a78fadd05b1f4eb94a8a0fb1e09854d6cca86447",
+    "glazing-candidates.json": "e1cc0c9a2ad89fea1e9717a6be63b4709a19cf47",
+    "facade-candidates.json": "f9b06e1ebd3d60635674d45972e618b5834b73ca",
+    "review-read-vs-sheet.md": "74c2d31ebf9818223649614028ff75c2dbec4230",
+    "review-read-vs-sheet_full.png": "e45d9994953b02da73d517da0688e8ba10961adc",
+    "review-read-vs-sheet_master_bedroom.png": "575f6affb2a9d445daaa7a7ed6d624be5a0c2399",
+    "review-read-vs-sheet_sitting_room.png": "63feec135ade9cf1dda6907d90eec98045c06899",
+    "placement-review.json": "0a4311bc442b7cde1460a5ecc266ee1baa6d8be5"
   },
-  "generated_epoch": 1783319124.452451,
+  "generated_epoch": 1783791172.1385472,
   "calibration": "PASS",
   "calibration_fails": [],
+  "signature_reconcile": {
+    "checked": true,
+    "matched": 2,
+    "orphaned_names": []
+  },
+  "zone_reconcile": {
+    "checked": true,
+    "matched": 0,
+    "name_orphans": [],
+    "geo_orphans": 0
+  },
   "rooms": [
     {
       "room": "master_bedroom",
@@ -21,6 +38,11 @@
       "dismissed": 2,
       "identity_flags": 0,
       "facing_flags": 0,
+      "kind_flags": 0,
+      "zone_flags": 0,
+      "zone_below_grade": 0,
+      "zone_open": 0,
+      "zone_exterior_linework": 0,
       "long_thin": 1,
       "dropped_total": 22
     },
@@ -33,6 +55,11 @@
       "dismissed": 2,
       "identity_flags": 0,
       "facing_flags": 0,
+      "kind_flags": 0,
+      "zone_flags": 0,
+      "zone_below_grade": 1,
+      "zone_open": 1,
+      "zone_exterior_linework": 1,
       "long_thin": 0,
       "dropped_total": 4
     }

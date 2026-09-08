@@ -1,0 +1,198 @@
+{
+  "queries": [
+    "visual perception repeated inspection own work defect detection",
+    "change blindness repeated exposure effect size",
+    "expertise schema-driven viewing defect detection",
+    "perceptual satiation visual inspection",
+    "semantic satiation defect detection",
+    "effect of repeated exposure on error detection rates",
+    "visual inspection habituation number of exposures before performance drop",
+    "satisfaction of search effect size radiology",
+    "interventions to reduce satisfaction of search in radiology",
+    "checklist-driven second read radiology effectiveness",
+    "forced re-scan cleared zones radiology",
+    "structured reporting radiology second defect detection",
+    "image transformation error detection habituated viewer",
+    "viewing image inverted mirror-flipped blurred error detection study",
+    "proofreading techniques effectiveness inverted text",
+    "art practice techniques for fresh perspective on own work",
+    "radiology image transformation defect detection",
+    "industrial inspection image manipulation error detection",
+    "time away from task to restore visual inspection performance",
+    "visual adaptation recovery time defect detection",
+    "decay curve of visual inspection performance over time",
+    "psychophysics two-alternative forced choice vs single-stimulus absolute rating sensitivity",
+    "2AFC vs absolute rating small differences detection",
+    "side-by-side vs sequential presentation visual comparison",
+    "systematic scan patterns vs free viewing visual inspection effectiveness",
+    "checklists in visual inspection QA miss rates",
+    "false alarm rate time cost systematic scan patterns",
+    "second independent reader defect detection rate",
+    "double reading radiology effectiveness statistics",
+    "proofreading second reader error catch rate",
+    "VFX dailies review process effectiveness",
+    "optimal reviewer rotation cadence",
+    "diminishing returns multiple reviewers inspection",
+    "object naming labeling effect on form error detection",
+    "withholding object labels as a countermeasure in inspection",
+    "low-prevalence effect visual search measured size",
+    "effect of expecting items to be correct on defect detection"
+  ],
+  "chunks": [
+    {
+      "title": "nih.gov",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHlbVRnYjZ4_bIQ6ktn5XoY4Gs9l8DNqzVu-G1bDVkZk0oz8DR_Ezjkm4FDjxN09HUafz_NIr9z9GFWVhAAtBUDvHeF22KIsWC0oD4ZQbQPBwtoOMSy5LMHvPHK03CXWrwV7tnowgUqdFlWfvs=",
+      "domain": ""
+    },
+    {
+      "title": "nih.gov",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF1biY0haIgGfCxYLTsIhOY67gzakYU24EEwkjDx4itqey3zyMJRuNMnvcY30pzWsAdJtCepfqvDT5E-dEDigIOyfUWuB_Eqjh4G4cIhr_sDSvzmOJyk6wlKf5pwq5ABRHZn7865dYhve_n84_9",
+      "domain": ""
+    },
+    {
+      "title": "qa-group.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHwYIlEfxdJq7y_nBddVx0h2u49BDeoA_7pY3lYEbOajQds8o36byW_3Ff87IUZCr3idE5wiw6QhFe73-bN2wVawUO7_a2qOb0_D1lHBgR2jL52RvaFiVQ5Y5a1pJX0ovIY15Ta5IFabxqo7pg=",
+      "domain": ""
+    },
+    {
+      "title": "nih.gov",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGTS6zgWMu3EMgyQeE-V4_JwnabLhBcbvTKuuaRNF4cFsGO-VljBfz6gvMM_FJVi9KUEEZxcj_ADIBlLBKEoSFs9s621rtJ_XeV4angFlf1lNLatOX4T5Qrz4pHgVVglQVnhGWTibfqu-nl2w4=",
+      "domain": ""
+    },
+    {
+      "title": "researchgate.net",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGLPASclAoRFEcY_FvAGQvWse6sxHt_RutiWD-zilHhCA1TJQIXXVFZKpRlRA0h4xxvNoMJ5HqM68OZ2BHE2RV04Jy6k2BQWwk_VWE5Jc3uI8yFLHvgbEP0ca5xHEt5mCEhgvurcSKhollBhetJxjMCokbNAJvKlb_zEsaUFT3aWVd16Xm62JB3yCceqxqa8qKHUM0foCWRHrejcar8a6T9Szut--elp7iGDRCz_GMHZhVHUqyiKS9K6hDoXLPHxrnf_spROWaQ12Pv8zr1mduzexYmjJC7a235lcTMrR5A07CJDIdZDpOAWB3Zzl2rD5dP682UMYEm",
+      "domain": ""
+    },
+    {
+      "title": "ajronline.org",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEi9MxYUOtJCGH9M1Vi9x_FstNSjeYU9jqv-15amdQpdAXEndDSz9IQqjDuqV_IdqlKnbl-PO8lqC80daIPAgZj_VN0CpsJa1nmD8EHJGg4owMSQ9VnchrIQtHndI3XHVhBTBlX9VRoZj09yc_R",
+      "domain": ""
+    },
+    {
+      "title": "semanticscholar.org",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHK_qkDjdEETQeO9ts4I8LOkSuZJL8w2SuVSMT_gqyv0RpChD8jQwVNhevN1lu8mJ0Hfkqnz7MayLk1xoxwxZQyB-d2vScmIiONdBtXA9_NjNEhkh_u3fYOjWpPDsS3cJaQuXAAxuEcifyAD9cyuXHvIQSN1BvvABqEr6CCYVftDEug8v5VXv3LPDoS6pAeFdiOkQKRc8ZZeClFiEqUY-udy2Z8BRRJPPMaWa3GaeeuPfhMhP9QK59HJl8vFiLsdTCOLZj5uW_lTWbf",
+      "domain": ""
+    },
+    {
+      "title": "rsna.org",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFZKkVjhfyRjRgVu_JkkhZLBcc-edu81tIlP7_lyqTg9fh_bEIeFKc0cLnA5Cy5REdis2zZJ8ycCoU0MpJdfIEgRBcbiZFGBbdmWd0jEfHqGVzLGvLRJzbnQBXIH-ftCHgUHE6-2nsO9ukEA_EbIQ_zYZsVdAeLaglVdQINoh-L_HKgBe_w",
+      "domain": ""
+    },
+    {
+      "title": "cloudexrad.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFZL9Qok8doVw5k3yZ-oV_FdjtXr3wDQL8ZBoVl247iK3FKX7ROVfYkdcmSBgvBr2t9pBfdJB3dzjBWC9_DJMQHKBS4QfRjFYD6-wgicZTV2vMecm0GQWLAUdyP_extRF8dmHXRXVF8KabgifIF77my6GgLw-w_xX_ygva65Rq0v3E-iUv8-pQ2JUfnqAHl",
+      "domain": ""
+    },
+    {
+      "title": "touro.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHZIEqVtnqdiIAfz-rwkIYgT0p4sHba7HsFA31A9BrIIo7XjCRJV9sIvCDt3IkP4_5e3cb-f9GLK3HZ6QYJF3gIp5A-3e5JRLyqaL-EKGYJ6r3f77Kjz5q8X8btsfPZMkGiLrMF5o5DSVngrC-CK7NFE0rVH8h3xr09vGr6rVAZPLEFYtIO1zHC5lMFYysYVoBhRm9DXRrhXNbSmsw=",
+      "domain": ""
+    },
+    {
+      "title": "ualr.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGP2S4c0YfAMZMq-owiM8A5Emhpnc5v7CSMVWcevNIBzsQh-zr9Q8st-p6wgJ9c7u9UhuHRsrASYMDVtF-1ioDDUw_qMKpGBjSEMEVFyuu7xijZWhE8AudOsd7dH83kXAD1FTsqS9_FYOfkigTuk_Xyh7eCYT1LIyvZtQ==",
+      "domain": ""
+    },
+    {
+      "title": "youtube.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEcTjaIGFrUrF8yHf5tpNUYKW3HgKGz78FGqvoBnig9p8ffq08nf8dEUesrIA4I11Vaa8Sczi-xsu2-oYiGogjxRJ85HeMzgJ_jNeg-vbqtzxK4kq-N4V2mSNqqHLc2XH2wo4ptCJY=",
+      "domain": ""
+    },
+    {
+      "title": "cuny.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE-XYTaL7CcMzlF_DV9wjiujjJWI1yRXZe4mY6DlKLxFh1waILC_UVqQ5OenHMawoUeQI-AiAIsoCzVBMc_3Xvot6OA0VO3R6bTt50sig_yS8qfilmlHl-CA5ymdd7vm16WS0Qv-Z27Pgzthy1EvyjXmYVEc7LAkIE2jAVi6YTpP2u5mdfLNmGHTLcGcW7vZ8pyMYO-8FZpwo636IZtQdtAQVQtiqr3h0MLS_SjFEE2nOsdf0FGkWZQKaj7TM5I0UQpb_gvLQ==",
+      "domain": ""
+    },
+    {
+      "title": "unr.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHGIHXdmghY0g0Rb9bYq1wtOkKlflOrf7oj-eTZ1xpgc6NU6GdoahrUL0c9GJREh1I8Q0HcEaCVbxPDzWxu2CgwHgFuaBO0bFkzwxdnez7xHz3NrCuTJ-buAngkCsnMK7dSu_gXOaZzFlj8s2gI4jNx5OAi-UaZWWfMihU8wzqA_yWMrlI0z_ek3c12itaj6is9IbbNUD7P7x_BCoAr4smzdDaR5BI=",
+      "domain": ""
+    },
+    {
+      "title": "bysalemma.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEPJI6fFVmsT3fOp5SGgIPIPtMk4Y6drgT6DYzbS_6EeINT47Y4FBV4t0C6wSDs7O34-Trn4WDEpVhfcElHJpx4VfOQ_NC-VWt7sWTX4tLRBa-lHm7mzZ3vWtLRssSrIl_dY_shsJNat2BqxLXKYSUL0u1JD1IOZqrzLfFraj-w-VjfiHDRo3e5gG4dezyhrw==",
+      "domain": ""
+    },
+    {
+      "title": "dorisandbertie.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG5lFQdBJp9F5yLHIxuwxTvFZY6J4v-rlag0XMCNV_-sCyPs4pxxatP8f38wtHa7Rg19Vqxeqw6ZQflTV4PGmMZs07d1u0nc-5uP7o_IU93GUs3a0hEMfdbnAHA7pds8hDJmSNCOZCEwt3U7d4eRQeHljqglUEcbFwTZlkbuXBMuUSoWyZdUTUE",
+      "domain": ""
+    },
+    {
+      "title": "tradeaiders.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEd6mSqhEsDmshcWxmmrIRleiID9aiy4MOEjaAKSJLrTQzZNBgAk75M0UUh7raFVhdzy-Afr3j4cBVCYv_Cghsy1yMihElJkTCjYzB-JrTM0DTkN82VjB1ppV-OC-NzNLFcbHJXGOMX11sXsVpJK_aSmVcZrWjbqKdI8GlBnrrtBG7kdVJhyRlFFw4=",
+      "domain": ""
+    },
+    {
+      "title": "qualityinspection.org",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEki65fOTSnECnEjCYrrjHonaACKoaWyUxXdFrFMs5FSXw3Y3s5-UIlV30fi2e5s93ollWdCTDMPQahdOfHu6iMMhrOKUWcu6boZpCL9FveDoiDa4QwEL3RDj9n-hUm8NfRPqfDSPachN7RKrlm8mHX6LxuWw2KCI8gDQnWpxt7Hy0=",
+      "domain": ""
+    },
+    {
+      "title": "averroes.ai",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEvZ6zPZulsc3JpGPT2FItZYfu-rJqVTgg3wBGuh7vcs3DkLy22oAZ6LB4fCGSTvxS2Q_-MJLI9ND5O0KggFSxU4TUdJDdYgKRZPAuqpO2jVRm7exsQkO7QqZyVffN9CfP_zm6T08xpNNoAfhFpOFPVr96hjqg=",
+      "domain": ""
+    },
+    {
+      "title": "nih.gov",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH6J9WAjqrWbiaCDOX0wJEf0Ox39ZK3PY31ONPfH52TXzRKmli3OaDGpazkIoV5g9-PXeLvMSj4_HDyX4pxA0tHrVVwyZkkvMhpYJ71YSoHiusiCP_y749igeMtT_e7QHsScAP3OFLc",
+      "domain": ""
+    },
+    {
+      "title": "diagnosticimaging.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGr8hxaXDlD3hJCaEwbfxqhQaeOej3e6WyXH8M5qEJP1zCqTGaFAWH-nc6h-wSDaNMsqdSw2y0JDXsRz8GhTWcxnsGPt1EivFGFvBeBXhParDOGZhCY7_BhMBziP8UNVbaNY6DieFvsHbi5XaWZaGzjIDPBe5wElw6Th3cPSbeij1LZbrPA",
+      "domain": ""
+    },
+    {
+      "title": "nih.gov",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGRU4u8iTRaLbf-4nDKqBBuPWIOxu8IkXLuQYCRQckNbI1Uyo1QgmPg2YPp6LgxDWlOCHZnrieEZFY5lsj4TtnWjVdLBnRGVvXaMkpEQiDVwEmneSTRsZEljEIC4SvFaDz71_WEzh4P_5neHCE=",
+      "domain": ""
+    },
+    {
+      "title": "oup.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHCKsWW0eUiq8uoYwNfrnZifE-fdLV4el6xktCnoqIRyMilABE9CcTcIq7-_EARQp0MVUT39jqcUOGEvCRDVeZAOfXopovYpaIAEW2WkWwm2TknE8YmVGGZgQBQKWdWtCWSYGehlRZ00W1BxL-91KdPMx_4",
+      "domain": ""
+    },
+    {
+      "title": "magicwordsediting.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH2aCEiOmaNtrcBTnoos03IrGjJeUCzbAiM8J0egCkpT_HUazWmqsYXkA4_gJdCXLZpE7DmX-BT_-1AyK-iqNk1l5sprbR7h8M97mcQ5erf7390GjNClyovaEGFxX5ba0jxmPCYsstRxXvFHoTraRVzBFVAhbJt0Q1X9ExhumO8ysjBbea704tKOT5eMZOhIPIIozon8hxedHX298Y=",
+      "domain": ""
+    },
+    {
+      "title": "stackexchange.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE9kHvkHaTHACSmvESy6CNp4F6Q2B_DqpEB34hW5af1rPBe-FRQgv4fgmTV_jdKVGWoqGGqrEgcGz1EIx_wcrpaCF5LgHvm5QqVnIFFJxykeWCvGsOF2wv1pHzmIYb_VbKPEMnB8JCvGtwC9zdJdfGjEueJZFlYLdwMLdRCqHCGT4YVJLZgphjmpNKm3VlfqtvQBOIO4vE-FQR9BW_oeg==",
+      "domain": ""
+    },
+    {
+      "title": "sohonet.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEnEhN1MWRi5bEvN2EuB4Z42gBR7cJIArN73kDvosjKvTjThh1BSpOwUpz30C-Sf82lTmUOnaOevWIW1f2QiK7l7mQp4dl8R4Vnmb6UOQuHucsFTxUVskoF7jwYD34Jjn3Uq1VoGXO_0c69R0-OXJDHwrKPpcUocyvnxEQq4qf33Kt1iX4ArJtCDPgPZJ7AEDNL7jOqTD_kFmatRmqwOMD5",
+      "domain": ""
+    },
+    {
+      "title": "blogspot.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEEdF5KHPtw2gioNnCiRTa2FBsBTuA9e4ohT3KBFlpQesGomg-dC2YcOZAzmHjE5gWaEzBdp_MdVYV-triIMWvezks6fCkVJ5QS6YvA1HfN_RvaM7y1Wy5uxsXqZful9djvdswVgaGSaShAybD7pMwM-s9h0Gw0q8JO-8SbXI_mOL7bWg==",
+      "domain": ""
+    },
+    {
+      "title": "autodesk.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEhNDkbI8YpYxxYqiZrwnfeS1_m5x5h5gplNdnHfdbebrFr_MowLIP6jEZR4pHk-0CSTcZAGykbCk5A0T1wiNnz-z_1VmSFzzZbrtwBt19oMGehjSylrNOxG4gQNnAtz7xlnyrHZ_IfLIe7Dl0U",
+      "domain": ""
+    },
+    {
+      "title": "netflixstudios.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF00JlR_byFY9Z8TL93RjpVSZPkGSgzXWe11s90h-xOAJD31U-uO9fLLsXmJDTl2IbMSVaiDt-IzLx5M07Lq1SkNjhBdLyPPDTXNHfULRHKFJwVTn_zQOzNTyYK5rmC4wHHgAN7_dtZfs3WsyivzwJrG1DGASXywPRXV38J8OcpIOkEbaBk_pQ2q-tFWBLmkoW0-WOofDv7QQ==",
+      "domain": ""
+    },
+    {
+      "title": "nih.gov",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFEjTHN7iUjHT80X4uLol_DDeLTC5lHpQwSXBJ1XnN8TguRYUsmo0QqeXjI5U72ReiKQriLohfh4XNmA86NQjazmMyTbhx48uZLnwjWx6wrKrzP_pnQrpFNRw2TiqciakWs1Yha_LeqP7Kf2j4=",
+      "domain": ""
+    },
+    {
+      "title": "arvojournals.org",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGJBooxK7D4bLoo5vHZ2S7UgYAXL3Y5ypMShskFXYPzvbGhhPsRS7ZiCP7KrtG0UP5BNTBv9cJB6-iyeiSEEfKHAJpB6jpPADfowqbAi-G0Rd28NcszPqOIRHyLIvJBluvCpbUDZB_14JKFsd9XnvKwqZ31hGuG",
+      "domain": ""
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "schema": "interior-ai/room-spec@0.2",
+  "units": "metric",
+  "note": "3-LEG EXPERIMENT VARIANT (2026-07-14) of pipeline/scripts/specs/sitting_room.json: GEOMETRY IS BYTE-IDENTICAL to the promoted spec (same outline/door/builtins/items — the FUNCTION-PASS provenance and the leg-A camera comparison depend on it; re-gated below, not assumed). The ONLY addition is the `materials` block: the render palette is now CHOSEN HERE, grounded in the project's real FF&E picks (03_layout/ffe-schedule.md), instead of build_room's hardcoded universal palette — FFE-S01 Index Lamona = polyester weave (was: cream boucle), FFE-S03 Index Teddy pair = velvet (was: boucle; velvet has a different scatter identity per knowledge/materials/pbr-material-behavior.md:102-106), FFE-S02 IKEA BORGEBY = light birch veneer (was: dark oak PBR via model's own maps — applied as retint), FFE-BS01 console = woodgrain laminate (was: walnut veneer slug; visually close, semantically the real product). COLORWAYS are design-intent pending SKU confirmation (vendor pages list multiple colours; ffe-schedule pins none). Original spec note (provenance, dims authority, arrangement) applies unchanged — see specs/sitting_room.json.",
+  "room": {
+    "type": "sitting_room",
+    "outline_mm": [[0, 0], [5100, 0], [5100, 3300], [0, 3300]],
+    "ceiling_mm": 2800,
+    "wall_thk_mm": 100
+  },
+  "door": {
+    "x": 5100,
+    "y": 1200,
+    "w": 1000,
+    "h": 2000,
+    "wall": "east",
+    "swing": "in-left",
+    "note": "opening toward the stair/circulation on the east; wall+offset are design judgement"
+  },
+  "builtins": [
+    {
+      "name": "คอนโซล/ตู้โชว์เตี้ย ผนังตะวันตก (BF12)",
+      "kind": "cabinet",
+      "x": 0,
+      "y": 1100,
+      "w": 500,
+      "d": 1100,
+      "h": 600
+    }
+  ],
+  "items": [
+    {
+      "name": "โซฟา 3 ที่นั่ง",
+      "kind": "sofa",
+      "x": 1500,
+      "y": 2340,
+      "w": 2100,
+      "d": 860,
+      "h": 800,
+      "rot": 0,
+      "note": "faces south (-Y) into the room. Plan draws it on the WEST party wall facing east; modelled on the NORTH wall facing south to keep the materializer's axis-aligned rotation convention (rot 90/270 swaps w/d about the centre and would push a west-wall 2100mm sofa out of bounds). DEPTH d=860 (was 600) — FF&E round-2 reconciliation (2026-07-04): the drawn 600mm shallow depth is unbuyable (no armed Thai 3-seater is <745mm; selected Index Lamona FFE-S01 = 860 deep). Back kept flush to the north-wall inner face (y_back=3200), front now y=2340. Height h=800 retained by specifying a low-leg variant (real product is 920; FF&E note 'trim with lower legs'). Coffee table nudged 150mm south to preserve sofa-front legroom (~340mm). Re-gated 2026-07-04: clearance PASS, function PASS. The conversation group (sofa + round coffee table + 2 armchairs + west console) is preserved."
+    },
+    {
+      "name": "โต๊ะกลาง (round coffee table)",
+      "kind": "coffee_table",
+      "x": 2050,
+      "y": 1300,
+      "w": 700,
+      "d": 700,
+      "h": 400,
+      "note": "y nudged 1450->1300 (150mm south) in the FF&E round-2 S01 reconciliation so the deepened 860mm sofa keeps ~340mm front legroom; still ~250mm off the armchairs (both are furniture-to-furniture reach gaps, not walkways)."
+    },
+    {
+      "name": "เก้าอี้อาร์มแชร์ 1",
+      "kind": "armchair",
+      "x": 1500,
+      "y": 350,
+      "w": 700,
+      "d": 700,
+      "h": 750,
+      "rot": 180
+    },
+    {
+      "name": "เก้าอี้อาร์มแชร์ 2",
+      "kind": "armchair",
+      "x": 2700,
+      "y": 350,
+      "w": 700,
+      "d": 700,
+      "h": 750,
+      "rot": 180
+    }
+  ],
+  "materials": {
+    "schema": "interior-ai/materials@0.1",
+    "note": "grounded in 03_layout/ffe-schedule.md (Sitting Room section) — see top-level note",
+    "surfaces": {
+      "floor": "oak_wood_floor",
+      "walls": "warm_white_paint",
+      "feature_wall": "walnut_feature",
+      "millwork": "laminate_woodgrain",
+      "glazing": "glazing_default"
+    },
+    "families": {
+      "fabric": "fabric_polyester_weave",
+      "wood": "oak_wood_floor",
+      "neutral": "neutral_solid"
+    },
+    "elements": {
+      "โซฟา 3 ที่นั่ง": "fabric_polyester_weave",
+      "เก้าอี้อาร์มแชร์ 1": "velvet_sand",
+      "เก้าอี้อาร์มแชร์ 2": "velvet_sand",
+      "โต๊ะกลาง (round coffee table)": "birch_veneer"
+    }
+  },
+  "render": false
+}

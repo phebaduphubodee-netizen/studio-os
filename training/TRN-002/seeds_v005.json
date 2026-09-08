@@ -1,0 +1,26 @@
+{
+ "note": "v005 = right-wall assembly + bed block, seeded from the r2 verifier fleet's measured anchors (nightstand arris/bottom from luminance-profile anchors; upper_edge corrected -15px from the ceilstrip agent's step detection; reveals at the seam-continuity u list; platform edges from the platform agent's line fits). judge:true lines are HELD OUT of every spec derivation and score the build (new lane rule: a metric that can fail).",
+ "seeds": [
+  {"name": "upper_edge",   "p0": [792, 86], "p1": [956, 6],   "family": "y", "rms_max": 1.6, "half": 5},
+  {"name": "ceil_diag",    "p0": [782, 139], "p1": [1070, 23], "family": "y"},
+  {"name": "band_top",     "p0": [708, 479], "p1": [1060, 501], "family": "y", "half": 4},
+  {"name": "ns_arris",     "p0": [990, 645], "p1": [1074, 667], "family": "y", "half": 4},
+  {"name": "ns_bottom",    "p0": [989, 697.5], "p1": [1052, 718], "family": "y", "half": 4, "rms_max": 1.6},
+  {"name": "plat_foot",    "p0": [326, 684], "p1": [402, 784], "family": "y", "half": 5},
+  {"name": "plat_near",    "p0": [424, 791.5], "p1": [572, 774.5], "family": "y", "half": 5},
+  {"name": "bench_top",    "p0": [672, 731], "p1": [900, 720], "family": "?", "half": 5, "rms_max": 1.6},
+  {"name": "rev_795_hi",   "p0": [795, 200], "p1": [795, 265], "family": "v", "mode": "dark", "half": 5},
+  {"name": "rev_811_hi",   "p0": [811, 200], "p1": [811, 265], "family": "v", "mode": "dark", "half": 5},
+  {"name": "rev_874_hi",   "p0": [874, 195], "p1": [874, 260], "family": "v", "mode": "dark", "half": 5},
+  {"name": "rev_950_hi",   "p0": [950, 190], "p1": [950, 255], "family": "v", "mode": "dark", "half": 5},
+  {"name": "rev_1043_hi",  "p0": [1043, 185], "p1": [1043, 250], "family": "v", "mode": "dark", "half": 5},
+  {"name": "rev_795_lo",   "p0": [795, 390], "p1": [795, 455], "family": "v", "mode": "dark", "half": 5, "judge": true},
+  {"name": "rev_874_lo",   "p0": [874, 385], "p1": [874, 450], "family": "v", "mode": "dark", "half": 5, "judge": true},
+  {"name": "rev_950_lo",   "p0": [950, 380], "p1": [950, 445], "family": "v", "mode": "dark", "half": 5, "judge": true},
+  {"name": "rev_1043_lo",  "p0": [1043, 375], "p1": [1043, 440], "family": "v", "mode": "dark", "half": 5, "judge": true},
+  {"name": "corner_v",     "p0": [732.5, 158], "p1": [732.5, 460], "family": "v"},
+  {"name": "door_head",    "p0": [633, 313.5], "p1": [671, 306.3], "family": "y", "mode": "dark", "half": 4},
+  {"name": "tv_right",     "p0": [44, 290], "p1": [44, 520], "family": "v", "half": 5, "judge": true},
+  {"name": "chair_backtop","p0": [170, 489], "p1": [232, 484], "family": "?", "half": 5, "rms_max": 1.6, "judge": true}
+ ]
+}

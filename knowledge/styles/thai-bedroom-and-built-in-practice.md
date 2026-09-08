@@ -1,0 +1,327 @@
+# ห้องนอนไทยและงานบิวท์อิน — แนวปฏิบัติจากช่างและดีไซเนอร์ไทย / Thai bedroom & built-in practice
+
+> **PROVENANCE: promoted 2026-08-28** from the Thai units of the video study:
+> - `knowledge/_inbox/video-study/2026-08-28-thai-master-bedroom-and-builtin-materials-pLdNdOzWLfI.md`
+> - `knowledge/_inbox/video-study/2026-08-28-a-wall-to-wall-wardrobe-spec-and-thai-switch-plates-R1dKybdYyY8.md`
+>
+> Source video ids: `pLdNdOzWLfI` (a Thai designer walking the master bedroom + dressing room
+> he was hired to design, 250 m² house) · `LsjpbtEeKfc` (a Thai builder on built-in materials)
+> · `SMI9meHxrIo` (a Thai builder on bedroom design principles) · `u70sISlKu6U` (why Thai
+> built-in quotes differ) · `DquOzbuc4vM` (a Thai designer on lighting and switch plates).
+>
+> **TIER: REFERENCE.** Thai practitioner practice spoken on camera — not statute, not a
+> published standard, and not a measurement of any artefact. Every value is a STARTING POINT.
+
+## ลำดับอำนาจ / Authority
+
+1. **`knowledge/codes-th/` outranks everything here.** Where a value below touches a statutory
+   minimum (room size, ceiling height, opening area, balustrade height), the law wins and this
+   file defers.
+2. The client contract and any owner-signed decision.
+3. `knowledge/ergonomics/casework-fixture-clearances-th-practice.md` — Thai practitioner
+   dimensions for casework; §2 there governs wardrobe internals for a Thai project.
+4. This file. **It answers WHY and WHAT IS USUAL, not HOW MUCH.**
+
+---
+
+## 1. ตำแหน่งและทิศของห้องนอน / Siting and orientation — with a climate reason
+
+> *"เราจะวางไว้ทาง**ทิศตะวันออกหรือทิศใต้** เหตุผลเพราะเรา**หลีกเลี่ยงที่จะให้ห้องนอนโดนแสงแดดตอนบ่าย** ซึ่งมันแรง
+> และมัน**จะสะสมความร้อนไว้ถึงตอนกลางคืน**"*
+
+- **Bedrooms east or south; avoid west** — the afternoon sun is fierce and the accumulated heat
+  carries into the night. This is a Thai-climate reason, not a compass preference, and it is
+  the first sourced justification for a sun direction in this repo.
+- Site the bedroom **away from noise**: at the back of the plot if the house fronts a main
+  road, and away from rooms where the household is active at night.
+- A modern Thai **master bedroom is three functions**: sleeping + bathroom + **ห้องแต่งตัว
+  (dressing area)**, with the bathroom kept as far from the bed as the plan allows, *"ทั้งเสียง
+  ทั้งกลิ่น"* — noise and smell.
+- **Only necessary furniture**, and a bed sized to the room — *"ไม่ใหญ่เกินไป ไม่เล็กเกินไป"*.
+  Ideally **no TV**: *"ไม่มีทีวีเนี่ยจะเป็นห้องนอนที่สมบูรณ์แบบ"*.
+
+## 2. ผนังหัวเตียงต้องทึบ / The headboard wall is solid — and what to do when it is not
+
+> *"**ไม่ควรจะวางหน้าต่างไว้ตรงหัวเตียง หัวเตียงเนี่ยควรจะทึบ** ถ้าจะมีหน้าต่างด้านหัวเตียง เอาไปไว้ซ้ายขวาด้านใด
+> ด้านหนึ่ง… ผนังหัวเตียงควรจะเป็นผนังทึบ มันจะทำให้เรานอนหลับพักผ่อนได้สบายมากกว่า"*
+
+The designer's worked solution when a window is already there: he did **not** block it. He made
+it concealable, so that closed it reads as *"**ผนังที่เป็นผนังเดียวกันทั้งหมด**"* — one continuous
+wall, *"**ทึบ 100 %**"* — and open it gives a view of the approach to the house.
+
+**A concealed opening satisfies the rule; a removed opening is not required.**
+
+## 3. งานบิวท์อินทำจากอะไร และทำไมราคาต่างกัน / What a Thai built-in is made of
+
+Two independent Thai builders give the same three families, split into **carcass** and
+**finishing**:
+
+| Family | Carcass | Usual finishing |
+|---|---|---|
+| **ไม้จริง / solid timber** | teak (ไม้สัก), ไม้แดง/ประดู่ for a luxurious or Chinese register, **oak** for modern; at accessible prices **ash** or **ยางพารา rubberwood**; often a solid frame with plywood faces | stained — clear to show grain on teak, darker/grey/light on rubberwood |
+| **เพาะโครง / built-up frame** | a timber frame faced front and back with plywood or thin board | painted to imitate solid wood, or faced with **HPL** (*"โฟเมก้า"* is a brand; the material is High Pressure Laminate) |
+| **เฟอร์นิเจอร์บอร์ด / engineered board** | particle board (lowest; chips visible on the edge) · **MDF** · **MDF grade HMR**, *High Moisture Resistance* — **identified because the board is dyed GREEN** | painted directly (MDF's smooth face is why **high-gloss furniture is usually MDF/HMR**), HPL, or **factory melamine-faced board** |
+
+**Why solid timber costs more, in Thai-climate terms:** *"คุณสมบัติของไม้จริงมัน**ทนน้ำ ทนชื้น** มีการ
+ยืดหยุ่น มีความแข็งแรงสูง **พอเราเปิดแอร์** มันก็จะมีเรื่องของ**อากาศเย็นมาก อากาศร้อน** พวกนี้มันก็จะทนได้"* —
+aircon cycling is named as the load. Rot and termite resistance for plantation timber depends
+on whether it was **pressure-treated (อัดน้ำยา)**, not on the species alone. Moisture-resistant
+MDF *"ทนชื้นได้บ้าง **แต่ไม่ได้กันแช่น้ำ**"*.
+
+### 3.1 THE RISK THAT DECIDES THE MATERIAL, AND IT IS NOT DURABILITY
+Solid-wood and painted/HPL work need skilled joiners and — the scarce trade — **skilled
+finishers**: *"ช่างฝีมือในการทำงานไม้จริง ๆ มันหาค่อนข้างยาก **ยิ่งงานสีเอง**"*. A contractor therefore
+carries many sub-trades, and jobs get walked away from.
+
+**Factory melamine-faced board is cut, bored, edge-banded and finished in the factory, and only
+ASSEMBLED on site** — *"เวลามาถึงหน้างานครับ เค้าก็จะแค่ทำการ**ประกอบ**เฉย ๆ"* — so *"**ความเสี่ยงต่อการ
+ถูกทิ้งงานจะน้อย**"*. The closing rule: *"**อะไรก็ตามที่หลีกเลี่ยงแรงงานเยอะ ๆ ได้ ความเสี่ยงของการที่จะถูกทิ้งงาน
+มันก็จะลดลง**"*.
+
+**How to check a supplier:** ask to visit the factory. A real one has *"เครื่องหลัก ๆ อยู่สัก
+**4-5 ตัว** มี**เครื่องตัด** มี**เครื่องเจาะ** มี**เครื่องปิดขอบ**"* — a panel saw, a boring machine and an
+**edge-bander** — buys pre-faced melamine board, and has references. And ask what the quote's
+material actually is: if MDF is priced near solid timber, take the timber.
+
+### 3.2 WHAT THIS MEANS FOR A RENDER
+> *"**แต่ถ้าทำเสร็จแล้วเนี่ย เฟอร์นิเจอร์ภายนอกเราจะมองไม่เห็นใช่ไหมครับ ว่าข้างในมันเป็นอะไร**"*
+
+Once finished, the carcass material is invisible. **What a frame shows is the FACE finish** —
+melamine, HPL, paint or veneer — plus the edges and the hardware.
+
+> **This narrows an open question that was previously unanswerable.** The correct generator for
+> a repeating wood surface differs by finish: a **veneered** wall drifts leaf to leaf (see
+> `knowledge/materials/veneer-figure-and-panel-layout.md` §7), while a **melamine or HPL**
+> surface is a **printed décor with a fixed repeat length** and must be generated as one. The
+> question to settle is therefore not *what is our casework made of* but **what is it FACED
+> with**, which an owner can answer in a sentence.
+
+### 3.3 "หน้างานมันไม่เหมือนที่คุยกันไว้" / Site reality vs what was agreed — the same risk said from the maker's side
+
+`X7ZpE_YGgGk` (Indy Woodworking Thailand, 6 min 48 s) yields exactly one sentence, at `[00:00]`:
+*"ปัญหาหน้างานมัน**ไม่เหมือนที่เราคุยกันไว้**"* — on-site reality does not match what was agreed. It is kept
+because it is a Thai maker naming, in his own words, the exposure §3.1 prices from the
+contractor's side: the gap opens **on site, after the agreement**, which is why this market's
+answer is to move labour into the factory. **The source is otherwise thin and promotional** — a
+woodworker arguing that people should take his workshop course rather than learn from YouTube,
+with no dimensions, no detail and no critique — so this one line is the whole yield, it
+generalises no further than the sentence itself, and the video is **not to be re-picked**.
+
+## 4. ห้องนอนมาสเตอร์ที่ส่งมอบจริง / A delivered Thai master suite, element by element
+
+From the designer walking the room he was hired to do. Style stated in his own words:
+*"สไตล์**มินิมอลเรียบง่าย โทนสีขาว แล้วก็ตัดด้วยงานไม้**"* — a white tone **cut with** woodwork.
+
+**ห้องแต่งตัว / the dressing room** is designed as a **U using all three walls**, and contains:
+- a **refrigerator** built into the run — 3.3 ft³, roughly **400+ mm wide × 800 mm high**, with
+  the opening made to fit it;
+- a **niche for the laundry basket**;
+- an **open compartment with a rail** — *"ก็จะเป็นแขวนสำหรับ**เสื้อที่จะใส่ไปในวันรุ่งขึ้น**"*, for
+  tomorrow's clothes. **The first use-based justification found for an open cell with a rail
+  in it**;
+- a **display cabinet for handbags**;
+- a small **dressing table** with room for jewellery and perfume, and a **mirror that slides
+  aside** because a window sits behind it — daylight used deliberately for makeup;
+- **one wardrobe door faced with mirror** for a full-length check;
+- rails plus a bought **trouser rack**; fittings from **Future Tech** (Thai hardware brand);
+- **handles integrated into the door face and run long** — *"มือจับที่แบบ**ติดมากับหน้าบาน**เลย… งาน
+  ออกแบบก็จะเป็น**ยาว ๆ**"* — a continuous edge pull rather than knobs.
+
+**Between dressing room and bedroom, a sliding door**, *"**1 เพื่อกั้นแอร์ แล้วก็กั้นเสียง**"* — aircon
+containment and sound, so one person can dress while the other sleeps. And a decision with its
+own defence: **the door is two colours, light on the bedroom face and dark on the dressing-room
+face**, *"**ไม่เป็นไร เพราะว่าเราใช้งานแค่ด้านเดียว**"* — each side is only ever seen from its own room.
+
+**The bed zone**: the headboard area is raised on a **~300 mm plinth** for a **6-foot mattress**,
+*"มันก็จะแบบ**ญี่ปุ่น ๆ หน่อย** มีฐานเตียง"*, with a **concealed LED uplight above the headboard**
+(*"มี**ไฟ LED ซ่อนเป็นอัพไลท์ข้างบน**"*) and **reading lights left and right**. Floor: **SPC
+wood-look vinyl plank** running from the corridor through the bedroom.
+
+## 5. ปลั๊ก สวิตช์ และแปลนไฟ / Plates and plans — a designer's scope
+
+> *"ดีไซเนอร์จะพยายาม**สเปคสิ่งที่สวยงาม**ให้กับบ้าน… นั่นก็คือ**ตัวปลั๊กกับสวิตช์ไฟ**นั่นเอง… ปลั๊กและสวิตช์เนี่ย
+> สามารถ**เลือกกรอบ**เลือกอะไรได้ตามดีไซน์ของบ้าน… แทนที่เราจะใช้เป็นตัวสแตนดาร์ดสีขาว ๆ ซึ่งมันก็ไม่ได้มีรายละเอียด
+> อะไร… **มันเป็นงานตกแต่งชิ้นหนึ่งภายในบ้าน เป็นเหมือนงานศิลปะ**"*
+
+- **The switch/socket plate is a specified, branded, colour-matched object**, not a default.
+  Named Thai supplier in the source: **Art DNA**. Reason given for spending on it: *"มัน**เปิดทุกวัน**
+  เราต้องใช้นิ้วเรา เดินเข้าไป**มองมันใกล้ ๆ**"*.
+- **The designer's scope includes a lighting plan and a socket plan**, drawn as sheets
+  **separate from the furniture plan** *"ไม่งั้นรายละเอียดมันจะยับ"*, and the lighting plan must
+  carry *"ตำแหน่งมันอยู่ตรงไหน **สูงเท่าไหร่ ติดยังไง** ใช้ไฟชนิดแบบไหน"* — position, height, mounting
+  method, fixture type. (Cross-ref: the same structure from the US side is
+  `knowledge/lighting/lumen-method-and-fixture-placement.md` §8.8.)
+- **Separate switch circuits are the design tool**: dim for TV at night, everything on for
+  guests — two named scenes from one rig.
+- For an exposed-conduit design the fixture is **surface-mounted (ไฟ Surface / ไฟกล่อง)** rather
+  than recessed, and *"ก็ต้องเลือกกล่องให้มันเท่"* — the box and the conduit are deliberately shown
+  and must therefore be chosen for looks.
+- A **wall washer** is used to *"ฉาบทำให้ผนังมันดูมีอะไร"* — graze a blank wall to give it
+  something, with a picture hung in it.
+
+## 6. อุปกรณ์ของช่างที่ทำให้ห้องอ่านว่าถูกออกแบบ / Detail devices a Thai designer reaches for
+
+- **เซาะร่อง V / V-grooves** cut into a plain painted wall *"ผมอยากเบรกนะครับ ให้มัน**ดูมีมิติ**มากยิ่งขึ้น"*
+  — stepped progressively along a stair.
+- **Furring a wall out flush to swallow structure**: projecting columns and beams are treated as
+  a defect — *"มันมี**ขยักเสาขยักคาน**ที่ผนัง… ผมก็เลย**เบิ้ลผนังออกมาให้มันเสมอเท่ากัน**"*.
+- **Long niches cut into the wall** wherever they can be, *"เพื่อให้ลูกค้า**วางของตกแต่ง**ได้เลย"* — the
+  wall itself is given places to put objects.
+- **Step lights on alternate treads** (1, 3, 5…), two-way switched; **hidden LED under a timber
+  handrail**.
+- **Balustrade at 1.10 m**, argued rather than assumed: *"ผมว่ากำลังดี… ถ้าเป็นเมตรหรือว่า 90 ซม. ผมว่า
+  มัน**เตี้ยไป**"*. **Check `knowledge/codes-th/` before using this — the law wins.**
+- **Large-format floor tile (600 × 600 mm)** in entry and living zones, chosen because *"ทำความ
+  สะอาดง่าย แล้วก็ตัวยาแนวมัน**เห็นน้อย**"* — fewer grout lines.
+- Teak stair treads and risers **34 mm** thick, finger-jointed, natural stain.
+
+## 7. พื้นห้องนอน / Bedroom flooring — avoid tile
+
+> *"ลุงช่างจะออกแบบให้ลูกค้าโดย**หลีกเลี่ยงกระเบื้อง เพราะมันเย็นและมันลื่น** ยิ่งถ้ามีผู้สูงวัย… ก็จะแนะนำไปใช้
+> ไม้จริง ปาร์เก้ ลดลงมาเป็น**ลามิเนต เอนจิเนียร์ กระเบื้องยาง** จะให้ความรู้สึกที่มัน**ซอฟต์เท้า**หน่อย"*
+
+Real wood or parquet first; otherwise laminate, engineered wood or vinyl/SPC. **Tile is
+specifically discouraged in a Thai bedroom** — cold and slippery, and worse with elderly
+occupants. A wood or wood-look floor in a Thai bedroom is therefore the expected choice, not a
+stylistic flourish.
+
+> หมายเหตุการนับหมวด: ไม่มี §8 — หมวดถัดไปถูกเพิ่ม 2026-08-28 ในชื่อ §9 โดยข้ามเลข 8 ไป
+> และการไล่เลขใหม่จะทำให้การอ้างอิงข้ามไฟล์ที่มีอยู่แล้วพัง จึงปล่อยว่างไว้โดยตั้งใจ
+
+## 9. ในบ้านลูกค้าจริง / Inside a real client's house — `m3UoGzkcYD4`
+
+dooDeco, *เซียนแต่งให้ EP.2*, 12 min, watched 2026-08-28 at a **Centro Ramintra 2 detached
+house** — the same segment as our project, which no other source in this file is. It is a
+built-in walkthrough, NOT a decor-placement lesson, and that limit is recorded rather than
+argued around: it was queued under a decor order and returned joinery. Four facts nothing else on
+disk has.
+
+### 9.1 บานเพ่ — the finger-groove front, named by the trade
+
+`[03:52]` *"บานเพ่ก็คือตู้ที่มีลักษณะการออกแบบหน้าบานให้มีร่องเว้า โดยที่มีการเซาะร่องหรือทำเป็นส่วนเว้าเข้าไปในตัวหน้าบานตู้
+เพื่อให้เราสามารถใช้นิ้วจับแบบเปิดหรือว่าปิด โดยที่ไม่ต้องมีมือจับยื่นออกมา"* — a door front with a routed recess so a
+finger opens it and no pull projects. He recommends it by register: *"สำหรับใครที่มีบ้านแนวเรียบหรูหรือ
+มินิมอล พลาดไม่ได้เลย"*.
+
+> **This names the detail our wardrobe is missing.** Our fronts carry neither pulls nor a groove,
+> and "switch plate with no buttons / no pulls" is a standing critic item. A routed rebate is
+> millwork — measurable, buildable by the R8 test — and it is what a Thai maker calls the answer
+> for a minimal house. §6 lists *long integrated door pulls* as a candidate device; this is the
+> same family with a Thai name and a stated reason.
+
+### 9.2 THE CELL IS DIMENSIONED FROM THE CLIENT'S OWN OBJECTS
+
+`[04:46]`–`[05:19]`: before the cell is drawn they ask the size of the client's fridge, TV, robot
+vacuum and cat feeder — *"เราก็จะวัดระยะจากของพวกนั้นน่ะแหละ… เราก็จะออกแบบมาไม่หลวมไม่แน่นมากจนเกินไป"*, and the
+client's own summary `[05:32]`: *"เครื่องใช้ไฟฟ้าเรามีสเปค ก็บอกมาตั้งแต่แรก ดีไซเนอร์จัดให้หมดเลย"*.
+
+> R10 spoken from the Thai trade side: **a cell exists because a named object goes in it**, and the
+> object's dimension is asked for, not assumed. Our own R10 pass found `desk_pier` typed at 60 mm
+> after the measurement said UNMEASURABLE — the same defect this workflow prevents by asking.
+
+### 9.3 A HORIZONTAL LINE IS DERIVED FROM ITS NEIGHBOUR, NOT TYPED
+
+`[07:28]`–`[07:41]`: the adjacent table top stands at *"ประมาณสัก 75 ซม."* (≈750 mm) and the
+headboard's line was set to meet it — *"ให้มันร้อยกันมา แล้วมันเจอกันพอดี มันจะได้ดูไม่ขัดตาแบบผิดระยะกัน"* (let it
+thread through and meet, so it does not jar as a wrong distance).
+
+> **R9's law, performed by a practitioner**: a position that can be derived from a contact is not
+> typed. The headboard band and the top of the piece beside it should share one line, and our spec
+> has never derived that relationship.
+
+### 9.4 AN OPEN CELL FOR CLOTHES NOT YET WASHED — a second Thai source
+
+`[08:56]`–`[09:09]`: *"ตู้โล่งตัวนี้อาจจะไว้เสื้อผ้าที่ยังไม่ได้ซัก… เหมาะเลยสำหรับคนที่มีเสื้อโค้ท เสื้อสูท ที่ใส่ซ้ำแล้วมันไม่อับ"*,
+with a garment steamer/spray in the same bay.
+
+> `decor-placement-grammar.md` §8.7 justified an open cell from ONE Thai source (next-day clothes,
+> a laundry basket, a bag display). **This is the second, and it is a different use again** —
+> worn-but-not-dirty outerwear, aired rather than stored. Promotes that line from [1SRC] to two
+> independent Thai sightings, and it is a USE our built-in could carry in frame.
+
+### 9.5 TWO MARKET FACTS, RECORDED WITHOUT A CLAIM ATTACHED
+
+- **A recess beside a column is boxed in rather than worked around** `[07:54]`–`[08:17]`: the old
+  photo showed a *หลืบเสา*; the built-in fills it so *"บ้านมันดูสมูทขึ้น มันดูโล่ง มันดูกลืนกันไปหมด"*.
+- **The revision count on a delivered Thai job** `[10:45]`: the client brought a clear reference,
+  the first image came back *"แทบจะเหมือนแบบนี้ 90%"*, and the whole job closed in *"2-3 ครั้ง"* of
+  adjustment. One data point, one job, and it is the client speaking — but it is the only figure
+  in this file for how many rounds a Thai residential job actually takes.
+
+## 10. คำตอบจากคนทำจริง / A working Thai designer, answering two questions — 2026-08-28
+
+> **PROVENANCE.** ASK-004, routed to the owner 2026-08-09 and answered by him on 2026-08-28 relaying
+> his designer friend — the practitioner whose delivered work is this studio's anchor pool. Two
+> questions, two sentences back. **This is the SECOND practitioner input this repo has ever had**
+> (the first was "most furniture comes from 3D Warehouse", which a 154-line Deep Research had
+> missed entirely). Tier: PRACTITIONER — one working professional in this market, not literature
+> and not a survey. It is one voice; it is also the only voice of its kind we hold.
+
+### 10.1 อะไรที่เขาปั้นเอง / What he models, and it is R8 word for word
+
+> *"เค้าปั้นแค่อันที่เป็นของแข็งและมี dimension ครับชัดเจน"*
+> — he models ONLY things that are solid and have clear dimensions.
+
+**That is R8's test, arriving from outside the repo and stated more briefly than we state it.** Our
+rule asks whether an object can be produced by (a) boxes with radii, (b) sweeping a measured 1D
+profile, or (c) extruding a measured outline — three clauses that are all one thing: *solid, and
+dimensioned*. And the corollary is the half we paid five and six rounds each to learn: **he does
+not hand-model free form at all.** Garments, cut flowers, drapery, figures — not his line of work
+either.
+
+> **WHAT IT CHANGES FOR US: nothing in the rule, and quite a lot in confidence.** R8 was written
+> from our own scar tissue (785 hand-written lines of cloth physics ending at 3/12; a Buddha image
+> at five rounds; a lily spray at six). A practitioner in the same market drawing the same line
+> independently means the rule is not a local workaround for a weak modeller — it is how the trade
+> divides the work. Cite this the next time a round is tempted to sculpt something free-form
+> "just this once".
+
+### 10.2 ลูกค้าตีกลับเพราะอะไร / Why Thai clients send work back — and it is not craft
+
+> *"ลูกค้าตีกลับเพราะ style ไม่ตรงกับความต้องการ"*
+> — clients send it back because the STYLE does not match what they wanted.
+
+Not the dimensions. Not the finish. Not the render quality. **Style fit.**
+
+> **THIS IS THE MOST UNCOMFORTABLE LINE IN THIS FILE AND IT SHOULD STAY THAT WAY.** This studio has
+> spent 88 rounds on surface realism — wood repeat, fold energy, rug edge, duvet coverage, value
+> ladders — measuring the axis on which delivered work is apparently NOT rejected. The axis it IS
+> rejected on is the one the studio only started governing on 2026-08-23, when the owner ordered
+> that the style be chosen before objects are selected (ORD-2026-08-23) and the STY program was
+> opened. That order now has a market reason behind it and not only a design one.
+>
+> **THE COMPANION FINDING, from the same market and the same week:** a delivered Thai job closed in
+> *"2-3 ครั้ง"* of revision after the client supplied a clear reference and the first image came back
+> *"90%"* right (§9.5). Read together: the revisions that happen are FEW, and they are about STYLE.
+> A studio whose style is settled up front barely revises; a studio whose style is not will revise
+> regardless of how good its surfaces are.
+>
+> **WHAT IT DOES NOT SAY**, so nobody over-reads one sentence: it does not say surface realism is
+> free, and it does not say a badly-built frame ships. It says that among work good enough to be
+> DELIVERED, the thing that comes back is style. Both of our lanes stay open; what changes is which
+> one gets to declare itself finished first.
+
+### 10.3 ที่ยังไม่ได้ตอบ / The third question, still open
+
+A third question was added to ASK-004 the same day and he has not answered it: **the delivered work
+styles its display bays very sparse (one object group per bay, roughly a third of cells empty) — is
+that a design decision, or a budget/props-not-arrived one?** It matters because §10.1 of
+`decor-placement-grammar.md` is about to adopt that sparseness as a target. Ask it next time; do not
+assume the answer.
+
+## 11. ช่องว่าง / Gaps — do not fill from model knowledge
+
+- **No Thai critique of finished work exists in this corpus.** Every Thai source here is a
+  fabricator explaining his own work, a teacher, or a build-along: they say what goes IN, never
+  what went WRONG. Design critique is not a Thai YouTube genre — the word *วิจารณ์* returns moral
+  and entertainment criticism. **A Thai professional's verdict on a finished built-in must come
+  from the owner or his designer friend, not from this file.**
+- **No dimensions for the plate face** (Thai 86×86 / 1-gang, rocker vs push, plate reveal) —
+  supplier catalogue.
+- **No aircon face dimensions** for a Thai bedroom (wall split vs concealed ducted with a linear
+  diffuser) — supplier catalogue plus a practitioner question.
+- **No veneer/panel leaf widths from a Thai supplier**, and no melamine décor repeat lengths —
+  both are supplier data and both decide a generator (§3.2).
+- Prices, brands and product codes named by the sources (Art DNA, Future Tech, TST, SL Lighting,
+  Boonthavorn, Smart Mat) are **pointers, not endorsements**, and none has been verified against
+  a current catalogue.

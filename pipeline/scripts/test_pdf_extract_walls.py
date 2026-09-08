@@ -83,6 +83,76 @@ def test_off_axis_slanted_line_is_dropped():
     assert W.keep_segment(0, 0, 5000, 6) is True             # 6mm skew is within the 8mm tolerance
 
 
+# ---- merge_carried (never silently drop owner-authored, non-regenerable walls) --------
+def _calibrated(**kw):
+    base = {"scale_mm_per_pt": 26.45, "origin_pt": [171.2, 596.5], "source_pdf": "p.pdf", "page": 1,
+            "n": 1, "segments": [[[0, 0], [5000, 0]]]}
+    base.update(kw)
+    return base
+
+
+def test_merge_carried_reinjects_manual_segments_into_segments():
+    # THE real objective: the manual wall must land in top-level `segments` (what build_floor extrudes),
+    # not merely in the manual_additions record. A fresh extract omits it (thin stroke) -> re-inject.
+    fresh = _calibrated()
+    prior = _calibrated(manual_additions={"segments": [[[-47, 600], [-47, -799]]]})
+    merged, notes = W.merge_carried(fresh, prior)
+    assert [[-47, 600], [-47, -799]] in merged["segments"], merged["segments"]
+    assert merged["n"] == 2 and merged["manual_additions"] == prior["manual_additions"]
+    assert any("re-injected" in s for s in notes), notes
+
+
+def test_merge_carried_dedups_already_present_segment():
+    seg = [[-47, 600], [-47, -799]]
+    fresh = _calibrated(n=1, segments=[seg])
+    prior = _calibrated(manual_additions={"segments": [[[-47, -799], [-47, 600]]]})  # same wall, reversed
+    merged, _notes = W.merge_carried(fresh, prior)
+    assert merged["segments"] == [seg] and merged["n"] == 1              # undirected dedup, not double-added
+
+
+def test_merge_carried_skips_reinjection_on_calibration_drift():
+    fresh = _calibrated()
+    prior = _calibrated(scale_mm_per_pt=30.0, manual_additions={"segments": [[[-47, 600], [-47, -799]]]})
+    merged, notes = W.merge_carried(fresh, prior)
+    assert merged["segments"] == [[[0, 0], [5000, 0]]] and merged["n"] == 1   # stale coords NOT injected
+    assert "manual_additions" in merged and any("WARNING" in s for s in notes), notes  # record kept, warned
+
+
+def test_merge_carried_source_pdf_basename_is_not_drift():
+    # a full path vs a stored basename is the SAME drawing -> must not count as drift and skip injection
+    fresh = _calibrated(source_pdf="c:/x/y/p.pdf")
+    prior = _calibrated(source_pdf="p.pdf", manual_additions={"segments": [[[-47, 600], [-47, -799]]]})
+    merged, notes = W.merge_carried(fresh, prior)
+    assert merged["n"] == 2 and any("re-injected" in s for s in notes), notes
+
+
+def test_merge_carried_no_manual_additions_is_noop():
+    fresh = _calibrated()
+    merged, notes = W.merge_carried(fresh, _calibrated())               # prior has no manual_additions
+    assert merged == _calibrated() and notes == []
+
+
+def test_merge_carried_handles_missing_or_nondict_prior():
+    assert W.merge_carried({"n": 0, "segments": []}, None) == ({"n": 0, "segments": []}, [])
+    assert W.merge_carried({"n": 0, "segments": []}, "corrupt") == ({"n": 0, "segments": []}, [])
+
+
+def test_merge_carried_refuses_unsigned_stub():
+    # glazing_candidates emits an OWNER-CONFIRM-PENDING template; pasting it unsigned
+    # must be machine-INERT: record kept (visible, re-signable), segments NOT injected,
+    # WARNING note emitted. Otherwise "do not paste unsigned" is prose, not a gate.
+    ma = {"date": "2026-07-06", "by": "OWNER-CONFIRM-PENDING (unsigned template)",
+          "segments": [[[0, 100], [0, 1000]], [[100, 100], [100, 1000]]]}
+    merged, notes = W.merge_carried(_calibrated(), _calibrated(manual_additions=ma))
+    assert merged["segments"] == _calibrated()["segments"]     # nothing injected
+    assert merged["manual_additions"] is ma                    # record still carried
+    assert any("UNSIGNED" in n and "WARNING" in n for n in notes)
+    # the same record, owner-signed, injects normally
+    signed = dict(ma, by="owner-confirmed 2026-07-06")
+    merged2, _n2 = W.merge_carried(_calibrated(), _calibrated(manual_additions=signed))
+    assert merged2["n"] == 3 and len(merged2["segments"]) == 3
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     for t in tests:

@@ -1,0 +1,140 @@
+{
+ "rows": [
+  {
+   "patch": "veneer_dark (header face)",
+   "ours": [
+    0.0844,
+    0.0578,
+    0.0356
+   ],
+   "target": [
+    0.1651,
+    0.107,
+    0.0685
+   ],
+   "value_ratio": 0.522,
+   "hue_err": 0.033
+  },
+  {
+   "patch": "veneer_dark (right stile)",
+   "ours": [
+    0.0262,
+    0.0222,
+    0.0203
+   ],
+   "target": [
+    0.0232,
+    0.0194,
+    0.0168
+   ],
+   "value_ratio": 1.158,
+   "hue_err": 0.036
+  },
+  {
+   "patch": "cavity (cubby interior)",
+   "ours": [
+    0.0331,
+    0.0284,
+    0.0262
+   ],
+   "target": [
+    0.0307,
+    0.0284,
+    0.0273
+   ],
+   "value_ratio": 1.015,
+   "hue_err": 0.066
+  },
+  {
+   "patch": "paint_white (left of bay)",
+   "ours": [
+    0.2195,
+    0.2051,
+    0.1845
+   ],
+   "target": [
+    0.4851,
+    0.4564,
+    0.4342
+   ],
+   "value_ratio": 0.443,
+   "hue_err": 0.038
+  },
+  {
+   "patch": "paint_white (right of bay)",
+   "ours": [
+    0.2831,
+    0.2623,
+    0.2346
+   ],
+   "target": [
+    0.4851,
+    0.4621,
+    0.4397
+   ],
+   "value_ratio": 0.562,
+   "hue_err": 0.049
+  },
+  {
+   "patch": "marble (clean field)",
+   "ours": [
+    0.2789,
+    0.2542,
+    0.227
+   ],
+   "target": [
+    0.4621,
+    0.4179,
+    0.3763
+   ],
+   "value_ratio": 0.605,
+   "hue_err": 0.005
+  },
+  {
+   "patch": "lacquer_white (plinth)",
+   "ours": [
+    0.2462,
+    0.227,
+    0.2016
+   ],
+   "target": [
+    0.5457,
+    0.4969,
+    0.4564
+   ],
+   "value_ratio": 0.45,
+   "hue_err": 0.017
+  },
+  {
+   "patch": "veneer_altar (step face)",
+   "ours": [
+    0.0782,
+    0.0612,
+    0.0452
+   ],
+   "target": [
+    0.147,
+    0.117,
+    0.0953
+   ],
+   "value_ratio": 0.514,
+   "hue_err": 0.062
+  },
+  {
+   "patch": "floor_oak (mid)",
+   "ours": [
+    0.1946,
+    0.1529,
+    0.1046
+   ],
+   "target": [
+    0.5647,
+    0.4397,
+    0.2961
+   ],
+   "value_ratio": 0.348,
+   "hue_err": 0.011
+  }
+ ],
+ "spread": 3.328
+}

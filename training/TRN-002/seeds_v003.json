@@ -1,0 +1,26 @@
+{
+ "note": "v003 after the wardrobe-corner zoom settled the structure: ceil_diag = wardrobe TOP FRONT edge (y-family), upper_diag = the real right-wall/ceiling junction from the ceiling corner (~730,101), corner_v = the room's back-right corner vertical, band_top = headboard trim on the WARDROBE FACE (y-plane). Dropped: ward_top + soffit_diag2 (corridors straddling features/gradients, ambig ~0.5), headboard_band_top v002 (chased an illumination gradient on the panels), console_back (rounded ends, position comes from backprojection later).",
+ "seeds": [
+  {"name": "art_top",       "p0": [470, 316], "p1": [560, 318], "family": "x"},
+  {"name": "art_bot",       "p0": [470, 455], "p1": [560, 454], "family": "x", "mode": "dark", "half": 5},
+  {"name": "art_L",         "p0": [466.5, 322], "p1": [466.5, 450], "family": "v", "mode": "dark", "half": 5},
+  {"name": "art_R",         "p0": [564, 324],  "p1": [564, 449], "family": "v", "mode": "dark", "half": 5},
+  {"name": "door_top",      "p0": [603, 295], "p1": [685, 297.5], "family": "x", "mode": "dark", "half": 4},
+  {"name": "part_head_top", "p0": [152, 231], "p1": [396, 239], "family": "x"},
+  {"name": "part_head_bot", "p0": [152, 249], "p1": [356, 253], "family": "x"},
+  {"name": "part_frame_L",  "p0": [148.5, 245], "p1": [148.5, 550], "family": "v"},
+  {"name": "part_slide_R",  "p0": [277, 255],  "p1": [277, 545], "family": "v"},
+  {"name": "closet_ceil",   "p0": [115, 192], "p1": [390, 220], "family": "x", "rms_max": 2.0, "half": 5},
+  {"name": "backwall_ceil", "p0": [420, 136], "p1": [755, 151], "family": "x", "rms_max": 2.0, "half": 5},
+  {"name": "shelf_top",     "p0": [55, 123],  "p1": [144, 128], "family": "x"},
+  {"name": "nightstand_top","p0": [1015, 585], "p1": [1075, 572], "family": "x"},
+  {"name": "ceil_diag",     "p0": [782, 139], "p1": [1070, 23],  "family": "y"},
+  {"name": "upper_diag",    "p0": [742, 96],  "p1": [886, 22],  "family": "y", "rms_max": 2.0, "half": 5},
+  {"name": "band_top",      "p0": [708, 479], "p1": [1060, 501], "family": "y", "half": 4},
+  {"name": "corner_v",      "p0": [732.5, 158], "p1": [732.5, 460], "family": "v"},
+  {"name": "reveal_1",      "p0": [787, 180],  "p1": [787, 450], "family": "v", "mode": "dark", "half": 4},
+  {"name": "reveal_2",      "p0": [855, 180],  "p1": [855, 435], "family": "v", "mode": "dark", "half": 4},
+  {"name": "reveal_3",      "p0": [920, 185],  "p1": [920, 430], "family": "v", "mode": "dark", "half": 4},
+  {"name": "reveal_4",      "p0": [985, 190],  "p1": [985, 420], "family": "v", "mode": "dark", "half": 4}
+ ]
+}

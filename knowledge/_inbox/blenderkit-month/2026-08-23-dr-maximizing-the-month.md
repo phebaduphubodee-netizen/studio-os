@@ -1,0 +1,147 @@
+# DR — maximizing a one-month Blendkit Full subscription (2026-08-23)
+
+**TIER: REFERENCE.** NotebookLM Deep Research, notebook `f63696bf-5622-455f-9491-c8911a5e9a97`
+("DR: maximizing a one-month BlenderKit Full subscription 2026-08-23"),
+conversation `11fd7935-12c9-44ad-9f92-ce64c2c69832`, turn 1 of 1.
+
+## READ THIS BEFORE THE ANSWER — one section is FABRICATED, measured the same hour
+
+**Section 5's "Advanced Search Operators" do not exist.** The DR recommends
+`author:<username>`, `license:cc0`, `rating:>=4` and `resolution:8k`,
+and claims they "dramatically increase your hit rate". Tested against the live public API on
+2026-08-23 using this repo's own positive/negative-control method — an unknown qualifier
+answers 0, a real one splits the set:
+
+| query on `asset_type:model+bed` | count |
+|---|---:|
+| (no filter) — control | 1244 |
+| `is_free:true` — known-real filter | 282 |
+| `rating:>=4` | **0** |
+| `resolution:8k` | **0** |
+| `license:cc0` | **0** |
+| `author:blenderkit` | **0** |
+| `zzznotafilter:9` — deliberate negative control | **0** |
+
+All four recommended operators behave exactly like a misspelled qualifier. The REAL
+equivalents, found by testing rather than by asking, are in
+`2026-08-23-api-filters-measured.md` beside this file.
+
+**Section 4's "35% to 50% of downloaded furniture assets require material adjustments"
+conflicts with our own DR of 2026-08-17**, which reported studios rebuilding materials on
+80-90% of bedding. Two figures, two DRs, no primary evidence under either. Neither number is
+usable; the CLASS of finding — bought models usually need material work — is corroborated by
+both and by docs/DECISIONS-render-assets.md.
+
+**Everything else here is UNVERIFIED unless it also appears in
+`2026-08-23-primary-sources-terms.md`**, which carries the contract text. This repo's own
+distillation ledger records this research lane fabricating prices and licences, so licence and
+money claims from here are leads, never findings.
+
+## The question asked
+
+```
+A small architectural-visualisation studio has bought ONE month of the BlenderKit "Full" subscription (the non-recurring 30-day plan) and has 29 days left. The goal is to extract the maximum durable value from that single paid month. Answer as a working Blender/archviz practitioner would, with specifics rather than generalities.
+
+Please cover, separately and concretely:
+
+1. WHAT SURVIVES THE SUBSCRIPTION LAPSING. When a paid BlenderKit subscription expires, what happens to assets already downloaded during the paid period? Specifically: (a) can renders made with them still be used commercially after the plan lapses; (b) do the local files remain usable in Blender, or does the add-on gate them; (c) does the royalty-free licence attach permanently at download time, or is it contingent on an active plan; (d) is there any published statement from BlenderKit on this, and where. Distinguish clearly between what BlenderKit's own terms/FAQ state and what community practice assumes — say plainly if the official terms are silent.
+
+2. THE 30-DAY ACQUISITION STRATEGY. What do experienced users actually download during a limited paid window, and in what order? Is the accepted practice to build a permanent curated in-house asset library during the window rather than to fetch per-project? What volume is realistic, and are there rate limits, fair-use clauses, or anti-bulk-download provisions that constrain it? What is the highest-value category per dollar for interior/residential archviz?
+
+3. WHAT PAID ACTUALLY BUYS, MEASURED. Beyond marketing claims, what concrete differences do practitioners report between BlenderKit free-tier and Full-plan MODELS: polygon budget and topology, UV quality, PBR texture map completeness and resolution, real-world scale accuracy, whether the object is a single fused mesh or properly separated parts, and whether interior scenes ship with extraneous geometry (backdrop walls, studio props) attached to the asset. Which of these differences hold up and which do not.
+
+4. KNOWN FAILURE MODES AND FIXES. What goes wrong with BlenderKit assets in production, and what do people do about it: wrong or ambiguous real-world scale; materials that read as plastic or need rebuilding from scratch; assets authored for Eevee that fall apart in Cycles; N-gons and shading artefacts; textures that are baked-in rather than procedural. Is there a reported rule of thumb for how often downloaded furniture needs its materials rebuilt rather than used as shipped?
+
+5. FEATURES BEYOND MODEL DOWNLOADS that a paid month unlocks or makes worthwhile, and whether they matter: resolution tiers on textures and HDRIs, scene assets, geometry-nodes assets, brushes, private-asset storage/quota, following specific authors, ratings and quality filters, and any search syntax or filtering that materially improves hit rate over naive keyword search.
+
+6. THE HONEST COUNTER-CASE. Under what circumstances do practitioners conclude a BlenderKit subscription was NOT worth it for interior/residential visualisation, and what do they use instead? Name the specific weaknesses of the library for this genre.
+
+Where sources disagree, say so and give both readings. Where you cannot find a grounded source for a claim, say that explicitly rather than filling the gap — especially for anything about licence terms, pricing, or what a subscription permits after it ends.
+```
+
+## The answer, verbatim
+
+### 1. Legal and Technical Persistence Post-Subscription
+
+*   **(a) Commercial Usability Post-Lapse:** Yes, **renders made with downloaded assets can be legally used and monetized commercially after your plan lapses [1, 2].** The licenses attach permanently at the moment of download and are non-retroactive; there is no requirement to maintain an active subscription or pay ongoing royalties once the plan expires [1, 2]. You can legally distribute, sell, or use 3D renders, video animations, or interactive walkthroughs containing these assets in any commercial context [1, 2].
+*   **(b) Local File Usability & Gating:** **The local files (.blend files and associated textures) remain fully usable inside Blender [3, 4].** The Blendkit (formerly BlenderKit) add-on does not implement any post-expiration gating, digital rights management (DRM) locks, or verification checks on locally stored assets [3, 4]. Geometry and shader networks appended or linked into existing scene files are embedded directly within those projects [3, 4]. However, **you lose the ability to re-download premium assets from the cloud database [5, 6].** If your local cache is cleared or corrupted, you cannot retrieve those premium assets without renewing your plan [5, 6].
+*   **(c) Royalty-Free License Permanence:** **The royalty-free license attaches permanently at download time and is not contingent on an active plan [1, 2].** Under both the Royalty-Free and CC0 licenses, assets can be integrated into commercial projects without requiring author attribution [7, 8]. The Royalty-Free license allows unlimited commercial use within higher-level derivative works (renders, environments, animations) but permanently prohibits the resale, sublicensing, or redistribution of the raw 3D models or materials themselves on competing marketplaces [7-9].
+*   **(d) Published Statements & GPL Constraints:** The official terms of service, licensing FAQ, and developer communications confirm this permanent operational model [5, 6]. The platform developer team has explicitly stated that downloaded models stay in user scenes and that the system does not impose retrospective limits or gating [5, 6]. Furthermore, because any script or add-on running inside Blender is bound by Blender's GNU General Public License (GPL) environment, **output files (.blend or .fbx models) you generate remain your sole, unencumbered property [10-12].** GPL compliance explicitly states that no add-on executed inside Blender can claim ownership or place non-commercial restrictions on the output data blocks you create [10-12].
+
+---
+
+### 2. The Thirty-Day Strategic Acquisition Framework
+
+*   **In-House Library vs. Per-Project:** For a studio operating with only 29 days left, a project-specific fetching strategy is highly inefficient [13, 14]. **The accepted practice among experienced practitioners is to build a permanent, curated, offline in-house asset library on local storage (such as a studio NAS) [13, 14].** By systematically downloading premium models and saving them locally, the studio can bypass the internet dependency of the add-on and provide the entire visualization team with rapid, permanent access to a massive array of models [13, 14].
+*   **Realistic Volumes and Technical Constraints:** While marketed as "unlimited downloads," the platform enforces strict safety measures to prevent database scraping and DDoS events [15-17]. **Attempting to automate downloads using custom Python scripts or bulk tools will trigger a 403 Forbidden error stating: *"Limit of models exceeded. The limit is 10000 items."* [16-18].** This cap is a security threshold that applies to each asset category individually, allowing a maximum of **10,000 models, 10,000 materials, and 10,000 HDRIs per month [15-17].** Additionally, high-frequency manual downloading can trigger **429 Too Many Requests API errors [16, 17, 19].** 
+
+    A realistic, manual downloading campaign executed by an artist can yield **200 to 400 highly curated, complex models per day**, resulting in a robust permanent local library of **6,000 to 12,000 top-tier assets** by the end of the month [20, 21]. You should focus entirely on downloading "Full" subscription models, as the "Free" tier assets will remain perpetually available after your subscription ends [22, 23].
+*   **Highest-Value Category Per Dollar:** Prioritize assets with high modeling or sculpting overhead [20, 21]. The highest value-per-dollar for interior visualization lies in **complex upholstered furniture (such as couches and chairs with realistic fabric folds), detailed plumbing fixtures, high-end kitchen appliances, and intricately layered materials [20, 21].** Avoid wasting bandwidth on easily modeled geometry (like basic tables, shelves, or minimalist walls) [20, 21].
+
+---
+
+### 3. Technical Evaluation of Free vs. Paid Assets
+
+The value of the paid plan lies heavily in the quality control standards enforced on paid assets, whereas the free tier is heavily populated by unregulated community uploads [24, 25]:
+
+| Quality Parameter | Free Tier Assets (Unregulated Community) | Paid Tier Assets (Vetted Premium Uploads) |
+| :--- | :--- | :--- |
+| **Polygon Budget & Topology** | Often excessively dense, unoptimized triangulated meshes with chaotic loop flows and shading-pinched N-gons [24, 25]. | **Optimally dense quad-dominant topology** with clean loop flows designed for Subdivision Surface modifiers [24, 25]. |
+| **UV Mapping Quality** | Auto-unwrapped with severe stretching, misaligned seam placements, and inconsistent texel density across parts [24, 25]. | **Manually unwrapped** with uniform texel density, optimized seam placements, and orientations aligned to realistic material grain (such as wood or fabrics) [24, 25]. |
+| **PBR Material Completeness** | Frequently incomplete, often missing roughness or metallic maps, relying on solid-color values [24, 25]. | **Complete PBR texture sets** (Diffuse, Normal, Roughness, Metallic, Ambient Occlusion, and displacement) [24, 25]. |
+| **Texture Map Resolution** | Commonly locked to low-resolution tiers (1K or 2K), causing pixelation in close-up renders [24, 25]. | **Unlocked high-resolution tiers** (up to 8K or 16K) with crisp, uncompressed details [24, 25]. |
+| **Scale Accuracy** | Highly erratic; models frequently import at microscopic or astronomical scales, violating real-world metrics [24, 25]. | **High real-world scale accuracy**; objects are zeroed out at the origin and import at correct metric dimensions [24, 25]. |
+| **Mesh Structure & Grouping** | Often uploaded as a single, fused object, making material changes or geometric edits extremely difficult [24, 25]. | **Logically separated sub-objects** with clear naming conventions, allowing easy material swapping or part manipulation [24, 25]. |
+| **Scene Clutter & Geometry** | Frequently contains hidden cameras, lights, backdrops, and active render settings that pollute your working file [24, 25]. | **Pure assets**; stripped of extraneous geometry, studio lighting, active cameras, and unused data blocks [24, 25]. |
+
+---
+
+### 4. Known Failure Modes and Technical Interventions
+
+Even within the premium catalog, community-authored assets can introduce technical anomalies in production [26, 27]. Standardized remediation steps include:
+
+*   **Wrong or Ambiguous Real-World Scale:** A model's scale may read as 1.0 in the properties panel, but its absolute dimensions are physically incorrect [28, 29]. **Fix:** Select the parent object and execute **Ctrl + A** to apply all transforms [28, 29]. This resets the scale to 1.0 relative to Blender's global grid, ensuring that procedural textures and physical modifiers (such as bevels) calculate with correct physical dimensions [28, 29].
+*   **Plastic-Looking and Flat Materials:** Wood, metal, and plastic shaders can look synthetic under advanced, realistic lighting setups [30, 31]. **Fix:** Adjust the material node network [30, 31]. Reduce the base specular value, add a fine-grained noise texture into the roughness channel, or insert a custom fresnel falloff curve to break up the flat, CGI look [30, 31].
+*   **Eevee-to-Cycles Shader Breakdowns:** Assets built specifically for Eevee often rely on custom screen-space refraction or fake ambient occlusion node setups that fall apart when rendered under Cycles' path-tracing [30, 31]. **Fix:** Strip out the non-standard Eevee nodes and rebuild the materials around a clean **Principled BSDF shader [30, 31].**
+*   **N-Gons and Shading Artifacts:** Shading pinches can appear when rendering complex curves on low-quality topology [32, 33]. **Fix:** Apply a **Weighted Normal modifier** and enable auto-smoothing in the mesh properties panel [32, 33].
+*   **Baked-in vs. Procedural Textures:** Models with non-tileable, baked-in textures limit your ability to customize finishes for clients [32, 33]. **Fix:** Select **File -> External Data -> Unpack Resources** or use Blender's image editor to save the map directly, allowing you to edit the textures in Photoshop [32-34].
+*   **The Professional Rule of Thumb:** Based on real-world archviz production pipelines, approximately **35% to 50% of downloaded furniture assets require material adjustments or partial node rebuilding** to meet high-end photorealistic standards [35, 36].
+
+---
+
+### 5. Features Beyond Model Downloads
+
+To extract maximum value during your 29-day window, utilize these advanced features:
+
+*   **Resolution Tiers:** The paid plan unlocks access to **4K, 8K, and 16K textures and HDRIs [37, 38].** Use this period to download and build a localized library of these high-resolution maps [13, 14, 37, 38].
+*   **Scene and Geometry Nodes Assets:** Unlocked full-tier scenes provide professional lighting setups and render configurations [37, 38]. You can harvest these scenes to extract detailed interior backdrops and modular geometry node setups (such as procedural scattering or vegetation tools) for future use [37, 38].
+*   **Private Storage Quotas:** The plan provides **2 GiB of private online storage [39-41].** However, because this online storage is gated post-expiration, you must not rely on it as a long-term backup solution [5, 6, 40, 41].
+*   **Advanced Search Operators:** Bypassing naive keyword search dramatically increases your hit rate and helps filter out low-quality assets [40, 41]:
+    *   `author:<username>`: Targets verified, high-quality asset creators who maintain consistent modeling standards [42, 43].
+    *   `license:cc0`: Retrieves public domain assets that can be distributed freely without attribution tracking [7, 8, 42, 43].
+    *   `rating:>=4`: Filters out amateurish, unvetted models and low-resolution materials [42, 43].
+    *   `resolution:8k`: Limits results to assets containing high-res texture files [42, 43].
+
+---
+
+### 6. The Honest Counter-Case
+
+Many professional archviz studios conclude that a permanent subscription is not worth the recurring cost due to several key weaknesses in the crowd-sourced catalog [44, 45]:
+
+*   **Stylistic Inconsistency:** Because the library relies on community uploads, combining various furniture models in a single scene often results in a visual clash due to different modeling styles, proportions, and material finishes [44, 45].
+*   **GPU Memory (VRAM) Overload:** Many community models contain unoptimized, high-resolution textures (such as 8K textures on small props) that consume massive amounts of GPU VRAM [44, 45]. In complex interior scenes, this can trigger out-of-memory render crashes, forcing artists to spend time manually downsampling textures to 1K or 2K [44, 45].
+*   **Lack of Specialized Curation:** The catalog often lacks highly specific, branded European or North American architectural designs required by demanding clients [44, 45].
+
+#### Professional Alternatives
+*   **iMeshh:** Highly regarded as the premier asset library for Blender-based architectural visualization [46, 47]. It provides over 3,100 curated, production-ready, highly optimized models and materials [46, 47]. Unlike Blendkit's erratic crowd-sourced catalog, iMeshh assets are modeled to a consistent professional standard, with optimized texture resolutions that protect GPU VRAM during heavy architectural rendering [46, 47].
+*   **Poliigon:** Representing the gold standard for photorealistic texturing, Poliigon offers mathematically precise PBR materials, flooring generators, and fabric textures [48, 49]. It is essential for studios prioritizing material accuracy over raw model counts [48, 49].
+*   **Chocofur and 3D Shaker:** These platforms provide highly targeted, premium furniture packs specifically optimized for Blender Cycles [48, 49]. They offer guaranteed physical scale, flawless topology, and uniform design languages, making them highly reliable for high-end commercial projects [48, 49].
+
+---
+📊 I can write a Python script using standard libraries to help parse your local `.blend` assets and identify unapplied transforms or oversized textures that might choke your GPU's VRAM. Let me know if that would be useful!
+
+---
+*The `[n]` markers are the notebook's own source indices and are deliberately NOT resolved
+to titles: this is a DR-generated source set, and every load-bearing claim was re-derived from
+primary sources instead (sibling file). Prune the notebook after distillation — account cap
+~100, 80 in use on 2026-08-23.*

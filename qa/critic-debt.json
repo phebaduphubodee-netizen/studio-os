@@ -1,0 +1,558 @@
+{
+ "_what": "The critic-debt ledger. Every row is a defect independent critics filed against this studio's own frames often enough that it is one debt re-billed, not a new finding each round. Read by pipeline/scripts/debt_check.py; cut by pipeline/scripts/debt_seed.py.",
+ "_law": [
+  "An item closes only when its door resolves against something BUILT (a placement dump, a rendered frame), or it is refuted with a NUMBER. Never with a sentence.",
+  "A row may change status. It may never leave this file — deleting it reproduces the 357-filed / 22-built defect exactly.",
+  "A spec is a declaration. No row closes against a spec, and a scene row rises above DECLARED only when a placement dump corroborates that the spec describes something that was built.",
+  "Only RESOLVED is a pass. PARTIAL means an instrument's half holds and the instrument is narrower than the defect that was filed — a guard door cannot close a row on its own. DECLARED-ONLY means we said so; NOT RUN means we did not look.",
+  "Existence is judged on the DRAWABLE population — a MESH the renderer draws. Hiding a mass must never close its debt.",
+  "`none_yet` is an honest verdict, not an exemption: it must name what would have to be built, and it may never be marked built or refuted while it says so."
+ ],
+ "_seeded_from": {
+  "corpus": "_private/benchmark/reproduction/TRN-002/renders/critique/*/ANSWER_*.md",
+  "answer_files": 28,
+  "items_filed": 367,
+  "census": "_private/benchmark/reproduction/TRN-002/critic-item-census-2026-08-10.json",
+  "method": "keyword classes over extracted items, multi-label; recurrence = number of ANSWER FILES a class appears in, never the number of items",
+  "unassigned_items": 4,
+  "_note": "21 rows, not 20. `junction-raw` and `no-surface-texture` tie at 9/28 on the boundary, and dropping one on a coin flip would be the builder choosing which debt to forget. The plan said top-20; this is the deviation, recorded rather than quietly taken.",
+  "_not_committed": "the corpus and the census are this lane's own critic answers and stay under _private/"
+ },
+ "rows": [
+  {
+   "id": "DEBT-01",
+   "class": "cloth-rigid",
+   "defect": "soft goods read rigid — no drape, compression or sag",
+   "object": "soft goods",
+   "kind": "geometry",
+   "filed_in": "TRN-002",
+   "recurrence": {
+    "files": 28,
+    "of": 28,
+    "first_round": "r14",
+    "last_round": "r38b"
+   },
+   "crosses_into": "DELIV-001",
+   "due_phase": "P2",
+   "closes_when": {
+    "door": "scene_row",
+    "row": "D8"
+   },
+   "_why_this_door": "D8 counts R8-ACQUIRE-class masses built as primitives, and its word list IS this defect's object list: pillow, cushion, bolster, sham, duvet, throw, blanket. r38 scores 7 against a threshold of 0.",
+   "status": "open",
+   "p2_triage_2026-08-11": "D8 reads 0 on the BUILT DELIV-001 p2r8 scene dump — the defect is PAID ON THIS LANE (soft goods are solver cloth / curved forms smooth-shaded). Stays open as a LANE SPLIT, twice over: the ledger pins this row against the TRN-002 r38 frame where it does not resolve (7 primitives / 16 faceted), and a scene_row door needs spec+dump evidence while this lane speaks item-specs, not masses. Same shape as DEBT-10.",
+   "p2_triage_2026-08-12": "door re-ran vs the BUILT p2r19 placement dump: D8 reads 0 (DECLARED-ONLY print is the door asking for the guard-side read; the r19 build scorecard D8 PASS 0 vs 0 is the built answer). Lane conclusion of 08-11 unchanged; TRN pin stands."
+  },
+  {
+   "id": "DEBT-02",
+   "class": "no-contact-shadow",
+   "defect": "nothing casts a contact shadow; every object floats",
+   "object": "whole frame",
+   "kind": "light",
+   "filed_in": "TRN-002",
+   "recurrence": {
+    "files": 25,
+    "of": 28,
+    "first_round": "r14",
+    "last_round": "r38b"
+   },
+   "crosses_into": "DELIV-001",
+   "due_phase": "P3",
+   "closes_when": {
+    "door": "none_yet",
+    "blocked_on": "a LOCALISED contact-luminance probe at floor junctions. D6 measures the share of the whole frame below L=26, which a black TV screen satisfies while every object still floats — binding this row to D6 would be the tenth flattering scorer."
+   },
+   "_why_this_door": "The second most recurring defect in the corpus has no instrument. Saying so is the point of the door.",
+   "status": "open"
+  },
+  {
+   "id": "DEBT-03",
+   "class": "empty-frame",
+   "defect": "the picture frame holds no art",
+   "object": "artwork",
+   "kind": "styling",
+   "filed_in": "TRN-002",
+   "recurrence": {
+    "files": 23,
+    "of": 28,
+    "first_round": "r14",
+    "last_round": "r38b"
+   },
+   "crosses_into": "DELIV-001",
+   "due_phase": "P4",
+   "closes_when": {
+    "door": "none_yet",
+    "blocked_on": "a material-side check that art / mirror / screen masses carry an image map. D7 already counts `artwork` and `art_mat` as styling objects, so the instrument we have is inflated BY this defect."
+   },
+   "_why_this_door": "Filed in 23 of 28 files and the only instrument that touches it counts the empty frame as a point in our favour.",
+   "status": "open"
+  },
+  {
+   "id": "DEBT-04",
+   "class": "wood-texture",
+   "defect": "wood reads as a decal — grain tiles, repeats, wrong scale",
+   "object": "timber surfaces",
+   "kind": "material",
+   "filed_in": "TRN-002",
+   "recurrence": {
+    "files": 22,
+    "of": 28,
+    "first_round": "r14",
+    "last_round": "r38b"
+   },
+   "crosses_into": "DELIV-001",
+   "due_phase": "P2",
+   "closes_when": {
+    "door": "none_yet",
+    "blocked_on": "a texture-map COVERAGE measure of our own scene — the share of materials carrying image maps, against the 50-66% measured in five production .blend files (blender-ground-truth-study-2026-07-30, our own file, 4.9% for us). texture_check.py cannot serve: it compares against a reference frame and DELIV-001 has no target."
+   },
+   "_why_this_door": "SC-4 ranks this the strongest measured realism lever in the plan, and nothing in the repo can score it without a target image.",
+   "status": "open",
+   "p2_triage_2026-08-11": "the named blocked_on INSTRUMENT NOW EXISTS: map_census prints the coverage number on every gate run (p2r8: 83.5% of frame on image-mapped materials, band 50-66%, shortfall named) and p2_exit.wood_boards reads figure repetition (peak 0.195 @ lag 174px = the two-bay pitch, below the 0.447 floor). The TILING half stays open, owned by P2r-2; the 'no coverage measure' half is paid.",
+   "p2_triage_2026-08-12": "both named instruments ran on p2r19: MAP-COVERAGE 84.28% of frame on image-mapped materials (band 50-66 — above, reporting line) and wood_boards autocorr peak 0.0 vs floor 0.417 (9th consecutive clean read). C3 filed generic tiling again the same night (6th round, near-verbatim) — the vendor-prior read stands refuted by the same numbers it was refuted with at r18."
+  },
+  {
+   "id": "DEBT-05",
+   "class": "flat-light",
+   "defect": "light is flat and directionless — no key, no falloff",
+   "object": "whole frame",
+   "kind": "light",
+   "filed_in": "TRN-002",
+   "recurrence": {
+    "files": 20,
+    "of": 28,
+    "first_round": "r14",
+    "last_round": "r38b"
+   },
+   "crosses_into": "DELIV-001",
+   "due_phase": "P3",
+   "closes_when": {
+    "door": "image_row",
+    "row": "D3"
+   },
+   "_why_this_door": "Flat light IS a compressed range: D3 is p1->p99 in stops, cut at the 25th percentile of 658 delivered frames. P3's whole thesis (SC-4) is that the defect is RANGE, not lamp count.",
+   "status": "open"
+  },
+  {
+   "id": "DEBT-06",
+   "class": "faceted",
+   "defect": "curved forms render faceted / low-poly, edges never eased",
+   "object": "curved masses",
+   "kind": "geometry",
+   "filed_in": "TRN-002",
+   "recurrence": {
+    "files": 19,
+    "of": 28,
+    "first_round": "r14",
+    "last_round": "r38b"
+   },
+   "crosses_into": "DELIV-001",
+   "due_phase": "P2",
+   "closes_when": {
+    "door": "scene_row",
+    "row": "D9"
+   },
+   "_why_this_door": "D9 counts curved masses that no beauty.soft entry smooths. r38 scores 16, and `beauty` is null in all ten specs r28-r38, so the softening code is dead in every shipping frame.",
+   "status": "open",
+   "p2_triage_2026-08-11": "D9 reads 0 on the BUILT DELIV-001 p2r8 scene dump — the defect is PAID ON THIS LANE (soft goods are solver cloth / curved forms smooth-shaded). Stays open as a LANE SPLIT, twice over: the ledger pins this row against the TRN-002 r38 frame where it does not resolve (7 primitives / 16 faceted), and a scene_row door needs spec+dump evidence while this lane speaks item-specs, not masses. Same shape as DEBT-10.",
+   "p2_triage_2026-08-12": "door re-ran vs p2r19: D9 flat-shaded-curved 0; build scorecard D9 PASS 0 vs 0. Unchanged."
+  },
+  {
+   "id": "DEBT-07",
+   "class": "styling-zero",
+   "defect": "styling density near zero — no books, lamps, plants, trays",
+   "object": "whole frame",
+   "kind": "styling",
+   "filed_in": "TRN-002",
+   "recurrence": {
+    "files": 19,
+    "of": 28,
+    "first_round": "r14",
+    "last_round": "r38b"
+   },
+   "crosses_into": "DELIV-001",
+   "due_phase": "P4",
+   "closes_when": {
+    "door": "scene_row",
+    "row": "D7"
+   },
+   "_why_this_door": ">=12 loose styling objects, counted from names. r38 scores 6. Reported and not scored in the standard until procurement closes the shortfall of 8 — but a debt row does not need the standard's permission to be owed.",
+   "status": "open"
+  },
+  {
+   "id": "DEBT-08",
+   "class": "seat-impossible",
+   "defect": "the stool / chair / bench cannot stand as built",
+   "object": "chair / stool / bench",
+   "kind": "geometry",
+   "filed_in": "TRN-002",
+   "recurrence": {
+    "files": 18,
+    "of": 28,
+    "first_round": "r14",
+    "last_round": "r38b"
+   },
+   "crosses_into": "DELIV-001",
+   "due_phase": "P2",
+   "closes_when": {
+    "door": "guard",
+    "module": "placement_check",
+    "verdict": "FLOATING",
+    "match": "chair",
+    "covers": "whether the seat and every leg are held up by something in the built scene. NOT covered: proportion (legs too thin for the seat), whether it reads as designed furniture, or whether it is parked in a door's swing."
+   },
+   "_why_this_door": "'Legs stop short of the seat' and 'legs end at different heights' are placement_check's FLOATING verdict, which has been able to say so since 2026-08-02 and was never asked.",
+   "status": "open",
+   "p2_triage_2026-08-11": "guard ran on the BUILT p2r8 scene (placement_dump from the deliverable .blend): ZERO FLOATING/OVERHANG on chair/stool/bench. NOT closed, by the ledger's own law: a guard door alone returns PARTIAL — it answers a narrower question than the row filed. The run's 63 non-furniture fails are three named guard-scoping families (28 folded-stack lofts, ~22 ceiling-recessed e5 trims, wall-hung sconces/sheers) — recorded in gate-DELIV001-P2r8.",
+   "p2_triage_2026-08-27": "THE DOOR HAS AN INSTRUMENT ON THIS LANE FOR THE FIRST TIME, and the 2026-08-11 note above is stale for a reason worth stating: it read 'zero FLOATING on chair/stool/bench' off a placement_dump of p2r8, and NO RENDER PATH HAS SPAWNED placement_check BEFORE OR SINCE — the row has been resting on one hand-run reading of a fourteen-round-old frame. carry_check (D-158) runs on every render from p2r85 and its first pass finds `stool__acq2` — the dressing stool's seat cushion — floating 1.0 mm above the frame it sits on, out of frustum at the record camera, rowed in qa/carry-ledger.json with a named restart (seat the parts of one multi-part acquired import against EACH OTHER, not each against the slot). Still open, and now for a measured reason rather than an unread one."
+  },
+  {
+   "id": "DEBT-09",
+   "class": "one-white-material",
+   "defect": "every surface is one white value — no material story",
+   "object": "whole frame",
+   "kind": "material",
+   "filed_in": "TRN-002",
+   "recurrence": {
+    "files": 17,
+    "of": 28,
+    "first_round": "r18",
+    "last_round": "r38b"
+   },
+   "crosses_into": "DELIV-001",
+   "due_phase": "P2",
+   "closes_when": {
+    "door": "image_row",
+    "row": "D10"
+   },
+   "_why_this_door": "D10 was cut for exactly this: a sighted judge named an amber-monochrome cast on our best frame and no other row could see it.",
+   "status": "built",
+   "p2_triage_2026-08-11": "door resolved on the BUILT p2r8 frame: D10 = 9.04 vs floor 3.69 (PASS, second frame running — the colour-story row the class was cut for).",
+   "closed_by": {
+    "how": "D10 re-measured on the p2r8 frame: 9.04 vs floor 3.69 — the colour-story row this class was cut for, passing on the deliverable frame.",
+    "evidence": [
+     "pipeline/output/room_bedroom_suite_eye_p2r8.png"
+    ]
+   }
+  },
+  {
+   "id": "DEBT-10",
+   "class": "joinery-hardware",
+   "defect": "joinery has no handles, reveals, plinth or track",
+   "object": "wardrobe / joinery",
+   "kind": "geometry",
+   "filed_in": "TRN-002",
+   "recurrence": {
+    "files": 16,
+    "of": 28,
+    "first_round": "r18",
+    "last_round": "r38b"
+   },
+   "crosses_into": "DELIV-001",
+   "due_phase": "P2",
+   "closes_when": {
+    "door": "object",
+    "match": "pull",
+    "min_count": 2,
+    "covers": "whether joinery PULLS exist as drawable masses in the built scene. NOT covered: reveals, plinths, hinges and track, which are the rest of the same filed defect and have no door."
+   },
+   "_why_this_door": "An absence, so it resolves the way R10 says: point at the object in the BUILT scene or it is not there. THE FIRST MATCH WAS WRONG AND IT READ GREEN: `match: \"handle\"` with min_count 1 was already satisfied by `door_handle`, the ENTRANCE door's lever, which is in every TRN-002 spec and dump — so a row filed 16 times about a wardrobe with no hardware resolved against a mass nobody built for it, and the reason recorded here read 'no mass named handle/pull exists', which was false. A substring match is a door onto whatever happens to share a syllable.",
+   "status": "open",
+   "p2_triage_2026-08-11": "LANE SPLIT: on DELIV-001 the door as written contradicts the SIGNED design — D6-A records 'flat handleless microcement' for the closed anchor and drawer towers, so demanding 2 pull masses would fail the owner's own decision (built p2r8 scene: 0 pulls, correct by design). The TRN-002 half (target wardrobe HAS pulls) stays open on that lane. Reveals/plinth half: shadow-line reveals exist on the drawer unit; wall skirting is DEBT-20's row."
+  },
+  {
+   "id": "DEBT-11",
+   "class": "glass-dead",
+   "defect": "glazing is opaque or reflects nothing",
+   "object": "glazing / mirror",
+   "kind": "material",
+   "filed_in": "TRN-002",
+   "recurrence": {
+    "files": 15,
+    "of": 28,
+    "first_round": "r18",
+    "last_round": "r38b"
+   },
+   "crosses_into": "DELIV-001",
+   "due_phase": "P2",
+   "closes_when": {
+    "door": "none_yet",
+    "blocked_on": "a material-side assertion that masses tagged as glazing carry transmission > 0 and roughness < 1 — trn002_materials has the channels, no rule reads them."
+   },
+   "_why_this_door": "Programmable and not programmed; the blocked_on is one commit of work.",
+   "status": "open",
+   "p2_triage_2026-08-11": "covered by P2r-5 (material-response audit per family vs ground-truth measurements) — transmission/roughness assertion for glazing folds into that item's instrument. Also P2j (the decided mirror-backed niche one-of-three built) is the sharpest instance of dead glass in frame and has its own item."
+  },
+  {
+   "id": "DEBT-12",
+   "class": "unidentifiable-mass",
+   "defect": "a mass in frame cannot be named as any object",
+   "object": "loose masses",
+   "kind": "geometry",
+   "filed_in": "TRN-002",
+   "recurrence": {
+    "files": 15,
+    "of": 28,
+    "first_round": "r18",
+    "last_round": "r38b"
+   },
+   "crosses_into": "DELIV-001",
+   "due_phase": "P2",
+   "closes_when": {
+    "door": "none_yet",
+    "blocked_on": "a program for R10's identity test. rule_gate.audit_spec reads each mass's `prov` TAG, and the tags were honest even for lamp_stem — whose provenance literally read 'carries shade'. A tag cannot say whether the thing deserves to exist."
+   },
+   "_why_this_door": "R10 is the newest rule in CLAUDE.md and it is enforced by the owner's eye alone.",
+   "status": "open",
+   "p2_triage_2026-08-11": "partially programmed since filing: item_convention + D7 now COUNT loose items in frustum with ray-cast occlusion (6 on p2r8, honest FAIL vs 12), and R10's identity test runs at gates. The full per-mass identity program stays open."
+  },
+  {
+   "id": "DEBT-13",
+   "class": "headboard",
+   "defect": "the headboard is absent, leaning, floating or implausible",
+   "object": "headboard",
+   "kind": "geometry",
+   "filed_in": "TRN-002",
+   "recurrence": {
+    "files": 14,
+    "of": 28,
+    "first_round": "r21",
+    "last_round": "r38b"
+   },
+   "crosses_into": "DELIV-001",
+   "due_phase": "P2",
+   "closes_when": {
+    "door": "guard",
+    "module": "placement_check",
+    "verdict": "FLOATING",
+    "match": "headboard",
+    "covers": "whether a mass named headboard exists in the built scene and is supported. NOT covered: whether it is VISIBLE at the head of the bed at a believable size — r38b's critic wrote 'no headboard' about a frame whose dump contains one."
+   },
+   "_why_this_door": "'A detached leaning slab touching neither mattress nor wall' is FLOATING verbatim. r37 deleted the invented 176 mm headboard and r38b's critic then read the bed as having no headboard at all.",
+   "status": "open",
+   "p2_triage_2026-08-11": "OVERTURNED BY THE SHEET, THEN BUILT. The earlier note called ABSENT a design decision — WRONG: the owner read floor2_TRUE_sheet (2026-08-11) and the ink draws a ~6 cm headboard band at the bed head in front of BF14; element3's \"headboard = the wall\" was our mis-derivation, and eight independent blind critic voices had been right about the zone all along. bed__headboard exists in the built scene from p2r11 (60mm x bed width x 1.10m declared-assumption height, D-034). Row stays open only because a guard door alone is PARTIAL by this ledger's law; the mass and its support are now in every placement dump.",
+   "p2_triage_2026-08-12": "first run against a REAL placement dump of the deliverable scene (r19): headboard exists, supported, no FLOATING finding — door moves to PARTIAL by its own covers-text; the visibility/size half stays uninstrumented and C2-r19 no longer files a headboard-absence item (its #10-at-r18 headboard flatness note also did not recur)."
+  },
+  {
+   "id": "DEBT-14",
+   "class": "rug-decal",
+   "defect": "the rug is a zero-thickness decal — no pile, no compression",
+   "object": "rug",
+   "kind": "geometry",
+   "filed_in": "TRN-002",
+   "recurrence": {
+    "files": 14,
+    "of": 28,
+    "first_round": "r18",
+    "last_round": "r38b"
+   },
+   "crosses_into": "DELIV-001",
+   "due_phase": "P2",
+   "closes_when": {
+    "door": "none_yet",
+    "blocked_on": "a thickness floor for floor-laid soft goods, read off the built AABB (8-20 mm is the real range). D8 counts the rug but cannot tell a zero-thickness plane from a woven pile."
+   },
+   "_why_this_door": "Cheap to build and it needs the dump, not the spec.",
+   "status": "open",
+   "p2_triage_2026-08-11": "the THICKNESS half is REFUTED WITH A NUMBER from the built scene: rug AABB thickness 18.7 mm, inside the row's own 8-20 mm real range (aabb now written by scene_dump on every build). The PILE/EDGE READ half (edge rollover, pile fringe, dent legibility) stays open, owned by P2r-3 — p2_exit.rug_edge baselines the edge at 5.0 px rise width on p2r8.",
+   "p2_triage_2026-08-12": "p2r19: rug AABB thickness 18.7mm (band 8-20, scene dump) and rug_edge rise 5.0px >= cut 3.0 -> ROLLED, second frame running. Pile-dent half: C2-r19 files it at rank 11 of 13 (bench legs), trend read only — fluctuating blind rank continues (r16 absent, r17 #8, r18 #11, r19 #12).",
+   "p2_triage_2026-08-25": "p2r70-71, owner order 'แก้ผิวพรม ไม่ถอยสเกล' carried out (D-135): the 2 mm FLOAT that killed the contact shadow is closed (edge rings end -0.5 mm below the floor top; the old skirt stopped at +2 mm since the 2026-07-02 slab literal), the edge is a 3-ring rolled binding with +-2.5 mm silhouette jitter (rug_edge 5.0 px ROLLED holds), and the pile read moved to the channels that can reach at this depth: Metal map cut (probed mean 51/255 nonzero 89.5% — a part-metallic wool), AO mean-normalised x1.1752, Sheen 0.4, pile-lay TONE field +-9% at 0.4 m. MEASURED CEILING, so nobody re-tunes map amplitudes: all three cached maps hold ~0.5% contrast at the 9.6 mm chevron scale (band_std 1.2-1.4/255) — the weave cannot read at 1.6-2.2 m through CoC 5-6 px at ANY amplitude. Reference measured with the same instrument (TRN-002 white rug on wood, n=86 rows): floor darkens -16 toward the edge, dip -44 — that depth is DIRECTIONAL KEY LIGHT, P3's lane (build-order law); the geometry now gives that light something to shadow."
+  },
+  {
+   "id": "DEBT-15",
+   "class": "downlights-dead",
+   "defect": "modelled downlights emit no pool, scallop or falloff",
+   "object": "downlights",
+   "kind": "light",
+   "filed_in": "TRN-002",
+   "recurrence": {
+    "files": 12,
+    "of": 28,
+    "first_round": "r21",
+    "last_round": "r38b"
+   },
+   "crosses_into": "DELIV-001",
+   "due_phase": "P3",
+   "closes_when": {
+    "door": "none_yet",
+    "blocked_on": "a check that every emissive mass produces a measurable luminance pool BELOW it. trn002_lightcheck measures per-object spread against a target frame; DELIV-001 has none."
+   },
+   "_why_this_door": "Twelve files say the downlights are modelled and emit nothing.",
+   "status": "open"
+  },
+  {
+   "id": "DEBT-16",
+   "class": "bed-monolith",
+   "defect": "bed base / plinth reads as one carved podium, not a made bed",
+   "object": "bed base",
+   "kind": "material",
+   "filed_in": "TRN-002",
+   "recurrence": {
+    "files": 11,
+    "of": 28,
+    "first_round": "r24",
+    "last_round": "r38"
+   },
+   "crosses_into": "DELIV-001",
+   "due_phase": "P2",
+   "closes_when": {
+    "door": "none_yet",
+    "blocked_on": "a value-separation DOOR (row or guard) over the per-material census mask — the mask + per-material luminance consumer exist since 2026-08-11 (map_census_mask.py; measured base/mattress/rug separations 18-48 codes on p2r8); what is missing is only the door that reads them."
+   },
+   "_why_this_door": "Another instrument that exists, is green, and is in no path.",
+   "status": "open",
+   "p2_triage_2026-08-11": "the blocked_on consumer now EXISTS (per-material census mask). Measured on p2r8: bed_base mean L 104 / mattress 148 / rug 130 / duvet 196 / coverlet 178 / throw 143 — adjacent separations 18-48 codes, a carved podium needs ~0. Stays open because the door is still none_yet: closing needs a REAL door (a value-separation row or guard), which is the follow-up this note names."
+  },
+  {
+   "id": "DEBT-17",
+   "class": "camera",
+   "defect": "wide lens: verticals converge, foreground objects crop",
+   "object": "camera",
+   "kind": "composition",
+   "filed_in": "TRN-002",
+   "recurrence": {
+    "files": 11,
+    "of": 28,
+    "first_round": "r21",
+    "last_round": "r38"
+   },
+   "crosses_into": "DELIV-001",
+   "due_phase": "P1",
+   "closes_when": {
+    "door": "none_yet",
+    "blocked_on": "placement_dump writes no camera record, so two-point perspective (rot_x ~ 0) cannot be asserted against the BUILT scene — only against the spec, which is a declaration."
+   },
+   "_why_this_door": "The fix is four lines in placement_dump plus one rule, and it is named here so it stops being invisible.",
+   "status": "open"
+  },
+  {
+   "id": "DEBT-18",
+   "class": "no-bedside",
+   "defect": "no bedside surface, nightstand or reading light beside the bed",
+   "object": "bedside",
+   "kind": "styling",
+   "filed_in": "TRN-002",
+   "recurrence": {
+    "files": 11,
+    "of": 28,
+    "first_round": "r15",
+    "last_round": "r38"
+   },
+   "crosses_into": "DELIV-001",
+   "due_phase": "P4",
+   "closes_when": {
+    "door": "object",
+    "match": "lamp",
+    "min_count": 2,
+    "covers": "whether bedside lamps exist as drawable masses. NOT covered: whether they are BESIDE THE BED — the dump carries AABBs and a proximity test against the bed would say so, and nothing here asks. min_count is 2 because a bed has two sides."
+   },
+   "_why_this_door": "An absence with a functional consequence a client sees: a bed with no bedside lamp cannot be switched off from the bed.",
+   "status": "open",
+   "p2_triage_2026-08-12": "door RESOLVED vs the r19 placement dump: 8 lamp objects (need 2). The 08-11 blocker was the dump format, not the scene."
+  },
+  {
+   "id": "DEBT-19",
+   "class": "cantilever-unsupported",
+   "defect": "a slab cantilevers and ends unsupported in mid-air",
+   "object": "joinery slabs",
+   "kind": "geometry",
+   "filed_in": "TRN-002",
+   "recurrence": {
+    "files": 10,
+    "of": 28,
+    "first_round": "r21",
+    "last_round": "r38b"
+   },
+   "crosses_into": "DELIV-001",
+   "due_phase": "P2",
+   "closes_when": {
+    "door": "guard",
+    "module": "placement_check",
+    "verdict": "OVERHANG",
+    "covers": "any group whose AABB overhangs its supports past the guard's tolerance. NOT covered: a slab that is genuinely supported but reads impossibly thick, which is a proportion judgement no AABB makes."
+   },
+   "_why_this_door": "OVERHANG is this defect's name in the guard that already reads the built scene. No `match`, because the defect is about ANY slab — naming the objects it applies to is what R9b says a rule must never do.",
+   "status": "open",
+   "p2_triage_2026-08-11": "placement_check ran on the BUILT p2r8 scene: zero unsupported FURNITURE slabs (the desk_pier class this row was filed for). NOT closed: the door's own covers-text spans ANY overhanging group, and the run returns OVERHANG on two non-furniture families (folded-stack lofts — cloth genuinely overhangs its own lower layers; ceiling-recessed e5 trims — braced by the ceiling they embed in). The guard needs R9b scoping derived from those premises before this door can resolve.",
+   "p2_triage_2026-08-12": "door re-ran vs r19 dump: zero unsupported FURNITURE slabs; the 53 OVERHANG findings are the same folded-stack loft family as r8 (mill__style_fold*) — contents overhang their shelves by construction. Row stays open on its own covers-text; conclusion of 08-11 unchanged.",
+   "p2_triage_2026-08-27": "THE ROW'S OWN EXCLUSION IS NOW COVERED. Its covers-text says in writing that OVERHANG cannot see 'a slab that is supported at one end and unsupported at the other'. p2r84 shipped nine hang rails supported at NEITHER end (40 mm short of both gables, every frame this lane has produced), and placement_check's OVERHANG saw none of them — an unsupported member is not an overhang, it is an absence. carry_check (D-158, p2r85) reads the load path off the scene dump and convicts all nine; the rails are fixed and the rung blocks the render. NOT CLOSED: the ORIGINAL half of this row is OVERHANG on cantilevered slabs, and placement_check is still not spawned on this lane at all (qa/coverage-map.json room_lane_debt, open). A load-path rung answers 'is it held'; it does not answer 'does it hang too far past what holds it'."
+  },
+  {
+   "id": "DEBT-20",
+   "class": "junction-raw",
+   "defect": "wall/floor/ceiling junctions are knife edges — no skirting",
+   "object": "wall / floor junction",
+   "kind": "geometry",
+   "filed_in": "TRN-002",
+   "recurrence": {
+    "files": 9,
+    "of": 28,
+    "first_round": "r21",
+    "last_round": "r38"
+   },
+   "crosses_into": "DELIV-001",
+   "due_phase": "P2",
+   "closes_when": {
+    "door": "object",
+    "match": "skirt",
+    "min_count": 4,
+    "covers": "whether skirting masses exist and reach every wall — 4, because one stub on one wall of four would otherwise close a row about the whole room. NOT covered: cornice, shadow gaps, or whether the skirting meets the floor."
+   },
+   "_why_this_door": "An absence: no mass named skirting exists in any TRN-002 spec. Nine files name the knife-edged wall/floor junction.",
+   "status": "open",
+   "p2_triage_2026-08-11": "counted on the BUILT p2r8 scene: 0 skirt masses (row needs 4). Honest open. The junction design question (skirting vs shadow-gap reveal at wall/floor) is a decision row for the owner-visible log before any mass is invented (R10: an object invented to satisfy a rule is the defect)."
+  },
+  {
+   "id": "DEBT-21",
+   "class": "no-surface-texture",
+   "defect": "surfaces carry no imperfection — no paint texture, no weave",
+   "object": "whole frame",
+   "kind": "material",
+   "filed_in": "TRN-002",
+   "recurrence": {
+    "files": 9,
+    "of": 28,
+    "first_round": "r14",
+    "last_round": "r34"
+   },
+   "crosses_into": "DELIV-001",
+   "due_phase": "P2",
+   "closes_when": {
+    "door": "image_row",
+    "row": "D5"
+   },
+   "_why_this_door": "D5 is the band-limited 4-32 px octave, two-sided so noise cannot buy it — the closest thing in the standard to 'the surface has grain'.",
+   "status": "built",
+   "p2_triage_2026-08-11": "door resolved on the BUILT p2r8 frame: D5 = 10.67 inside the two-sided band [6.45, 12.80] (band-limited structure with a noise negative control).",
+   "closed_by": {
+    "how": "D5 re-measured on the p2r8 frame: 10.67 inside the two-sided band [6.45, 12.80] (band-limited octave energy with a noise negative control).",
+    "evidence": [
+     "pipeline/output/room_bedroom_suite_eye_p2r8.png"
+    ]
+   }
+  },
+  {
+   "id": "DEBT-22",
+   "class": "rug-off-centre",
+   "defect": "the rug is not centred on the bed it serves: 555 mm of rug beyond the bed on one side and 103 mm on the other, so one side of the bed steps onto bare floor",
+   "object": "rug",
+   "kind": "placement",
+   "filed_in": "C2 blind local critic, p2r67 item 17 (2026-08-24)",
+   "recurrence": {
+    "files": 1,
+    "of": 28,
+    "first_round": "p2r67",
+    "last_round": "p2r67",
+    "note": "1 of the same 28-answer corpus the other twenty rows are ranked against, so the ranking stays reproducible. It is a low count because it was filed once, not because it is weak: the world measurement is unambiguous (555.1 vs 103.1 mm across the bed) and no earlier critic was ever asked about rug PLACEMENT — every prior rug item was about its surface."
+   },
+   "crosses_into": "P4",
+   "due_phase": "P2",
+   "closes_when": {
+    "door": "none_yet",
+    "blocked_on": "a SYMMETRY question that nothing in the repo asks. placement_check (R9b) asks FLOATING / OVERHANG / OFF-AXIS and a 226 mm off-centre rug passes all three — it is not floating, does not overhang, and is perfectly axis-aligned. What is needed: for an object that SERVES another (rug under bed), the margins on opposing sides across the served object must agree to within a stated tolerance, read off the built scene. Scope must be derived from the rule's own premise (R9b), never from a list of object names — 'serves' is already expressible as rest_on/centre_on in placement.py."
+   },
+   "_why_this_door": "MEASURED IN THE WORLD, not from pixels — and the critic's own pixel method could NOT have proven it: the rug runs off the right frame edge (mask reaches x=2399), so its right edge is not in the frame and the on-screen centre it computed is unsupportable. From p2r67.scene.json: rug AABB x 2.200..5.300 y -0.350..2.150 (3100 x 2500 mm), bed__frame__acq0 x 3.108..5.141 y 0.205..2.047 (2033 x 1842 mm). Across-bed margins 555.1 mm vs 103.1 mm = 5.4x; centre offset 226 mm. THE EYE FOUND WHAT, THE SCENE FOUND HOW MUCH — R10b's law, and this is the cleanest instance the lane has produced. WHY NO INSTRUMENT SAW IT IN 66 ROUNDS: placement_check (R9b) asks FLOATING / OVERHANG / OFF-AXIS and is explicitly no-allowlist, but none of its three questions is 'is this symmetric about the thing it serves'. A rug 226 mm off centre is not floating, does not overhang, and is perfectly axis-aligned. The guard is not broken; the question was never asked. Same shape as R10's finding that nothing governed WHETHER an object should exist.",
+   "status": "open"
+  }
+ ]
+}

@@ -56,6 +56,17 @@
             "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_paths.py\""
           }
         ]
+      },
+      {
+        "matcher": "WebFetch|WebSearch|Artifact|mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_egress.py\"",
+            "timeout": 10,
+            "statusMessage": "guard_egress: screening the outbound call for client data"
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -69,5 +80,6 @@
         ]
       }
     ]
-  }
+  },
+  "_comment_web_egress": "2026-07-13: permissions.ask still lists WebSearch/WebFetch ON PURPOSE. It is the fallback for when the guard_egress PreToolUse hook does not run at all (missing python3, bad edit, settings source not loaded) -- without it, a hook failure would be a silent unscreened allow. guard_egress auto-allows CLEAN WebFetch/WebSearch (so a deep-research run fans out unattended) and hard-blocks any call carrying client/project identifiers. It also screens Artifact publish (reading the file's CONTENT) and external MCP tools, but NEVER auto-allows those -- publishing is outward-facing and keeps its prompt. A permission rule cannot content-screen a query; only a hook can. Do not delete either half."
 }

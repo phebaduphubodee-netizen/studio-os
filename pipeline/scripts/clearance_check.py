@@ -29,10 +29,27 @@ with open(RULES_PATH, encoding="utf-8") as _f:
 
 
 class Item:
-    """Footprint box on the floor. x,y = SW corner; w,d = size (inches)."""
-    def __init__(self, name, kind, x, y, w, d):
+    """Footprint box on the floor. x,y = SW corner; w,d = size (inches).
+
+    z0/z1 are OPTIONAL and default to None = UNKNOWN. When both items declare a
+    height band, two footprints that overlap in plan but not in Z are a STACK, not
+    a collision — a stone volume under its own slab, drums carrying that slab, wall
+    cabinets over the bench they hang above. When either is unknown the pair is
+    treated as coplanar and still flagged, because an unknown height must not buy
+    an exemption (R9b: scope comes from the rule's premise, never from what would
+    silence a false positive).
+    """
+    def __init__(self, name, kind, x, y, w, d, z0=None, z1=None):
         self.name, self.kind = name, kind
         self.x, self.y, self.w, self.d = float(x), float(y), float(w), float(d)
+        self.z0 = None if z0 is None else float(z0)
+        self.z1 = None if z1 is None else float(z1)
+
+    def z_apart(self, other):
+        """True when both height bands are known and they do not meet."""
+        if None in (self.z0, self.z1, other.z0, other.z1):
+            return False
+        return min(self.z1, other.z1) - max(self.z0, other.z0) <= 0.0
 
     @property
     def aabb(self):
@@ -50,6 +67,23 @@ class Item:
         ax0, ay0, ax1, ay1 = self.aabb
         bx0, by0, bx1, by1 = other.aabb
         return ax0 < bx1 and bx0 < ax1 and ay0 < by1 and by0 < ay1
+
+    def penetration_to(self, other):
+        """How DEEP the overlap is (inches), 0.0 when they merely touch or are apart.
+
+        `gap_to` clamps to 0.0 on overlap, so a 16-inch interpenetration and a
+        hairline touch return the same number. The distinction matters: one is a
+        tight layout and the other is two solids in the same place, which is not a
+        layout at all. Measured 2026-08-29 on TRN-003, where an island rotated a
+        quarter turn sat 420 mm INSIDE the counter run; the report would have read
+        "footprints intersect" with no magnitude, which reads like an authoring
+        slip rather than a physically impossible room.
+        """
+        ax0, ay0, ax1, ay1 = self.aabb
+        bx0, by0, bx1, by1 = other.aabb
+        ox = min(ax1, bx1) - max(ax0, bx0)
+        oy = min(ay1, by1) - max(ay0, by0)
+        return min(ox, oy) if (ox > 0 and oy > 0) else 0.0
 
 
 MM_PER_IN = 25.4
@@ -290,8 +324,13 @@ def check(room, items):
     for a, b in _pairs(items):
         if "rug" in (a.kind, b.kind) and a.kind != b.kind:
             continue
+        if a.z_apart(b):
+            continue                    # stacked, not colliding — see Item.z_apart
         if a.overlaps(b):
-            add("FAIL", f"overlap: {a.name} / {b.name}", "footprints intersect")
+            pen = a.penetration_to(b)
+            add("FAIL", f"overlap: {a.name} / {b.name}",
+                f"footprints intersect by {pen:.0f}\" ({pen * MM_PER_IN:.0f} mm) — "
+                f"two solids in the same place")
 
     # 4) circulation: coarse proxy — non-paired items shouldn't be tighter than
     #    the secondary-walkway min (a real path-search comes in a later phase).
@@ -327,6 +366,7 @@ def check(room, items):
     out += _living(room, items)
     out += _bedroom(room, items)
     out += _dining(room, items)
+    out += _kitchen(room, items)
     return out
 
 
@@ -391,6 +431,150 @@ def _dining(room, items):
         res.append({"status": "PASS" if ok else "FAIL",
                     "check": f"dining pull-out ({tbl.name})",
                     "detail": f"nearest wall {gmin:.0f}\" (need {need}\")"})
+    return res
+
+
+# The kitchen vocabulary. NOT an allowlist of objects that get checked — every mass
+# is already in the overlap and circulation passes above. This is the set of kinds
+# whose PAIRINGS have a published aisle rule, and it is deliberately wide (a bench, a
+# tall bank, an appliance front) because R9b's law applies here too: a rule that names
+# the objects it applies to will always exempt the next one.
+KITCHEN_ISLAND_KINDS = ("island", "kitchen_island", "peninsula")
+KITCHEN_RUN_KINDS = ("counter", "countertop", "base_cabinet", "bench", "kitchen_run",
+                     "tall_bank", "range", "cooktop", "oven", "sink", "sink_base",
+                     "fridge", "refrigerator", "dishwasher", "uppers")
+KITCHEN_APPLIANCE_KINDS = ("sink", "sink_base", "cooktop", "range")
+KITCHEN_HOST_KINDS = ("counter", "countertop", "base_cabinet", "bench", "kitchen_run",
+                      "island", "kitchen_island", "peninsula")
+
+
+def _kitchen(room, items):
+    """The aisle rules. Reads dimensional_rules kitchen_NKBA, which had NO READER.
+
+    WHY THIS FUNCTION IS DATED 2026-08-29 AND ITS NUMBERS ARE DATED 2026-07-02.
+    A kitchen island was built a quarter turn out of true. It sat 420 mm INSIDE the
+    counter run — a negative walkway, two solids in the same place — and after the
+    correction it left 1094 mm, which is still under this studio's own comfort figure.
+    Both verdicts were already written down, twice, months earlier:
+
+        pipeline/scripts/dimensional_rules.v0.2.json   kitchen_NKBA (7 keys)
+        knowledge/ergonomics/residential-clearances.md Kitchen table (P&Z 2.4)
+
+    and an audit that morning found **51 of the 75 keys in that rules file have no
+    reader in any script in this repo** (rules_reader_check.py now counts it every
+    run). A number that convicts a layout sitting on disk is not the same thing as
+    the layout being checked. It is the defect this repo has paid for at every other
+    layer — a queue whose consumer never visits it — landing on the rules file itself.
+
+    THE TWO SOURCES DISAGREE, so both are reported rather than one being picked:
+    NKBA gives 42 in for a one-cook work aisle and 48 in for two cooks; Panero &
+    Zelnik give 48 in for opposing counters with a single cook and no circulation
+    behind. The lower is the FAIL floor and the higher is the REVIEW target, so a
+    layout between them is neither blessed nor blocked — it is reported as what it
+    is: legal under one authority and short under the other.
+    """
+    res = []
+    islands = _by(items, *KITCHEN_ISLAND_KINDS)
+    runs = _by(items, *KITCHEN_RUN_KINDS)
+    if not islands and not runs:
+        return res
+
+    floor_in = _r("kitchen_NKBA", "walkway_no_work_zone", "in", default=36)
+    aisle1 = _r("kitchen_NKBA", "work_aisle_one_cook", "in", default=42)
+    aisle2 = _r("kitchen_NKBA", "work_aisle_two_cook", "in", default=48)
+    isl_lo = _r("kitchen_NKBA", "island_clearance_all_sides", "in_min", default=42)
+    isl_hi = _r("kitchen_NKBA", "island_clearance_all_sides", "in_max", default=48)
+
+    def ladder(label, a, b, lo, hi):
+        """One aisle, with its magnitude in mm and both authorities named."""
+        pen = a.penetration_to(b)
+        if pen > 0:
+            return {"status": "FAIL", "check": label,
+                    "detail": "NEGATIVE aisle: the two overlap by %.0f in (%.0f mm). "
+                              "Not a tight kitchen — an impossible one"
+                              % (pen, pen * MM_PER_IN)}
+        g = a.gap_to(b)
+        cite = ("NKBA one-cook %d in / %.0f mm, P and Z opposing-counter %d in / %.0f mm"
+                % (lo, lo * MM_PER_IN, hi, hi * MM_PER_IN))
+        st = "FAIL" if g < floor_in else ("WARN" if g < hi else "PASS")
+        return {"status": st, "check": label,
+                "detail": "%.0f in (%.0f mm); %s" % (g, g * MM_PER_IN, cite)}
+
+    # 1) island <-> every run piece it faces
+    for isl in islands:
+        for r in runs:
+            if r is isl or isl.z_apart(r):
+                continue
+            res.append(ladder("kitchen aisle (%s <-> %s)" % (isl.name, r.name),
+                              isl, r, aisle1, aisle2))
+        # 2) island <-> walls, on the island's own all-sides band
+        for n, g in zip(("west", "east", "south", "north"), room.wall_gaps(isl)):
+            st = "FAIL" if g < floor_in else ("WARN" if g < isl_hi else "PASS")
+            res.append({"status": st, "check": "island clearance %s (%s)" % (n, isl.name),
+                        "detail": "%.0f in (%.0f mm); NKBA all-sides %d-%d in "
+                                  "(%.0f-%.0f mm)"
+                                  % (g, g * MM_PER_IN, isl_lo, isl_hi,
+                                     isl_lo * MM_PER_IN, isl_hi * MM_PER_IN)})
+
+    # 3) landing beside a sink / cooktop — free counter each side, along the run
+    lsink = _r("kitchen_NKBA", "counter_landing_beside_sink", "in", default=18)
+    lcook = _r("kitchen_NKBA", "counter_landing_beside_cooktop", "in", default=12)
+    hosts = _by(items, *KITCHEN_HOST_KINDS)
+    for ap in _by(items, *KITCHEN_APPLIANCE_KINDS):
+        need = lsink if ap.kind in ("sink", "sink_base") else lcook
+        host = None
+        for h in hosts:
+            if h is ap:
+                continue
+            hx0, hy0, hx1, hy1 = h.aabb
+            ax0, ay0, ax1, ay1 = ap.aabb
+            if hx0 <= ax0 and hy0 <= ay0 and hx1 >= ax1 and hy1 >= ay1:
+                host = h
+                break
+        if host is None:
+            # Not a pass and not a layout failure: the check COULD NOT RUN, and it
+            # says so, because a silent skip and a clean result look identical from
+            # outside — the mute this repo has already lost one instrument to.
+            res.append({"status": "WARN", "check": "landing beside %s" % ap.name,
+                        "detail": "COULD NOT RUN — no counter run contains this "
+                                  "appliance in plan; the landing is unmeasurable"})
+            continue
+        along_x = host.w >= host.d
+        h0, h1 = (host.aabb[0], host.aabb[2]) if along_x else (host.aabb[1], host.aabb[3])
+        a0, a1 = (ap.aabb[0], ap.aabb[2]) if along_x else (ap.aabb[1], ap.aabb[3])
+        left, right = a0 - h0, h1 - a1
+        res.append({"status": "PASS" if max(left, right) >= need else "WARN",
+                    "check": "landing beside %s" % ap.name,
+                    "detail": "%.0f in / %.0f in each side on %s; NKBA needs %d in "
+                              "(%.0f mm) on at least one"
+                              % (left, right, host.name, need, need * MM_PER_IN)})
+
+    # 4) work triangle — only when all three vertices exist
+    tri = {}
+    for it in items:
+        if it.kind in ("sink", "sink_base"):
+            tri.setdefault("sink", it)
+        elif it.kind in ("range", "cooktop"):
+            tri.setdefault("cook", it)
+        elif it.kind in ("fridge", "refrigerator"):
+            tri.setdefault("cold", it)
+    if len(tri) == 3:
+        pts = [(tri[k].x + tri[k].w / 2.0, tri[k].y + tri[k].d / 2.0)
+               for k in ("sink", "cook", "cold")]
+        legs = [math.hypot(pts[i][0] - pts[(i + 1) % 3][0],
+                           pts[i][1] - pts[(i + 1) % 3][1]) for i in range(3)]
+        tot = sum(legs)
+        lo = _r("kitchen_NKBA", "work_triangle_total_legs", "in_min", default=156)
+        hi = _r("kitchen_NKBA", "work_triangle_total_legs", "in_max", default=312)
+        res.append({"status": "PASS" if lo <= tot <= hi else "WARN",
+                    "check": "work triangle",
+                    "detail": "legs %s = %.0f in (%.2f m); NKBA %d-%d in"
+                              % ("+".join("%.0f" % l for l in legs), tot,
+                                 tot * MM_PER_IN / 1000.0, lo, hi)})
+    elif tri:
+        res.append({"status": "WARN", "check": "work triangle",
+                    "detail": "COULD NOT RUN — only %s present; a triangle needs "
+                              "sink + cook + cold" % sorted(tri)})
     return res
 
 

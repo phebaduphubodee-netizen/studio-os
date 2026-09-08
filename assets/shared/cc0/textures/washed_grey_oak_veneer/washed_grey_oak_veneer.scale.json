@@ -1,0 +1,11 @@
+{
+ "slug": "washed_grey_oak_veneer",
+ "dimensions_mm": [
+  1000.0,
+  1000.0
+ ],
+ "tile_m": 1.0,
+ "aspect": 1.0,
+ "source": "https://api.polyhaven.com/info/washed_grey_oak_veneer",
+ "note": "The world size of one repeat, as published. R8: scale is ASSERTED on ingest, never assumed."
+}

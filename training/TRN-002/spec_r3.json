@@ -1,0 +1,991 @@
+{
+ "id": "TRN-002",
+ "round": 3,
+ "image": {
+  "w": 1080,
+  "h": 821
+ },
+ "camera": {
+  "x_mm": -4491.0,
+  "y_mm": -7992.0,
+  "z_mm": 1305.0,
+  "yaw_deg": 20.0417,
+  "focal_mm": 38.841,
+  "shift_x": 0.0,
+  "shift_y": -0.002961,
+  "_solved": "v004 pins + corner anchor + G1, unchanged from r1"
+ },
+ "gauges": {
+  "G1": "door leaf 2000 + lever 1030 -> cam z 1305. SWEPT r3: NOT ROBUST \u2014 cam_z band 1278..1338, H_main 3038..3180, lever dominates 2.5:1. Horizon-basis bias found: record pins (horizon 407.3) give cam_z 1319/H 3120; 1305 belongs to horizon 409.4. DECISION r3: do NOT rescale mid-lane \u2014 camera+spec share one similarity, the render cannot see it; fix the basis only when the lane needs absolute mm (procurement).",
+  "open_tension": "equal-modules gives wardrobe plane x=-1290 (cv 0.0046, four ~510 doors); run-to-ceiling-3102 wants -940; door standards want ~-960..-976. ADOPTED r2: wardrobe section x=-1290 with its top junction MEASURED at z~2920 (a bulkhead/lower junction over the run \u2014 the two eyes that read 'dropped' were right), entry-door section its own plane x=-976, open slot between them at y -1.15..-2.55. All three numbers are round-2-measured, sweep-tested next round.",
+  "G3": "door module 510mm IS the gauge that selects x_wall=-1290 \u2014 declared r3. The r2 'equal-modules cv=0.0046 minimum' is REFUTED as an instrument: cv is 0.0046 at every x in -1400..-518; the module WIDTH standard did the choosing."
+ },
+ "provenance_legend": "M=measured via solved camera, D=derived from a measured contact, A=assumed (standard), tag on every mass",
+ "shell": {
+  "H_main": 3102,
+  "left_wall_x": -4750,
+  "right_wall_x": 0,
+  "back_wall_y": 0,
+  "_left_wall_prov": "A-banded(M bound: <=-4724 console-corner frame-edge; desk depth 410 closes at -4750)"
+ },
+ "masses": [
+  {
+   "name": "floor",
+   "c": [
+    -2375.0,
+    -4750,
+    -50
+   ],
+   "s": [
+    4750.0,
+    9500,
+    100
+   ],
+   "value": 0.55,
+   "prov": "M(sill z=0)"
+  },
+  {
+   "name": "back_wall",
+   "c": [
+    -2375.0,
+    100,
+    1551
+   ],
+   "s": [
+    4750.0,
+    200,
+    3102
+   ],
+   "value": 0.82,
+   "prov": "M"
+  },
+  {
+   "name": "left_wall",
+   "c": [
+    -4850,
+    -4750,
+    1551
+   ],
+   "s": [
+    200,
+    9500,
+    3102
+   ],
+   "value": 0.82,
+   "prov": "A(left wall x)"
+  },
+  {
+   "name": "right_wall",
+   "c": [
+    100,
+    -4750,
+    1551
+   ],
+   "s": [
+    200,
+    9500,
+    3102
+   ],
+   "value": 0.8,
+   "prov": "M(corner arris u731.5, seen through slot)"
+  },
+  {
+   "name": "ceil_main",
+   "c": [
+    -2375.0,
+    -4750,
+    3152
+   ],
+   "s": [
+    4750.0,
+    9500,
+    100
+   ],
+   "value": 0.86,
+   "prov": "M(junction_true ratio, H=3102)"
+  },
+  {
+   "name": "ward_bulkhead",
+   "c": [
+    -645,
+    -3850,
+    3011
+   ],
+   "s": [
+    1290,
+    5300,
+    182
+   ],
+   "value": 0.84,
+   "prov": "M(upper_edge z~2920 on x=-1290)"
+  },
+  {
+   "name": "ward_body",
+   "c": [
+    -645,
+    -4525,
+    1460
+   ],
+   "s": [
+    1290,
+    3950,
+    2920
+   ],
+   "value": 0.78,
+   "prov": "M(x_wall=-1290 equal modules; groove starts y~-2830; top 2920)"
+  },
+  {
+   "name": "ward_groove",
+   "c": [
+    -1291,
+    -4525,
+    2668
+   ],
+   "s": [
+    6,
+    3950,
+    30
+   ],
+   "value": 0.3,
+   "prov": "M(ceil_diag on -1290: z 2666/2671)"
+  },
+  {
+   "name": "rev_1",
+   "c": [
+    -1291,
+    -2945,
+    1780
+   ],
+   "s": [
+    6,
+    8,
+    1770
+   ],
+   "value": 0.35,
+   "prov": "M(u795 -> y-2945 on -1290)"
+  },
+  {
+   "name": "rev_2",
+   "c": [
+    -1291,
+    -3084,
+    1780
+   ],
+   "s": [
+    6,
+    8,
+    1770
+   ],
+   "value": 0.35,
+   "prov": "M(u811)"
+  },
+  {
+   "name": "rev_3",
+   "c": [
+    -1291,
+    -3590,
+    1780
+   ],
+   "s": [
+    6,
+    8,
+    1770
+   ],
+   "value": 0.35,
+   "prov": "M(u874; modules 506/509/506)"
+  },
+  {
+   "name": "rev_4",
+   "c": [
+    -1291,
+    -4099,
+    1780
+   ],
+   "s": [
+    6,
+    8,
+    1770
+   ],
+   "value": 0.35,
+   "prov": "M(u950)"
+  },
+  {
+   "name": "rev_5",
+   "c": [
+    -1291,
+    -4605,
+    1780
+   ],
+   "s": [
+    6,
+    8,
+    1770
+   ],
+   "value": 0.35,
+   "prov": "M(u1043)"
+  },
+  {
+   "name": "door_wall",
+   "c": [
+    -1026,
+    -600,
+    1551
+   ],
+   "s": [
+    100,
+    1200,
+    3102
+   ],
+   "value": 0.82,
+   "prov": "M(door plane -976, its own standards)"
+  },
+  {
+   "name": "door_leaf",
+   "c": [
+    -981,
+    -597,
+    1000
+   ],
+   "s": [
+    14,
+    845,
+    2000
+   ],
+   "value": 0.88,
+   "prov": "M(leaf u628-680 -> y -175..-1020)"
+  },
+  {
+   "name": "artwork",
+   "c": [
+    -1773.5,
+    -15,
+    1466
+   ],
+   "s": [
+    727,
+    30,
+    1008
+   ],
+   "value": 0.9,
+   "prov": "M"
+  },
+  {
+   "name": "part_head",
+   "c": [
+    -3458,
+    0,
+    2425.5
+   ],
+   "s": [
+    1667,
+    70,
+    107
+   ],
+   "value": 0.25,
+   "prov": "M"
+  },
+  {
+   "name": "part_jamb_L",
+   "c": [
+    -4260,
+    0,
+    1186
+   ],
+   "s": [
+    64,
+    60,
+    2372
+   ],
+   "value": 0.25,
+   "prov": "M"
+  },
+  {
+   "name": "part_jamb_R",
+   "c": [
+    -2657,
+    0,
+    1186
+   ],
+   "s": [
+    64,
+    60,
+    2372
+   ],
+   "value": 0.25,
+   "prov": "M"
+  },
+  {
+   "name": "part_stile_M",
+   "c": [
+    -3500,
+    0,
+    1186
+   ],
+   "s": [
+    72,
+    60,
+    2372
+   ],
+   "value": 0.25,
+   "prov": "M"
+  },
+  {
+   "name": "part_rail_B",
+   "c": [
+    -3458,
+    0,
+    30
+   ],
+   "s": [
+    1667,
+    60,
+    60
+   ],
+   "value": 0.25,
+   "prov": "M"
+  },
+  {
+   "name": "closet_floor",
+   "c": [
+    -3458,
+    1250,
+    -50
+   ],
+   "s": [
+    2400,
+    2500,
+    100
+   ],
+   "value": 0.6,
+   "prov": "A"
+  },
+  {
+   "name": "closet_back",
+   "c": [
+    -3458,
+    2440,
+    1400
+   ],
+   "s": [
+    2400,
+    100,
+    2800
+   ],
+   "value": 0.75,
+   "prov": "A"
+  },
+  {
+   "name": "shelf_col",
+   "c": [
+    -4496,
+    -200,
+    1520
+   ],
+   "s": [
+    408,
+    400,
+    3040
+   ],
+   "value": 0.58,
+   "prov": "M(u extents, top z~3030)",
+   "kind": "oct",
+   "cut": 170
+  },
+  {
+   "name": "desk",
+   "c": [
+    -4545.0,
+    -1947.5,
+    825.0
+   ],
+   "s": [
+    410,
+    2995,
+    100
+   ],
+   "value": 0.6,
+   "prov": "M(top 875+/-15 on pier plane; front -4340+/-25; fascia ~100)",
+   "kind": "oct",
+   "cut": 40
+  },
+  {
+   "name": "chair",
+   "c": [
+    -3920,
+    -455,
+    390
+   ],
+   "s": [
+    600,
+    620,
+    780
+   ],
+   "value": 0.7,
+   "prov": "M(feet on floor)",
+   "kind": "oct",
+   "cut": 180
+  },
+  {
+   "name": "console",
+   "c": [
+    -4622.5,
+    -4302.5,
+    624.0
+   ],
+   "s": [
+    255,
+    1715,
+    258
+   ],
+   "value": 0.6,
+   "prov": "M(front -4495+/-8, top 753+/-22, thick 258+/-10) / A-swept(end y -5160)",
+   "kind": "oct",
+   "cut": 55
+  },
+  {
+   "name": "tv",
+   "c": [
+    -4750.0,
+    -4935.0,
+    1325.0
+   ],
+   "s": [
+    40,
+    1250,
+    750
+   ],
+   "value": 0.08,
+   "prov": "A-swept(bottom band 820..1090 -> 950; right edge u41 vertical M)"
+  },
+  {
+   "name": "rug",
+   "c": [
+    -2548,
+    -3720,
+    6
+   ],
+   "s": [
+    2495,
+    3755,
+    12
+   ],
+   "value": 0.92,
+   "prov": "M(left edge x=-3795, corner y=-1843) / A(right end clipped at ward face)"
+  },
+  {
+   "name": "bed_platform",
+   "c": [
+    -2522.5,
+    -3045.0,
+    110.5
+   ],
+   "s": [
+    2065,
+    2200,
+    221
+   ],
+   "value": 0.88,
+   "prov": "M(top 221+/-4 on x=-3555; bottom flush 0+/-1; foot x=-3555 r2)",
+   "kind": "oct",
+   "cut": 300
+  },
+  {
+   "name": "bed_mattress",
+   "c": [
+    -2440.0,
+    -3045.0,
+    370.5
+   ],
+   "s": [
+    1900,
+    1870,
+    299
+   ],
+   "value": 0.9,
+   "prov": "M(foot face -3390+/-3, inset 165/side both faces; shoulder 507..527->~550 mid)",
+   "kind": "oct",
+   "cut": 150
+  },
+  {
+   "name": "bed_headboard",
+   "c": [
+    -1440,
+    -3045,
+    457.5
+   ],
+   "s": [
+    100,
+    2200,
+    915
+   ],
+   "value": 0.88,
+   "prov": "M(top z~915 on head plane); floor-standing panel (derived: rest_on floor)"
+  },
+  {
+   "name": "pillow_L",
+   "c": [
+    -1620.0,
+    -3425.0,
+    710.0
+   ],
+   "s": [
+    240,
+    650,
+    380
+   ],
+   "value": 0.92,
+   "prov": "D(rest_on mattress, lean headboard; replaces end-on capsule placeholder)",
+   "kind": "oct",
+   "cut": 60
+  },
+  {
+   "name": "pillow_R",
+   "c": [
+    -1620.0,
+    -2665.0,
+    710.0
+   ],
+   "s": [
+    240,
+    650,
+    380
+   ],
+   "value": 0.92,
+   "prov": "D(rest_on mattress, lean headboard)",
+   "kind": "oct",
+   "cut": 60
+  },
+  {
+   "name": "ward_band",
+   "c": [
+    -1302.0,
+    -4525.0,
+    711.0
+   ],
+   "s": [
+    24,
+    3950,
+    452
+   ],
+   "value": 0.62,
+   "prov": "M(top 937.1+/-1.0 on -1290, level 0.25mm/148mm) / A(bottom 485 occluded)"
+  },
+  {
+   "name": "nightstand",
+   "c": [
+    -1465,
+    -4950,
+    396
+   ],
+   "s": [
+    350,
+    700,
+    170
+   ],
+   "value": 0.58,
+   "prov": "M(arris y-4706..-5132 at depth 350; top z~481)"
+  },
+  {
+   "name": "bench",
+   "c": [
+    -2738,
+    -5182,
+    210
+   ],
+   "s": [
+    1050,
+    600,
+    420
+   ],
+   "value": 0.9,
+   "prov": "M(top mid backprojection at z=420)",
+   "kind": "oct",
+   "cut": 200
+  },
+  {
+   "name": "petcave",
+   "c": [
+    -1750,
+    -5750,
+    275
+   ],
+   "s": [
+    700,
+    900,
+    550
+   ],
+   "value": 0.9,
+   "prov": "A(identity open; floor pt (-1599,-4392) r1)",
+   "kind": "oct",
+   "cut": 250
+  },
+  {
+   "name": "dl_1",
+   "c": [
+    -4129,
+    -2465,
+    3097
+   ],
+   "s": [
+    120,
+    120,
+    10
+   ],
+   "value": 1.0,
+   "prov": "M"
+  },
+  {
+   "name": "dl_2",
+   "c": [
+    -3851,
+    -717,
+    3097
+   ],
+   "s": [
+    120,
+    120,
+    10
+   ],
+   "value": 1.0,
+   "prov": "M"
+  },
+  {
+   "name": "dl_3",
+   "c": [
+    -1778,
+    -706,
+    3097
+   ],
+   "s": [
+    120,
+    120,
+    10
+   ],
+   "value": 1.0,
+   "prov": "M"
+  },
+  {
+   "name": "dl_4",
+   "c": [
+    -1788,
+    -2456,
+    3097
+   ],
+   "s": [
+    120,
+    120,
+    10
+   ],
+   "value": 1.0,
+   "prov": "M"
+  },
+  {
+   "name": "desk_pier",
+   "c": [
+    -4410.0,
+    -3415.0,
+    387.5
+   ],
+   "s": [
+    210,
+    60,
+    775
+   ],
+   "value": 0.6,
+   "prov": "M(face y=-3445+/-60 pier-foot on z=0; x -4515..-4305; rest_on floor)"
+  },
+  {
+   "name": "duvet_top",
+   "c": [
+    -3225.0,
+    -3045.0,
+    597.5
+   ],
+   "s": [
+    330,
+    1870,
+    155
+   ],
+   "value": 0.92,
+   "prov": "A-swept(foot crest 626..734 -> 675 at mattress plane); r3b: reshaped from a floating mid-mattress block after the owner read it as an anonymous mass — same class as the r2b pillow capsule, 2nd occurrence",
+   "kind": "oct",
+   "cut": 120
+  },
+  {
+   "name": "duvet_drape",
+   "parent": "duvet_top",
+   "c": [
+    -3435.0,
+    -3045.0,
+    448.0
+   ],
+   "s": [
+    90,
+    1870,
+    454
+   ],
+   "value": 0.92,
+   "prov": "D(hem hangs over the mattress foot face and RESTS ON the platform ledge z=221 — the contact the target shows; declared one duvet via parent)",
+   "kind": "oct",
+   "cut": 40
+  },
+  {
+   "name": "bolster",
+   "c": [
+    -1610.0,
+    -2215.0,
+    610.0
+   ],
+   "s": [
+    180,
+    210,
+    180
+   ],
+   "value": 0.92,
+   "prov": "A(the white roll at the far corner)",
+   "kind": "oct",
+   "cut": 80
+  },
+  {
+   "name": "lamp_shade",
+   "c": [
+    -1479.8,
+    -4919.0,
+    1006.7
+   ],
+   "s": [
+    220.0,
+    220,
+    230.0
+   ],
+   "value": 0.05,
+   "prov": "M(silhouette u1057-1080 v484-508 backprojected on nightstand plane)",
+   "kind": "oct",
+   "cut": 80,
+   "parent": "lamp_stem"
+  },
+  {
+   "name": "lamp_stem",
+   "c": [
+    -1479.8,
+    -4919.0,
+    686.3
+   ],
+   "s": [
+    30.0,
+    30,
+    410.7
+   ],
+   "value": 0.05,
+   "prov": "D(rest_on nightstand top 481, carries shade)"
+  }
+ ],
+ "landmarks_3d": {
+  "corner_ceiling": [
+   0,
+   0,
+   3102
+  ],
+  "art_TL": [
+   -2137,
+   0,
+   1970
+  ],
+  "art_TR": [
+   -1410,
+   0,
+   1970
+  ],
+  "art_BL": [
+   -2137,
+   0,
+   962
+  ],
+  "art_BR": [
+   -1410,
+   0,
+   962
+  ],
+  "ph_TL": [
+   -4292,
+   0,
+   2479
+  ],
+  "ph_TR": [
+   -2625,
+   0,
+   2479
+  ],
+  "sill_L": [
+   -4292,
+   0,
+   0
+  ],
+  "ward_junction_far": [
+   -1290,
+   -3000,
+   2920
+  ],
+  "ward_groove_far": [
+   -1290,
+   -3018,
+   2560
+  ],
+  "door_head_far": [
+   -976,
+   -175,
+   1990
+  ],
+  "door_head_near": [
+   -976,
+   -1020,
+   1990
+  ],
+  "plat_foot_corner": [
+   -3555,
+   -4145,
+   0
+  ],
+  "dl_1": [
+   -4129,
+   -2465,
+   3102
+  ],
+  "dl_2": [
+   -3851,
+   -717,
+   3102
+  ],
+  "dl_3": [
+   -1778,
+   -706,
+   3102
+  ],
+  "dl_4": [
+   -1788,
+   -2456,
+   3102
+  ],
+  "plat_top_foot": [
+   -3555.0,
+   -3454.1,
+   221.6
+  ],
+  "mat_foot_contact": [
+   -3391.3,
+   -2932.0,
+   221.0
+  ],
+  "band_top_far": [
+   -1290.0,
+   -4596.1,
+   937.1
+  ],
+  "desk_top_end": [
+   -4576.3,
+   -3445.0,
+   877.6
+  ],
+  "pier_foot": [
+   -4428.4,
+   -3438.5,
+   0.0
+  ],
+  "console_junction": [
+   -4535.4,
+   -3445.0,
+   754.5
+  ]
+ },
+ "landmarks_px": {
+  "corner_ceiling": [
+   730.6,
+   175.8
+  ],
+  "art_TL": [
+   466.1,
+   314.1
+  ],
+  "art_TR": [
+   561.1,
+   316.7
+  ],
+  "art_BL": [
+   466.1,
+   455.4
+  ],
+  "art_BR": [
+   561.1,
+   454.0
+  ],
+  "ph_TL": [
+   147.5,
+   226.7
+  ],
+  "ph_TR": [
+   399.0,
+   239.6
+  ],
+  "sill_L": [
+   147.8,
+   608.6
+  ],
+  "dl_1": [
+   199.4,
+   13.3
+  ],
+  "dl_2": [
+   227.4,
+   110.4
+  ],
+  "dl_3": [
+   547.8,
+   137.9
+  ],
+  "dl_4": [
+   662.1,
+   65.5
+  ],
+  "plat_top_foot": [
+   368.2,
+   682.7
+  ],
+  "mat_foot_contact": [
+   380.8,
+   653.5
+  ],
+  "band_top_far": [
+   1041.0,
+   507.3
+  ],
+  "desk_top_end": [
+   90.0,
+   524.7
+  ],
+  "pier_foot": [
+   133.0,
+   761.0
+  ],
+  "console_junction": [
+   102.0,
+   558.0
+  ]
+ },
+ "judge_lines": {
+  "note": "held out of every derivation above; the build is scored against them (rule: a metric that can fail)",
+  "rev_lo_set": [
+   "rev_795_lo",
+   "rev_874_lo",
+   "rev_950_lo",
+   "rev_1043_lo"
+  ],
+  "others": [
+   "tv_right",
+   "chair_backtop"
+  ]
+ },
+ "render": {
+  "diffuse_bounces": 8,
+  "max_bounces": 12
+ }
+}

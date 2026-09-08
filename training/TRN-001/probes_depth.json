@@ -1,0 +1,10 @@
+{
+  "_what": "Depth probes: intersect the FLOOR plane instead of an assumed face plane, so the y that comes back IS the measured depth of that element. Rows are the floor-contact lines the round-1 measurers located.",
+  "probes": [
+    { "name": "towerR_floor_contact_u1720", "u": 1720, "v": 1702, "plane": "floor" },
+    { "name": "towerR_floor_contact_u1820", "u": 1820, "v": 1712, "plane": "floor" },
+    { "name": "plinth_floor_contact_left", "u": 264.5, "v": 1630.5, "plane": "floor" },
+    { "name": "plinth_floor_contact_mid", "u": 1000, "v": 1718, "plane": "floor" },
+    { "name": "plinth_floor_contact_right", "u": 1666, "v": 1775, "plane": "floor" }
+  ]
+}

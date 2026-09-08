@@ -1,0 +1,69 @@
+{
+ "_what": "One row per mass in the built scene that carry_check finds CARRIED BY NOTHING. Consumed by pipeline/scripts/carry_check.py, which build_room._score_deliverable spawns on every render.",
+ "_law": [
+  "An uncarried mass with no row FAILS THE BUILD. A part that cannot be built must not ship in a frame without someone saying so.",
+  "A row whose masses are all carried again is STALE and also fails — delete it in the commit that fixed it. A ledger is a queue, and a queue nobody empties is this repo's signature defect.",
+  "covers_n is the count the row was written against. If the real count RISES above it, the build fails: a prefix row must never become the door new instances walk through.",
+  "verdict 'pending' is refused by name. fix / unresolved need a restart_by (a named builder action); signed-gap needs the order or decision that signed it."
+ ],
+ "_why_it_exists": "p2r84 measured nine brass hang rails stopping 40 mm short of BOTH gables — carried at neither end, on every frame this lane has ever shipped — and two of the nine were EXCUSED FROM placement_check's FLOATING BY THE CLOTHES HANGING ON THEM. p2r85 fixed the rails and built the rung that reads the load path off the built scene. The rows below are what that rung found on its first honest run: not a licence, the backlog with a name and a date on every entry.",
+ "opened": "2026-08-27",
+ "rows": [
+  {
+   "prefix": "juliet__",
+   "verdict": "fix",
+   "since": "2026-08-27",
+   "covers_n": 15,
+   "why": "The Juliet balcony rail outside the south slider is drawn 185 mm beyond the slab edge (posts y -928..-888 against a floor that ends at -703) and drops 50 mm below floor level so it READS grounded through the glass — exterior.DROP_BELOW_FLOOR_MM says exactly that in its own comment. Nothing models the thing it bolts to: a Juliet rail is carried by two facade brackets through the wall, and this one is carried by the sentence that says it is.",
+   "restart_by": "exterior.juliet_rail_parts emits two BRACKETS per rail — from the wall's outer face (plane + sign_out*wall_thk) out to the post, at two heights — and the posts land on them. Layout stays pure and unit-tested in exterior.py. Occluded by the west sheer at the record camera, which is why it is a row and not this round's build."
+  },
+  {
+   "prefix": "mill__acc_",
+   "verdict": "fix",
+   "since": "2026-08-27",
+   "covers_n": 6,
+   "why": "THE WALL PLANE WAS READ OFF THE FURNITURE STANDING NEAR THE WALL. bathroom.accessory_parts takes wall_x = wc.x — the WC's own west face at x=55 — while the ensuite's west wall has its inner face at x=5. So the towel bar, its two posts, the paper holder and both bath towels hang 50 mm off the wall they are screwed to. R9 by name: a coordinate encoding a RESULT, taken from the wrong datum.",
+   "restart_by": "Derive the mounting plane from the SUBROOM OUTLINE (min x of subroom.outline_mm), never from a fixture, and bury each fitting ~25 mm into the wall so the contact is real. The module already receives subroom and its own docstring already says everything derives from it. Out of frustum at the record camera."
+  },
+  {
+   "prefix": "mill__vanity_taskbar",
+   "verdict": "fix",
+   "since": "2026-08-27",
+   "covers_n": 2,
+   "why": "The ensuite vanity task bar sits 43 mm south of the wall face it is mounted on (y 5898 against a wall inner face at 5855) — the same wrong-datum family as mill__acc_*, one code site over: its y comes from the vanity fixture, not from the wall.",
+   "restart_by": "Same fix as the mill__acc_ row, applied where the task bar's y is set: derive from the subroom's own wall line and embed. Out of frustum."
+  },
+  {
+   "prefix": "mill__shower_head",
+   "verdict": "fix",
+   "since": "2026-08-27",
+   "covers_n": 1,
+   "why": "A shower head 140x140x60 floating at z2150 and touching NOTHING — no arm, no riser, no ceiling drop. The purest R10 SENSE instance in this scene: not merely unsupported, but connected to no plumbing at all.",
+   "restart_by": "Model the arm the head hangs off: a wall-fixed horizontal member from the ensuite west wall to the head's centre at its own z, or a ceiling drop. Out of frustum at the record camera; it belongs to the ensuite frame's own round."
+  },
+  {
+   "prefix": "sheer__",
+   "verdict": "fix",
+   "since": "2026-08-27",
+   "covers_n": 2,
+   "why": "THE ROD IS IN THE PROSE AND NOT IN THE SCENE. casement_sheers speaks of rod_offset_mm — 'the fabric hangs room-side of the glass' — and builds no rod: both west sheers hang from nothing, 50 mm proud of the wall's inner face, touching zero masses. C2 filed 'no curtain track anywhere' as an R10 SENSE item and this is the measured half of it.",
+   "restart_by": "Emit the rod plus its two face-fix brackets from casement_sheers (pure, unit-tested): a ~14 mm section at the head, on brackets landing on solid wall beyond each jamb, with the sheer's top reaching over it. Out of frustum here — the IN-FRAME curtains are a different and harder case (their tops vanish into the ceiling slab with no pocket, which this rung reads as FIXED-IN and cannot flag; see the module's declared blind spots)."
+  },
+  {
+   "prefix": "nightstand__life2188__acq1",
+   "verdict": "fix",
+   "since": "2026-08-27",
+   "covers_n": 1,
+   "why": "A 25x25x5 mm styling fragment on the north nightstand rests 1 mm above the tray it belongs to. Below the eye at this camera, above the tolerance the rung was given.",
+   "restart_by": "Same seat-on-drawn-geometry correction."
+  },
+  {
+   "prefix": "stool__acq2",
+   "verdict": "fix",
+   "since": "2026-08-27",
+   "covers_n": 1,
+   "why": "The dressing stool's seat cushion floats 1.0 mm above the frame it sits on — exactly at the contact tolerance, so a real gap and not float noise. Out of frustum at the record camera. DEBT-08 (seat-impossible) is the class, and this is the first time any rung on this lane has been able to say so.",
+   "restart_by": "Seat the parts of one multi-part acquired import AGAINST EACH OTHER, not each against the slot."
+  }
+ ]
+}

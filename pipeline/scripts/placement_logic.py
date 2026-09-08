@@ -272,10 +272,15 @@ def _rule_furniture_dimensions(spec, ctx):
         k = el.get("kind")
         if k in ergo.TABLE_H_MM:
             checked = True
-            lo, hi = ergo.TABLE_H_MM[k]
+            # ROLE, not kind: a side_table parked beside the bed head is a NIGHTSTAND, judged
+            # against the nightstand band (it must reach mattress height). Judging it as a
+            # lounge side_table (380-480) false-WARNed every real bedside table — PRJ-2026-002's
+            # own 520 mm ones included. (2026-07-12)
+            band_k = "nightstand" if any(el is n for n in (ctx.get("nightstands") or [])) else k
+            lo, hi = ergo.TABLE_H_MM[band_k]
             h = float(el.get("h", 0) or 0)
             if h and not (lo <= h <= hi):
-                issues.append(f"{k} height {h:.0f}mm (norm {lo}–{hi})")
+                issues.append(f"{band_k} height {h:.0f}mm (norm {lo}–{hi})")
         elif k == "wardrobe":
             checked = True
             lo, hi = ergo.WARDROBE_DEPTH_MM
@@ -553,10 +558,206 @@ def _rule_camera_has_a_reason(spec, ctx):
             f"({sol['lens_mm']:.0f} mm; {share * 100:.0f}% of view directions on a subject)")
 
 
+# ---------- FURNISHING-COMPLETENESS rules (client-revision evidence, 2026-07-12) ----------
+# Source: ONE revision list from ONE residential project by ONE practising Thai designer, written
+# against a render he had already DELIVERED (Discord #ฝากข้อความ msg 2025-11-19), corroborated by
+# the SAME client's next-day list (2025-11-20). All three omissions below appear in that single
+# 2025-11-19 message. (A separate 2025-03-24 list exists but is a COMMERCIAL spa job about
+# lighting — it is NOT evidence for these three rules; do not cite it here.) The raw messages stay
+# in _private/ — local-only per the owner's 2026-07-12 call — but the rules below carry no client
+# data. Each is a thing the paying client asked to ADD, i.e. something the render silently OMITTED
+# (Thai quoted verbatim from the source, incl. its original typo "อ้าง"):
+#     "หัวเตียง อยากให้มีโต๊ะข้างเตียง"   -> a bed with no bedside table
+#     "ไฟแขวนโต๊ะกินข้าว"                -> a dining table with no pendant over it
+#     "ใต้อ้างล้างหน้าอยากให้มีตู้"        -> a basin with no cabinet under it  [sic: อ้าง = อ่าง]
+# The geometry is legal, the clearances pass, and the beauty judge scores them fine — the client
+# still sends it back. Same blind spot that produced the TV rules, one rung down: not "is this
+# piece in a usable place?" but "is the piece even THERE?".
+#
+# NOTE the same client's 2025-11-20 list says "SOFA ... เอา sitetable ออก" (REMOVE the sofa side
+# table) — which is exactly why bed_has_nightstand is scoped to the BED head only, never to lounge
+# seating: "a table by every seat" is NOT what the evidence says.
+#
+# SEVERITY = WARN, never FAIL. n=1 project, 1 studio: enough to make a human look, NOT
+# enough to hard-block a paid render (a tight guest room may have no wall for a nightstand; a
+# bar-height counter takes no pendant). Promote to FAIL on measurement, never on this comment.
+NIGHTSTAND_KINDS = {"side_table", "nightstand", "bedside_table", "night_table"}
+NIGHTSTAND_REACH_MM = 900          # a bedside table is useless out of arm's reach of the pillow
+
+DINING_TABLE_KINDS = {"dining_table"}          # the ONLY kind lighting.py hangs a pendant over
+DINING_MISKIND_KINDS = {"table", "round_table"}   # generic kinds a dining table gets mis-authored as
+# Matches a DINING TABLE's name, NOT everything dining-adjacent. English requires the word "table"
+# (so "Dining Chair"/"Dining Pendant"/"Dining rug" no longer match — that false-WARNed correct
+# specs and told the user to re-kind a CHAIR as a table). Thai is infix-tolerant so it catches the
+# formal โต๊ะรับประทานอาหาร as well as โต๊ะอาหาร, plus a seat-count table (โต๊ะ 6 ที่นั่ง). Combined
+# with the DINING_MISKIND_KINDS gate below, a name match only fires on an actual table.
+_DINING_NAME_RE = re.compile(
+    r"\bdining\s+table\b"                    # English: 'dining table', never 'dining chair'
+    r"|โต๊ะ[^\s]*อาหาร"                       # โต๊ะอาหาร, โต๊ะรับประทานอาหาร (รับประทาน infix ok)
+    r"|โต๊ะกินข้าว|โต๊ะทานข้าว"                # colloquial
+    r"|โต๊ะ\s*\d+\s*ที่",                     # seat-count table: โต๊ะ 6 ที่ / โต๊ะ6ที่นั่ง
+    re.IGNORECASE)
+
+BARE_BASIN_KINDS = {"basin", "washbasin", "lavatory", "sink"}       # a bowl, nothing under it
+UNDER_BASIN_STORAGE_KINDS = {"vanity", "vanity_double", "cabinet", "drawer_unit", "basin_cabinet"}
+BASIN_STORAGE_GAP_MM = 150         # storage must sit under/against the basin, not across the room
+
+
+def _gap(a, b):
+    """Shortest axis-aligned gap (mm) between two footprints; 0 if they overlap."""
+    ax0, ay0, ax1, ay1 = a
+    bx0, by0, bx1, by1 = b
+    dx = max(bx0 - ax1, ax0 - bx1, 0.0)
+    dy = max(by0 - ay1, ay0 - by1, 0.0)
+    return math.hypot(dx, dy)
+
+
+def nightstands_at_head(spec, bed):
+    """Tables actually SERVING as bedside tables: a nightstand-ish kind, within arm's reach of
+    the bed, on its HEAD half. Shared by three rules — bed_has_nightstand asks whether any
+    exist, furniture_dimensions judges a member against the nightstand band instead of the
+    380-480 lounge band (PRJ-2026-002's real bedside tables were being WARNed as under-tall
+    lounge tables), and nightstand_vs_mattress asks the RELATION question the band cannot
+    (P2i: 520 beside a 600 mattress passed the band while sitting 80 mm below reach)."""
+    if bed is None:
+        return []
+    bfp, bc = _footprint(bed), _center(bed)
+    fx, fy = _front_vec(bed.get("rot", 0))       # bed FRONT = the FOOT, so the head is -front
+    out = []
+    for el in (spec.get("items") or []) + (spec.get("builtins") or []):
+        if el.get("kind") not in NIGHTSTAND_KINDS:
+            continue
+        if _gap(bfp, _footprint(el)) > NIGHTSTAND_REACH_MM:
+            continue
+        cx, cy = _center(el)
+        # keep only tables on the HEAD half of the bed (a table at the foot is not a nightstand)
+        if (cx - bc[0]) * -fx + (cy - bc[1]) * -fy >= 0:
+            out.append(el)
+    return out
+
+
+def _rule_bed_has_nightstand(spec, ctx):
+    bed = ctx.get("bed")
+    if bed is None:
+        return None
+    near = [el.get("name") or el.get("kind") for el in ctx.get("nightstands") or []]
+    nm = bed.get("name") or "bed"
+    if near:
+        return ("bed_has_nightstand", PASS,
+                f"bed '{nm}' has {len(near)} bedside table(s) within {NIGHTSTAND_REACH_MM} mm of the head")
+    return ("bed_has_nightstand", WARN,
+            f"bed '{nm}' has NO bedside table within {NIGHTSTAND_REACH_MM} mm of the head — a real client "
+            f"sent this exact omission back for rework (\"หัวเตียง อยากให้มีโต๊ะข้างเตียง\", 2025-11-19); "
+            f"add a side_table each side, or note why the room can't take one")
+
+
+def _rule_nightstand_vs_mattress(spec, ctx):
+    # RELATION, not band (P2i): furniture_dimensions judges a nightstand against
+    # TABLE_H_MM["nightstand"] = (380,700), which happily passes a 520 mm deck beside a
+    # 600 mm mattress — 80 mm below the sleeper's reach (C2#10). A nightstand's height is
+    # a relation to the bed it serves. Spec-side (both `h` fields; a bed item's `h` is
+    # the mattress plane in build_room._build_bed) and advisory like the rest of the
+    # dimensions family; the built-scene number is re-measured at the gate from the
+    # scene dump when the two disagree (model_assertions vs item h is a known split).
+    bed = ctx.get("bed")
+    stands = ctx.get("nightstands") or []
+    if bed is None or not stands:
+        return None          # absence is bed_has_nightstand's finding, not a silent pass here
+    # P2r-24: WITH AN ACQUIRED FRAME, THE ITEM'S h IS NOT THE PLANE. h=600 is
+    # the ink's made-bed massing envelope; the staged winner's plane measured
+    # 425 mm, and judging decks against 600 turned a +193 mm seam into a
+    # passing +18 (C2#3 saw it by eye; this rule said PASS). The plane is a
+    # MEASURED declaration with provenance (`bed_plane_measured_mm`, verified
+    # against the staged scene by _place_bed_frame every build, drift >15 mm =
+    # hard stop), so this comparison can never silently go stale again.
+    plane_row = bed.get("bed_plane_measured_mm")
+    if (bed.get("bed_models") or {}).get("frame"):
+        if not (isinstance(plane_row, dict) and plane_row.get("value")):
+            return ("nightstand_vs_mattress", WARN,
+                    "bed stages an ACQUIRED frame but declares no measured "
+                    "sleeping plane (`bed_plane_measured_mm`) — the item's h "
+                    "is the ink envelope, not a surface, so this relation is "
+                    "UNMEASURABLE spec-side until the plane is declared "
+                    "(P2r-24; never a silent pass)")
+        bh = float(plane_row["value"])
+    else:
+        bh = float(bed.get("h", 0) or 0)
+    if not bh:
+        return None          # a bed with no height claim: nothing to relate against
+    lo, hi = ergo.NIGHTSTAND_TOP_VS_MATTRESS_MM
+    off, measured = [], 0
+    for el in stands:
+        h = float(el.get("h", 0) or 0)
+        if not h:
+            continue             # a deck with no height claim is skipped, never guessed
+        measured += 1
+        if not (lo <= h - bh <= hi):
+            nm = el.get("name") or el.get("kind")
+            off.append(f"'{nm}' deck {h:.0f}mm sits {h - bh:+.0f}mm vs mattress top "
+                       f"{bh:.0f}mm (band {lo:+d}..{hi:+d})")
+    if not measured:
+        return None              # nothing measurable -> not applicable, never a silent PASS
+    if off:
+        return ("nightstand_vs_mattress", WARN,
+                "; ".join(off) + " — outside the reach band a sleeper is served by "
+                "(band is a DECLARED ASSUMPTION, ergonomics_ref)")
+    return ("nightstand_vs_mattress", PASS,
+            f"{measured} bedside deck(s) within {lo:+d}..{hi:+d}mm of the mattress top")
+
+
+def _rule_dining_table_pendant(spec, ctx):
+    # lighting.py:109 hangs the pendant ONLY over kind == "dining_table". A dining table authored
+    # as a generic 'table'/'round_table' therefore gets NO pendant, silently — which is precisely
+    # how a delivered render ends up missing one. This rule catches the KIND slip, not the fixture:
+    # checking "is there a pendant?" would just re-assert what lighting.py already guarantees.
+    tables = [it for it in (spec.get("items") or []) if it.get("kind") in DINING_TABLE_KINDS]
+    # a slip = a TABLE-family piece (not a chair/pendant/rug that merely says "dining") whose name
+    # reads as a dining table but whose kind isn't 'dining_table', so lighting.py skips its pendant.
+    slipped = [it for it in (spec.get("items") or [])
+               if it.get("kind") in DINING_MISKIND_KINDS
+               and _DINING_NAME_RE.search(str(it.get("name") or ""))]
+    if slipped:
+        names = ", ".join(f"'{it.get('name')}' (kind={it.get('kind')})" for it in slipped)
+        return ("dining_table_pendant", WARN,
+                f"{names} reads as a dining table but is not kind 'dining_table' — lighting.py only hangs a "
+                f"pendant over that kind, so this table renders with NO pendant over it (client rework, "
+                f"\"ไฟแขวนโต๊ะกินข้าว\", 2025-11-19); re-kind it 'dining_table'")
+    if tables:
+        return ("dining_table_pendant", PASS,
+                f"{len(tables)} dining table(s) kinded 'dining_table' — lighting.py will hang a pendant over each")
+    return None      # no dining table in this room -> not applicable, never a silent pass
+
+
+def _rule_basin_has_storage(spec, ctx):
+    # SUBROOM fixtures only. A kitchen 'sink' sits in the MAIN room inside a counter run and is
+    # owned by the work-triangle rule — scanning subrooms keeps the two 'sink's apart (same
+    # location-disambiguates convention the bathroom/kitchen rules already rely on).
+    # A 'vanity' IS a cabinet by definition, so it is not a bare basin and never faults here.
+    flagged, checked = [], False
+    for sr in spec.get("subrooms", []) or []:
+        fixtures = sr.get("fixtures", []) or []
+        storage = [f for f in fixtures if f.get("kind") in UNDER_BASIN_STORAGE_KINDS]
+        for b in [f for f in fixtures if f.get("kind") in BARE_BASIN_KINDS]:
+            checked = True
+            bfp = _footprint(b)
+            if not any(_gap(bfp, _footprint(s)) <= BASIN_STORAGE_GAP_MM for s in storage):
+                flagged.append(f"{sr.get('name', 'bath')}: '{b.get('name') or b.get('kind')}'")
+    if flagged:
+        return ("basin_has_storage", WARN,
+                f"{'; '.join(flagged)} — a bare basin with no cabinet/drawer under it; a real client asked "
+                f"for exactly this (ใต้อ่างล้างหน้าอยากให้มีตู้, 2025-11-19). Use kind 'vanity' (basin + "
+                f"cabinet) or place a cabinet under the bowl")
+    if checked:
+        return ("basin_has_storage", PASS, "every bare basin has storage under it")
+    return None      # no bare basin (a 'vanity' already includes its cabinet) -> not applicable
+
+
 RULES = [_rule_tv_positioned, _rule_tv_faces_viewer, _rule_tv_not_over_viewer,
          _rule_tv_viewing_distance, _rule_door_vs_bed_head, _rule_furniture_dimensions,
          _rule_bathroom_logic, _rule_seating_faces_focal, _rule_seating_clear_of_screen,
-         _rule_kitchen_work_triangle, _rule_tv_mount_height, _rule_camera_has_a_reason]
+         _rule_kitchen_work_triangle, _rule_tv_mount_height, _rule_camera_has_a_reason,
+         _rule_bed_has_nightstand, _rule_nightstand_vs_mattress,
+         _rule_dining_table_pendant, _rule_basin_has_storage]
 
 
 def _worst(statuses):
@@ -577,7 +778,8 @@ def check(spec):
     tv, tv_status = find_tv(spec)
     ctx = {"bed": bed, "viewer": viewer, "viewer_front": viewer_front,
            "viewer_kind": viewer_kind, "tv": tv, "tv_status": tv_status,
-           "door_wall": _door_wall(spec), "is_inch": is_inch}
+           "door_wall": _door_wall(spec), "is_inch": is_inch,
+           "nightstands": nightstands_at_head(spec, bed)}
     findings = []
     for rule in RULES:
         r = rule(spec, ctx)

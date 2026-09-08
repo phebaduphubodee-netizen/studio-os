@@ -2,8 +2,12 @@
 
 > PROVENANCE: distilled from Discord "MY DATA PEAT" (forum channel #dimension-interior), threads:
 > `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/001_KITCHEN-ROOM/thread.md` (+ images in `files/`),
-> `.../002_ม่าน-Curtain/`, `.../003_การเลือกจำนวนบานพับกับความสูงตู้/`, `.../004_ปูกระเบื้อง-spc/`,
-> `.../005_Dimension-ที่ใช้ในการเขียน-อ่านแบบ/`, `.../006_ตู้เสื้อผ้า/`, `.../007_เว้นระยะสำหรับลิ้นชัก-รับใต้รับข้าง/`.
+> `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/002_ม่าน-Curtain` (→ §5),
+> `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/003_การเลือกจำนวนบานพับกับความสูงตู้` (→ §3),
+> `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/004_ปูกระเบื้อง-spc` (→ §6),
+> `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/005_Dimension-ที่ใช้ในการเขียน-อ่านแบบ` (→ §7),
+> `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/006_ตู้เสื้อผ้า` (→ §2),
+> `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/007_เว้นระยะสำหรับลิ้นชัก-รับใต้รับข้าง` (→ §1).
 > Pulled 2026-07-03, tier REFERENCE. Source = studio practitioner notes ("Peat"), not a published standard.
 > AUTHORITY: statutory Thai minimums in `knowledge/codes-th/` OUTRANK every value here; where a value
 > overlaps a legal floor, the law wins and this file defers to it.
@@ -18,8 +22,14 @@ Units are kept EXACTLY as the source gave them (cm / ซม. / มม. / inches)
 
 ---
 
+
+> **SOURCE VIDEO IDS carried by this file** (the staged units above hold the full
+> quotations and timestamps; a video whose content did NOT reach this file is
+> deliberately absent): `s9dEdHgCP-Y` · `eDUQkwlLzBk` · `EO62T1LHdNA` · `iJYto0muSd4` · `saFsrHObKyk` · `AbmVfYx8aTo` · `XeCPWJgb4Qg` · `axVhLMkgq2U` · `22ijpgjmkWY`
+
 ## 1. เว้นระยะลิ้นชัก รับใต้ / รับข้าง / Drawer-box vs cabinet-opening deductions
-Source: thread `007_เว้นระยะสำหรับลิ้นชัก-รับใต้รับข้าง/thread.md` (text only, no image). "วิธีคำนวนภายในลูกลิ้นชัก" —
+Source: staged unit `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/007_เว้นระยะสำหรับลิ้นชัก-รับใต้รับข้าง`
+(`thread.md`, text only, no image). "วิธีคำนวนภายในลูกลิ้นชัก" —
 how to size the drawer box from the clear cabinet opening, by slide type.
 
 | รางลิ้นชัก / Slide type | หักจากช่องตู้ (กว้างลูกลิ้นชัก) / Deduct from clear opening | องค์ประกอบที่หัก / Made up of |
@@ -35,7 +45,7 @@ how to size the drawer box from the clear cabinet opening, by slide type.
 ---
 
 ## 2. ตู้เสื้อผ้า / Wardrobe internals
-Source: thread `006_ตู้เสื้อผ้า/` (images in `files/`).
+Source: staged unit `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/006_ตู้เสื้อผ้า` (images in `files/`).
 
 ### 2.1 ขนาดของเสื้อผ้า / Garment sizes (for sizing hanging & shelf zones)
 Source image `files/417394_image.png` (PAPERROOM chart "ขนาดของเสื้อผ้า"). Height × footprint as drawn.
@@ -98,7 +108,8 @@ adjust to the user's stature).
 ---
 
 ## 3. จำนวนบานพับกับความสูงตู้ / Cabinet-door hinge count vs door height & weight
-Source: thread `003_การเลือกจำนวนบานพับกับความสูงตู้/files/659530_image.png` (Futuretech chart
+Source: staged unit `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/003_การเลือกจำนวนบานพับกับความสูงตู้`
+— image `files/659530_image.png` (Futuretech chart
 "เทคนิคการเลือกจำนวนบานพับให้เหมาะสมกับความสูงของตู้").
 
 | จำนวนบานพับ / No. of hinges | ความสูงตู้/บาน / Door height | น้ำหนักบาน / Door weight |
@@ -172,7 +183,8 @@ Source image `206174_standard-fridge-sizes.png` (Angi). Source values are in **i
 ---
 
 ## 5. ม่าน / Curtain — การเว้นระยะกล่องบังราง & ดรอปฝ้าซ่อนราง / Valance-box & recessed-pocket allowances
-Source: thread `002_ม่าน-Curtain/` — images `841981_image.png` (**เสริมกล่องบังราง / add-on valance box**) and
+Source: staged unit `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/002_ม่าน-Curtain`
+— images `841981_image.png` (**เสริมกล่องบังราง / add-on valance box**) and
 `145779_...scaled.png` (**ดรอปฝ้าซ่อนราง / recessed drop-ceiling curtain pocket**), NITAS TESSILE.
 "เว้นเคลียร์ใน" = clear inside depth the box/pocket must give the fabric stack.
 
@@ -193,7 +205,8 @@ Both boxes/pockets are drawn at ระดับฝ้าเพดาน / ceilin
 ---
 
 ## 6. ปูพื้นไม้/กระเบื้อง — รูปแบบการปู / Wood-plank (SPC) laying patterns
-Source: thread `004_ปูกระเบื้อง-spc/files/483028_FB_IMG_1705886812907.jpg` ("เรื่องพื้นๆ ปูพื้นไม้แบบนี้เรียกว่าอะไร",
+Source: staged unit `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/004_ปูกระเบื้อง-spc`
+— image `files/483028_FB_IMG_1705886812907.jpg` ("เรื่องพื้นๆ ปูพื้นไม้แบบนี้เรียกว่าอะไร",
 elements & decors). This card names layout PATTERNS only — **no numeric dimensions are given**, so nothing to
 transcribe as measurements. Pattern glossary (for spec/tagging):
 
@@ -209,7 +222,8 @@ transcribe as measurements. Pattern glossary (for spec/tagging):
 ---
 
 ## 7. Dimension ที่ใช้ในการเขียน–อ่านแบบ / Drawing dimension-string conventions
-Source: thread `005_Dimension-ที่ใช้ในการเขียน-อ่านแบบ/thread.md` (msg [2]) + image `files/081737_image.png`
+Source: staged unit `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/005_Dimension-ที่ใช้ในการเขียน-อ่านแบบ`
+(`thread.md` msg [2]) + image `files/081737_image.png`
 (both agree). How dimension strings are written/read on drawings; the "1.50" values are illustrative examples.
 
 | สัญกรณ์ / Notation | ความหมาย / Meaning |
@@ -223,6 +237,268 @@ Source: thread `005_Dimension-ที่ใช้ในการเขียน-�
 | EQ | ระยะเฉลี่ยเท่ากัน จากการเฉลี่ยหน้างาน / equal-spaced, averaged on site (exact value not fixed on the drawing) |
 
 ---
+
+## 8. มาตรฐานราวแขวน + ระบบ 32 มม. (cross-check จากการศึกษาวิดีโอ 2026-08-28) / Hanging standards + the 32 mm system
+
+> PROVENANCE: promoted 2026-08-28 from
+> `knowledge/_inbox/video-study/2026-08-28-closet-dimensions-from-a-closet-designer-s9dEdHgCP-Y.md`,
+> `knowledge/_inbox/video-study/2026-08-28-material-spectrum-and-the-32mm-system-5gfcLreD2ZM.md`,
+> `knowledge/_inbox/video-study/2026-08-28-trade-details-rail-curtain-track-downlight-iJYto0muSd4.md`,
+> `knowledge/_inbox/video-study/2026-08-28-a-built-illuminated-closet-and-a-ceiling-curtain-pocket-AbmVfYx8aTo.md`
+> and `knowledge/_inbox/video-study/2026-08-28-closet-boutique-method-and-rod-standards-MqfBg3-yzY4.md`.
+> **These are US/EU trade sources.** §2 above is Thai practitioner practice and **OUTRANKS
+> this section for a Thai project.** This section exists because §2's sheets give ZONE
+> heights across example layouts and never state a rod height, a carcass depth, a hanger
+> width or a hole pitch — and those are the four things a builder must type.
+
+### 8.1 ราวแขวน / Rod heights — two independent sources agreeing
+
+| เงื่อนไข / Condition | ค่า / Value |
+|---|---|
+| แขวนชั้นเดียว / single hang, to top of rod | **66-68 in = 1676-1727 mm** |
+| แขวนคู่ ราวล่าง / double hang, lower rod | **40-42 in = 1016-1067 mm** |
+| แขวนคู่ ราวบน / double hang, upper rod | **80-84 in = 2032-2134 mm** |
+| ชั้นบนสุด / top shelf | **84 in = 2134 mm** |
+| แขวนกลาง / medium hang zone | **45 in = 1143 mm** |
+| แขวนยาว / long (maxi) hang zone | **60 in = 1524 mm** |
+
+A professional organiser gives 40-42 / 80-82; an ex-California-Closets designer gives
+*"42 and 84 — those were the rod heights"*. **They agree.**
+
+**Cross-check against §2.2 (Thai sheets), and it is close:** the Thai short-hang zone
+**1000-1150 mm** brackets the 1067 mm double-hang section almost exactly. The Thai
+full-length zone **1600-1750 mm** runs taller than the US long-hang **1524 mm** — plausibly
+because §2.1's Thai chart puts a hung coat at **1600 mm** and a dress at **1400 mm**, so the
+Thai sheet is sized to a coat. **Where they differ, §2 wins for a Thai project.**
+
+### 8.2 ความลึกตู้และไม้แขวน / Carcass depth and hanger width
+- ไม้แขวนไม้ / wooden hanger: **19 in = 483 mm** wide.
+- ความลึกตู้ขั้นต่ำสำหรับแขวน / minimum depth for hanging: **22 in = 559 mm**;
+  **24 in = 610 mm** is better *"because then you have big bulky coats"*.
+- โมดูลตู้ไม่จำเป็นต้องลึกเท่ากันทั้งแถว / **module depths may differ within one run** — a built
+  closet in the source mixes **20 in (508 mm)** and **13 in (330 mm)** modules
+  *"due to the space considerations of the room"*.
+
+### 8.3 ระบบ 32 มม. / The 32 mm system — line boring
+| Quantity | Value |
+|---|---|
+| ระยะรู / hole pitch | **32 mm** |
+| ขนาดรู / hole diameter | **5 mm** (accepts 5 mm Euro screws and shelf pins) |
+| ร่นจากขอบหน้า / setback from the front edge | **37 mm** |
+| ร่นจากร่องแผ่นหลัง / setback from the back-panel groove | **37 mm** |
+| ความสูงแผ่นข้าง / side-panel height | an exact multiple of 32 (a *balanced panel*) |
+
+The 37 is a compromise with drawer hardware — slides have a centre-line hole at **35 mm** and
+are set back from the front — so one column serves shelf pins, slides and frameless hinge
+plates. **The visual rule that comes with it:** both columns are the same distance from
+their own edge, *"that way it gives a balanced look… it's going to be the same distance when
+you're looking at it, and it just looks better."*
+
+### 8.4 การรับน้ำหนักและช่วงพาด / Load and span — one threshold, three trades
+- ราวโลหะกลวง / hollow metal rod **Ø 1¼-1½ in = 31.75-38.1 mm**, carrying **70-90 lb
+  (31.8-40.8 kg) across a 6 ft (1829 mm) span**; the round section *"functions like an arch
+  in architecture"*.
+- **ช่วงพาดเกิน 5-6 ft (1524-1829 mm) ต้องมีตัวรับกลาง / a span over 5-6 ft requires an
+  intermediate support**, fixed to the BACK wall.
+- ปลายราวนั่งใน cup bracket บน trim plate ทั้งสองข้าง / the rod ends sit in **cup brackets on
+  trim plates** on the side walls, and the rod is cut **about 1/16 in (1.6 mm) shy** of the
+  surface-to-surface opening. One cup closed, the opposite cup open-side-up.
+- ชั้นยาว / a long shelf takes a **solid front rail** (turning the plate into a T-section)
+  rather than a mid-divider; the same ~1500 mm threshold applies.
+- ระยะที่ spec ต้องระบุแต่ยังไม่มี / two clearances a spec must state and ours does not: rod to
+  back panel (*"far enough out that clothes won't rub against the back wall"*) and rod to the
+  shelf above (*"far enough below a shelf that you can hook the hangers in easily"*).
+
+### 8.5 หมายเหตุที่สำคัญกว่าตัวเลข / A note that matters more than any number above
+§5 of this file has carried **ดรอปฝ้าซ่อนราง / recessed curtain-pocket clear depths (100-300 mm
+by curtain make-up, +50-100 mm with a cove light)** since 2026-07-03, and a 2026-08-28 site
+source independently corroborates it — a carpenter setting a ceiling pocket back
+**300-325 mm**, framed **before the ceiling is lined**, blocked so the pocket box is fixed at
+its END rather than cantilevering past the last truss.
+
+**Nothing in `pipeline/` has ever read §5.** `casement_sheers.py` contains no pocket at all,
+and the render's curtain tops vanish into the ceiling slab — a defect all three critics have
+filed by eye. The table that answers it has been in this file, unconsumed, for eight weeks.
+Recorded here because it is this repo's own named failure shape (a queue whose consumer never
+visits it), landing on a knowledge file rather than on a queue.
+
+Two more from the same site source, both about the junction our spec does not describe: the
+pocket runs the **FULL WIDTH of the wall** (*"rather than just having 3/4 width, which would
+look a little bit silly"*), and the wardrobe casework stands **100 mm off the wall so the
+curtain tucks in behind it**.
+
+**สายที่สาม — ฝ้ายิปซัม / A third sighting, in plasterboard, and it carries no numbers.**
+`22ijpgjmkWY` (Technogips Pro, *"How to Build Decorative Hidden Curtain Rod"*, 3 min 20 s,
+watched 2026-08-28) has **no speech at all** — music and captions only — so **nothing from it
+is quoted here and nothing is measured from it**. Its frames show a proprietary gypsum profile
+screwed to a stud line to form the recessed pocket in the ceiling plane: the same
+**pocket → bracket → track** order this file already carries from `saFsrHObKyk` (manufacturer)
+and `XeCPWJgb4Qg` (site carpenter, the 300-325 mm setback above), but in **PLASTERBOARD**
+construction — which is the case a Thai ฝ้ายิปซัม ceiling actually is, and the reason it was kept.
+
+So the recessed-pocket assembly now stands at **three watched sightings** (`saFsrHObKyk` ·
+`XeCPWJgb4Qg` · `22ijpgjmkWY`) and still **two** dimensioned ones. It adds no clear depth, no
+setback, no width and no fixing pitch, and it does **not** touch §5: the Thai NITAS table
+(100-300 mm by curtain make-up, +50-100 mm with a cove light) remains the only numeric
+authority for what the pocket must give the fabric stack, and it outranks all three for a Thai
+project. Corroboration of an ASSEMBLY is not a source of NUMBERS.
+
+---
+
+## 9. ผ้าม่าน — ความฟู การแขวน และชาย / Drapery make-up — fullness, hang height, hem
+
+> PROVENANCE: promoted 2026-08-28 from
+> `knowledge/_inbox/video-study/2026-08-28-drapery-grammar-and-the-triforce-of-realism-JgQdCad1Iiw.md`.
+> Source video id: `JgQdCad1Iiw` (a designer's drapery primer). Tier REFERENCE, US practice.
+> §5 above gives the POCKET the track sits in; this gives the CLOTH that hangs from it.
+
+### 9.1 ความฟู / Fullness — the input a stack-back table needs
+| Style | Fullness | Stack |
+|---|---|---|
+| traditional, lush, belled at the hem | **~300 %** | wide |
+| contemporary **ripple fold** | **~150 %** | *"a narrow, slender stack"* |
+
+The hardware that belongs with the contemporary case is named: *"something as **invisible as a
+simple ripplefold track that's mounted in the ceiling**, and you don't see anything else"* —
+which is the condition §5's recessed pocket creates. **A floor-to-ceiling sheer on a concealed
+ceiling track is the ~150 % ripple-fold case**, and that is a specific pleat geometry, not
+unnamed gathers.
+
+### 9.2 ระดับแขวนและชาย / Two dimensioned rules of thumb
+- **Hang as close to the ceiling as possible — within 76-102 mm (3-4 in)**; where there is a
+  cornice, hang from the **bottom of the cornice**, never covering it.
+- **Hem: graze the floor.** Either allow a slight puddle (*"elegant… but a bit of a maintenance
+  issue"*) or hem **3.2-6.4 mm (⅛-¼ in) clear** — and clear of **the carpet top** where a rug
+  passes under, not of the floor.
+- The cardinal failure: *"**if they are too short, drapery tend to look like they have been
+  shrunk. And that's the thing you want to avoid at all costs.**"*
+
+### 9.3 คำศัพท์ที่สเปคต้องระบุ / Vocabulary a spec must state
+- **Working panels vs FIXED panels are different objects.** Drapery is *"fabric panels that hang
+  on either side of a window or a door **and they can be pulled across**"*; fixed side panels
+  *"don't move across, they just act as a decorative element."*
+- **Lining is a separate selection**: blackout / light-blocking (bedrooms, nurseries), privacy,
+  or thermal. A bedroom sheer with no lining is a choice, and should be recorded as one.
+- **Top styles**: tab top · single / double / **triple pleat** (*"really add a lot of fullness"*)
+  · **inverted or box pleat** (*"super tailored… but it does give a little bit of fullness"*) ·
+  grommet · ring-with-tab · plain/rod top · pocket or gathered top.
+- **Hardware**: rods; **double rods** for a sheer plus an over-drapery; **traverse rods** on long
+  spans; rings, hooks, finials, brackets, tiebacks; and **pull buttons**, because *"you're not
+  gonna be wanting to **pull the drapery from the front end** — that will actually pull it out of
+  line and out of shape eventually."*
+- Five factors chosen before any of the above: architectural style · privacy and light control
+  (*"bedrooms are different than living rooms"*) · special conditions (baseboard heaters,
+  radiators, an HOA requiring uniformity from outside) · window type and shape · and which of the
+  five treatment families — drapery, shades, roller shades, blinds, shutters.
+
+## 10. ระดับสวิตช์ ปลั๊ก บัวเชิงผนัง และร่องเซาะ / Switch, socket, skirting and shadow-gap heights (bedroom)
+
+> **PROVENANCE.** Distilled 2026-08-28 from `knowledge/_inbox/nlm-th-bedroom-services/2026-08-17-bedroom-services.md`
+> and its transcript `knowledge/_inbox/nlm-th-bedroom-services/qa-history.json` — NotebookLM Deep
+> Research, notebook `7864b15c-68f8-4649-810f-36f3f7c31618`, conversation `1bee1917`, fired
+> 2026-08-17 after the vault was searched first and **this file was found to carry KITCHEN outlet
+> clearances only (§4.3)**.
+> **Tier REFERENCE — practice-report grounding, not domain truth and NOT statute.** NLM does not
+> hold Thai law and volunteers statutory numbers from model memory: nothing below may be cited as
+> a code value, and `knowledge/codes-th/` always outranks. The unit's own bracketed source markers
+> are still unresolved to titles; that debt rides with these numbers.
+>
+> **WHY IT SAT FOR ELEVEN DAYS, and it is worth one line.** The unit was consumed by
+> `build_room.py` in its own commit — five constants come straight off it — but nothing in
+> `knowledge/` ever cited it, so `inbox_audit` printed it as a PROVENANCE-ORPHAN from 2026-08-17
+> onward. On 2026-08-28 a video (`KX6ZYSo8apo`) was picked specifically to close the
+> setting-out-heights half of the switch-plate row, returned nothing usable, and was written off
+> with the words *"placement heights are still unsourced"* — **while the answer had been staged in
+> this repo for eleven days.** A queue whose consumer never visits it, in the shape where the
+> consumer is a later version of the same builder.
+
+### 10.1 สวิตช์ / Switch plates, bedroom
+
+| item | value | driver |
+|---|---|---|
+| door-side switch, centreline AFFL | **1200–1250 mm** | standing reach envelope, average Thai adult |
+| Universal Design / senior units | **900–1000 mm** | EIT (วสท.) recommendation; side-approach wheelchair reach capped 1100–1200 mm |
+| horizontal clear of finished architrave edge | **100–150 mm** | keeps the conduit box clear of the door sub-frame, and separates plate from trim visually |
+| bedside two-way switch (*สวิตช์สองทาง*) AFFL | **600–700 mm** | operated from a reclined position; sits **100–150 mm above the nightstand deck**, itself 500–550 mm |
+
+### 10.2 ปลั๊ก / Bedside sockets
+
+| item | value | driver |
+|---|---|---|
+| concealed behind the nightstand | **300–350 mm AFFL** | matches general-purpose outlet height; hides the lamp cable |
+| exposed, counter-level | **600–700 mm AFFL** | phone/laptop charging without bending |
+| Universal Design | **≥ 900 mm AFFL** | lower-back strain and fall risk in elderly units |
+| quantity per bedside | **2 duplex plates = 4 outlets** | one duplex of Type O grounded (TIS 166-2549, 3-pin round) + one hybrid with dual USB-A/USB-C ≥ 2.1 A |
+
+- Under EIT (วสท.) there are **no rigid residential height limits for outlets in dry spaces** — the
+  numbers above are convention, not code. Recorded as such because the distinction is the whole
+  reason this tier exists.
+- Ground floors of landed homes in flood-prone zones: circuits below the flood line must be on an
+  RCD/RCBO at **≤ 30 mA**. Not our room, kept because it is the one place a code value appears.
+
+### 10.3 บัวเชิงผนัง / Skirting — height, projection, and the architrave joint
+
+- **Height by ceiling volume**: 2400–2600 mm ceiling → **70–80 mm** (nominal 3″); 2700–3200 mm
+  ceiling → **100–150 mm** (nominal 4–6″). Proportion, not protection: tall skirting under a low
+  ceiling compresses the room.
+- **Projection**: **6–16 mm** for flat polymer or solid timber; **20–25 mm** for classic moulded or
+  hollow assemblies.
+- **Material is a CLIMATE decision here, not a cost one.** Thai humidity makes MDF/HDF swell and
+  delaminate. Standard alternatives: PVC 6–16 mm (termite-proof, ฿40–120/m); polystyrene 15–21 mm
+  (sharper profile lines, ฿150–300/m); **solid teak (ไม้สัก) milled 90 mm high × 12–14 mm thick,
+  ฿250–350/m** — the high-end default, naturally termite- and rot-resistant when kiln-dried.
+- **The architrave joint has two named methods and the choice is decided by which piece is
+  THICKER** — a rule our elevations have never carried:
+  - **A · flush butt (architrave thicker than skirting, the upscale standard):** e.g. a 20–21 mm
+    architrave against a 12–14 mm skirting. The skirting runs into the casing and butts square,
+    sitting inset — and that inset **creates a shadow line that masks wall-flatness deviation.**
+  - **B · 45° back-bevel (skirting thicker than architrave):** e.g. a 5 mm uPVC wrap against a
+    16–20 mm hollow PVC board. A butt joint would expose the skirting's raw end profile, so the
+    board is back-bevelled at 45° down to the architrave face and the joint filled with
+    colour-matched acrylic (*แด๊ป / DAP*) mixed with wood dust.
+
+### 10.4 ร่องเซาะ / The shadow gap (*บัวฝัง* · *เซาะร่อง*) — and why it is not a free swap
+
+- **Gap 10–15 mm high × 10–12 mm deep**, sized to fit extruded aluminium or UV-stable PVC
+  shadow-gap beads (U-channel / Z-profile plaster stops).
+- **The build sequence is the content**, because in Thai construction the wall is AAC block
+  (Superblock / Q-CON) with **15–20 mm hand-applied cement-sand plaster**, and cutting a straight
+  recess into wet plaster is labour-intensive and *"ruthlessly highlights"* any waviness. So: the
+  rigid bead is fastened and levelled to the RAW BLOCK first, the plasterers screed to its stop
+  flange, and **the wood floor slides into the horizontal recess — which conceals the flooring's
+  own expansion gap** while leaving it free to move.
+- **Cost, because it decides whether it is a detail or a decision** (THB per linear metre): PVC
+  bead 25–50 · anodised/powder-coated aluminium 150–350 · **skilled-mason labour premium 400–850**
+  · fully finished in a Bangkok luxury condo **600–1200**; with an integrated LED slot,
+  **1500–2500** (excluding driver and controller).
+- **NOT BUILT, and the reason is R8's test, recorded so nobody re-litigates it:** a shadow gap is a
+  RECESS — it cuts the wall prism — while skirting is a box added to it. Those are different
+  mechanisms with different first rounds. Skirting is the reversible choice; the shadow gap stays
+  named as the reversal.
+
+### 10.5 อยู่บนแบบยังไง / How it is drawn — the convention half
+
+- Elevations at **1:20** (switches sometimes 1:25); wall-to-floor details at **1:2 or 1:5**; a
+  shadow gap carries a **mandatory 1:1 or 1:2 section**.
+- A switch is a scaled plate box (**86 × 86 mm** square, or **120 × 70 mm** rectangular) overlaid
+  with a circled **"S"** subscripted **3** or **2W** for two-way. A socket is a box containing a
+  circle with **two parallel slashes** (duplex receptacle).
+- Both carry a vertical dimension string **FFL → box centreline**, plus a horizontal string to the
+  finished architrave edge or wall/column line.
+- **On coordination plans the nightstand is overlaid as a DASHED OUTLINE** to verify that concealed
+  outlets fall inside the furniture profile and exposed ones clear the deck with room for the
+  plug's bending radius. That is a check we can run in the scene, from geometry we already have.
+- The wall-to-floor detail enumerates: structural slab → screed → PE foam underlay → flooring
+  (e.g. 12 mm engineered timber) with an **8–10 mm peripheral expansion gap** → AAC block or stud →
+  **15 mm plaster/skim** → skirting profile with its adhesive cavity.
+
+### 10.6 อะไรที่ยังไม่ปิด / What this does not close
+
+- **The plate's own face geometry stays VG-07** (supplier catalogue): rocker vs push, plate reveal,
+  the actual moulding of a Thai 86 × 86 face. §10.5 gives the drawn box; it does not give the
+  object. The 2026-08-28 video pick aimed at exactly this returned nothing (`KX6ZYSo8apo`).
+- Every number here is a practice REPORT with unresolved source markers. It may seed a build and
+  may not settle a dispute against `knowledge/codes-th/`.
 
 ## หมายเหตุการกลั่นกรอง / Distillation notes
 - No pure-software / off-topic threads in this channel — all 7 threads carry casework/ergonomic content and are distilled above.

@@ -1,0 +1,112 @@
+{
+ "_what": "TRN-001 reproduction blockout spec (round 1: camera + blockout). Generic prayer-room feature wall; dims are the 2026-07-30 study's mutually-consistent spine (vault-grounded where the vault speaks, trade standards where it is silent). Committed file carries TRN-id + generic content only per qa/reproduction-curriculum.md.",
+ "room": {
+  "ceiling_mm": 2700,
+  "back_wall_len_mm": 6000,
+  "room_depth_mm": 4500,
+  "unit_center_offset_mm": -1370
+ },
+ "unit": {
+  "_asym": "2026-07-31 v2 \u2014 dims re-derived from VP-pinned solve residuals (real = model - printed_mm): asymmetric unit; plinth is a LOW tray-drawer bench ~190h running left-of-centre under the left tower; step top 420; box top 890 w~980; marble top 2275 leaving ~86mm glow reveal under the 340 header band; absolute scale rests on the ceiling=2700 assumption",
+  "_c2_round1": "C2 triage 2026-07-31: marble slab must never show its bottom edge (bot_z sunk to 150, hidden behind the 420 step everywhere); box narrowed 980->780 (B probe + critic 2:1 vs measurer A who read the pedestal silhouette); pedestals +40; header depth 360 (flush family with towers per reference). REFUTED with probes: tier-rhythm claim (plinth-top 190 / step-top 420 pinned by machine probe residuals <=10px) and top-right framing (header corner probe v130 vs model 125). Round-2 lane: tower cubbies, right-tower toe base, header 3-panel joints + brass, drawer reveals + toe recess",
+  "_depths": "2026-07-31 round 2: every DEPTH swept against the landmark fit instead of assumed \u2014 each has a real minimum (tower 360, header 380, plinth 600, step 500, box 380, marble proud 70), which also REFUTES the round-1 critic's 'right tower reads too shallow' with a number: 450+ makes the fit visibly worse (median 7.9 -> 15.7). plinth.r_mm is FLAT in the fit (spread 0.7px) = genuinely unconstrained by landmarks, so it must come from a direct probe, never from the solver",
+  "_joinery": "2026-07-31 round 2 \u2014 every joinery number below is BACK-PROJECTED from the target through the round-1 camera onto the face plane it lies on, never proportioned: shelf boards land on a 432 mm ladder shared by BOTH towers (which refutes round 1's 'the two towers' shelves disagree' \u2014 that was pure perspective, gone the moment the rows were read in mm), board ~28 mm, right tower stands on a recessed toe ~197 mm, and the plinth's four drawer reveals sit at measured x so the two end faces stay WIDER than the middle three because they carry the end curve",
+  "header": {
+   "len_mm": 3290,
+   "band_h_mm": 340,
+   "depth_mm": 380,
+   "top_z_mm": 2700,
+   "cx_mm": 24,
+   "joints_x_mm": [
+    -1202,
+    1250
+   ],
+   "reveal_mm": 5,
+   "brass": {
+    "inset_mm": 45,
+    "width_mm": 6,
+    "proud_mm": 2
+   }
+  },
+  "tower": {
+   "w_mm": 419,
+   "d_mm": 360,
+   "left_on_plinth": false,
+   "board_mm": 18,
+   "shelf_t_mm": 18,
+   "toe_h_mm": 99,
+   "toe_setback_mm": 200,
+   "shelves_L_z": [
+    638,
+    1064,
+    1492,
+    1921
+   ],
+   "shelves_R_z": [
+    638,
+    1064,
+    1492,
+    1921
+   ],
+   "base_top_mm": 219
+  },
+  "marble": {
+   "w_mm": 1440,
+   "h_mm": 2125,
+   "bot_z_mm": 150,
+   "proud_mm": 70,
+   "cx_mm": -50
+  },
+  "plinth": {
+   "len_mm": 2804,
+   "h_mm": 225,
+   "d_mm": 600,
+   "r_mm": 120,
+   "cx_mm": -174,
+   "drawers": 5,
+   "reveal_mm": 5,
+   "reveal_depth_mm": 20,
+   "reveal_x_mm": [
+    -943.7,
+    -430.5,
+    83.0,
+    595.9
+   ],
+   "toe_h_mm": 16,
+   "toe_setback_mm": 45
+  },
+  "step": {
+   "len_mm": 2242,
+   "h_mm": 230,
+   "d_mm": 311,
+   "r_mm": 110,
+   "cx_mm": -137
+  },
+  "box": {
+   "w_mm": 935,
+   "h_mm": 470,
+   "d_mm": 380,
+   "r_mm": 140,
+   "cx_mm": -55
+  },
+  "pedestal": {
+   "w_mm": 272,
+   "h_mm": 190,
+   "d_mm": 350,
+   "cx_mm": 782,
+   "r_mm": 60
+  },
+  "_surround_refuted": "2026-07-31: the 72mm proud-of-white-surface measurement is REAL and repeatable (stable across every tower depth tried), but the structure it implied \u2014 a furred-out white panel across the bay with the marble at the back of a 218mm reveal \u2014 was BUILT and the frame refuted it on sight: it reads as a deep TV niche, which the target is not. Recorded as an unresolved measurement, not built. Do not re-derive it from the same flank pixels without a new independent read.",
+  "_c2_round2": "C2 round-2 triage 2026-07-31 (every item measured, none taken on taste): ACCEPTED+BUILT \u2014 shallow face (tower depth 360->80 from the 28px vs 101px side return, header 380->150, which also removes the phantom soffit joint the critic found under the header), altar radii to the measured 150-200mm family, centre box 900 wide at cx-25 and pedestals 268 at +/-772 (both were fat and shifted right), plinth toe 16/45 so the base shadow reads, left tower to floor so its underside stops showing, room wall closed to the unit edge at x=-1608. CARRIED \u2014 the target's lowest left cubby is SHORTER than its four siblings because the plinth cuts it (ours are equal); rounded TOP edges (a section bullnose, not a plan radius) are still square."
+ },
+ "camera": {
+  "_init": "VP pre-solve 2026-07-31: focal from orthogonal VP pair f_px=2210 -> 38.9mm; horizon v=1023.5 = frame centre -> shift_y~0; yaw -20.5 (station in front of right tower, axis re-centred on marble); metric position scaled from the VP station solve to this spec's 3300 run",
+  "x_mm": 1524.0356994302015,
+  "y_mm": -4263.405622072465,
+  "z_mm": 1249.8360077766033,
+  "yaw_deg": -20.55,
+  "focal_mm": 38.9,
+  "shift_x": 0.0,
+  "shift_y": 0.0
+ }
+}

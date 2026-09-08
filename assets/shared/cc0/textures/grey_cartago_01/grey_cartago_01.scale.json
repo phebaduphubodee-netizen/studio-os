@@ -1,0 +1,11 @@
+{
+ "slug": "grey_cartago_01",
+ "dimensions_mm": [
+  750.0000596046448,
+  750.0000596046448
+ ],
+ "tile_m": 0.75,
+ "aspect": 1.0,
+ "source": "https://api.polyhaven.com/info/grey_cartago_01",
+ "note": "The world size of one repeat, as published. R8: scale is ASSERTED on ingest, never assumed."
+}

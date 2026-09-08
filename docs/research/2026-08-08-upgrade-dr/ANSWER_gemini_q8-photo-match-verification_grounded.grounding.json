@@ -1,0 +1,177 @@
+{
+  "queries": [
+    "camera matching workflow interior architecture",
+    "fSpy vs Blender camera matching accuracy",
+    "accuracy of camera matching from single photo focal length position",
+    "failure modes of single view camera calibration",
+    "single view metrology accuracy Criminisi",
+    "error bounds single view reconstruction Zisserman",
+    "conditions for failure single view metrology",
+    "state of the art single image 3D scene reconstruction editable",
+    "vision-language models for 3D scene generation Blender",
+    "inverse graphics Blender script from image",
+    "Thinking in Blender: Staged Executable Inverse Graphics with Vision-Language Models paper",
+    "image similarity metrics for 3D reconstruction evaluation",
+    "PSNR vs SSIM vs LPIPS in scene reconstruction",
+    "perceptual similarity metrics for architectural visualization",
+    "image metrics for detecting structural errors in 3D scenes",
+    "local vs global error in image similarity metrics",
+    "image metrics blind to structural changes",
+    "failure modes of photometric comparison in scene reconstruction",
+    "change detection metrics for missing objects",
+    "staged vs monolithic 3D scene reconstruction performance",
+    "iterative refinement in inverse graphics stopping criteria",
+    "verifier design in generative 3D models",
+    "architectural visualization training reproducing photographs curriculum",
+    "archviz curriculum photo matching exercise scoring",
+    "scoring criteria for 3D scene reproduction in education",
+    "Thinking in Blender Staged Executable Inverse Graphics with Vision-Language Models arxiv",
+    "accuracy of fSpy focal length estimation",
+    "Blender camera match tool accuracy evaluation",
+    "single view metrology error analysis Criminisi paper",
+    "limitations and failure modes of single view metrology",
+    "image metrics failing to detect geometric errors",
+    "local vs global consistency in image quality assessment",
+    "structural error detection in image similarity metrics",
+    "architectural visualization photo matching tutorial",
+    "archviz training exercises photo reproduction",
+    "learning archviz by copying photos curriculum"
+  ],
+  "chunks": [
+    {
+      "title": "designblendz.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGuX8NQggNPV5ymeAP4AgFJiS41a4Q8IV4rKxNytGc6EAQLlf9fzGFHztRVB6tAWCMCkOiXafdNuqaME3RjafBEZ_C_YAZmpnIQse9CcwBx6uWPrXIub7_rDx370VhSIn815UCK7jYIxhp8OaBNdqw4ffGuRzEna7x52sotzNCejwJEWCSt_c2i4_OVMmBO84lEfw==",
+      "domain": ""
+    },
+    {
+      "title": "bluentcad.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHiEdiRcGzQbJ46Md-BEBoBoNoOvVXJv4Gf5JBufEq5QptwntjY4DRLDc_XCqbEOmS7jD-_jDWlM4sjFXqLfwcap1NrNujNB_ZD6gNvZX_a96At2nelEp7o8pMwo1bm8JOAjxPpoMQp4UtxB5RbUe3aQWAeCot85awOtl0sUrUkgwXa0pogAomkzgXw",
+      "domain": ""
+    },
+    {
+      "title": "lumion.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE5oTVUqpixahrZ0M584YKlKSrI_RJPxnUca8KytCRbRzW3pMqNfngTbri1pjwrkF-5OFxq-XsFwpNmNvh9W94oHbi0Ncb2pFATBLfis_gSGQJDA_LTOJxPxIYFyvI3T6dA6_7fSsrWLLHnDpHvlByBhXnH2qWY_7sLTXmW5xRWSYBwKorSj9ltmKUo3mWdG5s0z2-1zGlt4c4=",
+      "domain": ""
+    },
+    {
+      "title": "youtube.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGYVqmLy69ENwZpo6foUCsFbMU3T89h0tiBv4GRYFxXHLJ1wk3iGY-wNGJ2knkASr7Epum2_Jv5PqQfVGQmhgilmjuPgUzt4cUMLbFE6i6RunkcpTEAlpRZhFL4ec9NiT0G9Ki73Oc=",
+      "domain": ""
+    },
+    {
+      "title": "youtube.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEFylIp17zlcbCgTNZsoqkgUS97mYCWrpE_ExoFLon6v1-1kPSWTjL3B67ovntPVyzGu0wDr9B2Me_kV5XsHVRXA6mraAO4QMr6w9PT1abourV6jdi14_usXO3TRtCwJAH7ekRg_L8=",
+      "domain": ""
+    },
+    {
+      "title": "fspy.io",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQERj1b6WDLnE-qPWSIrHhaW_8W3QewWhiwQC-_Q4Awihn8odm0h8pMACWSpyKc0gIu0K1MUKsk3gfYfgzwzoErNoX-Ynd8rABlmZhIfZFTinYEDvQ==",
+      "domain": ""
+    },
+    {
+      "title": "fspy.io",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEBrXBK3Sy-10rRkGizioe2YTjec8kKvOmoITwQgzuOACMZ4r6_w0ZNQjWSOWtyNDvyo3BxUEGiLgVOQ-3Bfis0X6ZJZEuoAYWhX7cyDpr2lB0=",
+      "domain": ""
+    },
+    {
+      "title": "github.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHTfXhA0yctPg0MpEX6Ql78tssqXlAMhpyW8cyr-t_FOIPiCJrZAQZJ6NST5sO_m4wXzloQeGU9s8HtI7h0FQKwxV234lJUjOFnJ--YKeKCXsAxgegItASRR06WFwrGjMA6KYl2r42TnA==",
+      "domain": ""
+    },
+    {
+      "title": "ucf.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFP_2YSAElEroMWqQUxbv_rCZ7srgX2WPZ3cYZhoMEC8jgrd4ZtVI5sP4NNZoQ-BCS297qvJWHIqTDVWLhTWMaOfqC2BnhXEJJKCYwDpI0FAoep6iuoPD5DPmH5lnbg4IGHg6cQT14OdWyXuepu71xyd0MhLyLdfk_V3Now83GP",
+      "domain": ""
+    },
+    {
+      "title": "ucsd.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEoIM16hVLNHT3Jneac6YFVuz4dxFkUnQa9ES0mbchuOxk5fiZ9HTbah5WxV7dMOMngAjJmkX77O-V_BDo4mrDPl21raqy07Wyj0jio-Vam8wO7X_rpMcKqy7cRNeIzykxksSuHjcwV9TZFYpsxadlUTHorWaru6yq1",
+      "domain": ""
+    },
+    {
+      "title": "github.io",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHophxBAr7BW1aB2wBoN3xNiL1YLwNKlLLJiJJSTKTNfLD01Pa5xsX2UwDO3aapR0vx5OWDtDbAfBMOsIYfzvKKh4tBGL0Ink8n3g0mX-bHVkH3YXB1XjrnAvBEARl347GRXA==",
+      "domain": ""
+    },
+    {
+      "title": "mdpi.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFREl-lWNiPUy14fNnWv0isbmOoeBrEYq1d7CgWG40T1Y4gfittMmdabvvXGP8v8ZlmCY_R5i6hheXFlW9tEzsdexdvFGt5qPyIWG6xbT2bTPfHkzX1I-FopTl8FjRuDBGPPWGK",
+      "domain": ""
+    },
+    {
+      "title": "mit.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGXKvytI8cCu0KL9W_CSCWDHJzkFFr6FpoOxhI_tfysRNnFzfqubEWSongou_Uev1o1GrDHhqYzukvItOM-EH58I5Av3aQ7jJs5ATDbxnaw9BNr9Q7tE9UlWvYXmI1jJABQYfeYY5Vxm2qiIdazvBiW3PYnnLANQkbMj__tOw==",
+      "domain": ""
+    },
+    {
+      "title": "huggingface.co",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGtOVG_8A6Bi0JLSPX-QAPfLNzM6JqkbvHyD-AE2RxsOVvvsb-_0109QoopAARt-mO_mV5YFg7P-SdMB5A9pqhuQobWxbjWAQk0KQkQc_GtfwuW4nmCyYRpqMmZnDLOl0nG7GM=",
+      "domain": ""
+    },
+    {
+      "title": "arxiv.org",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQElvHajl1pLm0aTIInhoVDdy1M-xwEHNntKLTSzjZ3pVg6LSF5bQdGy5JFlm4LJPqvL2Uv0ALxXEt_X3OOi6L5nkRmhQZXAeCMICRSeioh194J-DDaF-bHMu-T1",
+      "domain": ""
+    },
+    {
+      "title": "medium.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHKXQspakvOvG5u-dcC4jgPPwogpNKN0qaj_EGcPgAFxK9vp6wGrIcibJRKTLOwAV0WXqhs0ey4pjJZpfKb59GP_vcUSR8SxOMCYD4dxcQGx0RjwOYhPseMBSnk_kg4fxRCBIOfF8ONU-DJ0rY762AxrOwPr95fb2dJSDTwjDrthN3pox5tuFTPkNyREPJ20bNab0YbBuh4LU9E4xCWDXJF",
+      "domain": ""
+    },
+    {
+      "title": "researchgate.net",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH8eC8-ekXkV6sWGLwz2WRhf0_7fZShjQ_7ZIp7MEIzI63W0WOFgGK06GUIgf2U4OKCzclTSxtOHe3znerpnKAZett8I5HQfcRPgvgNFfkc-2vFQWxmAA1XGWz5PR_ZWcs7nOeobWVekxrQG-ABWBallMuOrcCkXyVxsWa6zce289AI3XBAU3Db7siy_-WIPnTAr1FqqOpsBt56TNwGIJK8kxUFQMMcxusG7dAPFctg5Obm7a3xbocXnund5m55W8O1",
+      "domain": ""
+    },
+    {
+      "title": "arxiv.org",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE1NMC5zZRHV_bcwBKMUvk16fFRavAaF_XfY03y2ttsNyZVkXvzrJjDPVQ4dSZqcKHJM-Ez6T1CNwxSH1laHNex134DNy-qyDR49yhxVHZLsHx6pmvPiaUR1Qd-JcXW",
+      "domain": ""
+    },
+    {
+      "title": "uwaterloo.ca",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF6lWW2H12z4adltTDzng67qFn0vU5cn5pvYWUvoJW-dyFWgyzoA2x2hGcdYlFlQfJW6hWvREXuus6mSRxAXcC0ZZRzo_rCmGyuERnRkSMvFh_ywGVit93WFFMk6fGOme6Pr2rPeGqJjuBq4WwtED2EoO4e",
+      "domain": ""
+    },
+    {
+      "title": "wikipedia.org",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHZZj3iFsZp8xluphpB0tP6yvyw6KrN1JoplpjV1BMsg2Vpuhd-ILu-v46qu8sJHbqcPMcQLLIQo4gpfQmsXTtyrQCA6oXW21Y4-8dTXk1mVUAaCqjMWBVzxoTSNp2Ew_alWK59zRGkc1yGoJx9gmg6fiPy9kCV7rZtcWpz",
+      "domain": ""
+    },
+    {
+      "title": "arxiv.org",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEV2-Z_Q4x71vWl4HrKUbnpfdGEX9cZbhY8Kli1gOg4xtG3aEaBiyKVVQX56n4Kdb4KOh92GDdI40sGUMwHDuS30tcRqF9fsQkUAe07IS1PWZJ_7O8IqMIzWXde0u6V",
+      "domain": ""
+    },
+    {
+      "title": "researchgate.net",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHVZBW7i4zVnVP37eZcabafEt2J729Z6NIh9hpkvIs_wT-9-MHITPNOYNcB-inSdEoCYsazyWWEvk33QuVO_9km-lTMBDYWrVLvLKBUcMM4hievpnxFb372KwYwdf1q2h1rcVe3D84TSC5UanNOqckGJ-08ZRj4GFpUffowzLm4rHNukvjPCAMeoAzNdO5HOe_6EL3Z0qMagAII1q9T5EURpD8v696lio_1sYXO2_B6QHhq2OHJw-ogO8rN_UkrVt90edHQskd7o3pNyqSMXSaiMzxHrTQa0j0t266eWRdj9LjzT2-TW90OKs9T2A==",
+      "domain": ""
+    },
+    {
+      "title": "nih.gov",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHDtIbE8WmwZnvMx5NxJYvaGKIIzvCC3UnzF8ixZIIjCMuLJm-Wo_o8eHwJoMbFvMqgbFFQUCpG1uq0k_hRlrqe3Tv-a3SwbQ2gmVqOBv__B2p2j6Zl2X_TLHmhHmvlfs7EjLaW2GdI-JGnhHna",
+      "domain": ""
+    },
+    {
+      "title": "nih.gov",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF88hX2aw1gCZ0MjCJUdZmKDRygM0Mgqcu2tYpGFECLVPKryPidUgPYTKVi7ZxUb7w01UHUlHvtD9RODhHoXFLglmCImjCujt8fATaHaf5Tl4PMyc_-QI8es81EId5h5t9tde-h91sIERRcEnXs",
+      "domain": ""
+    },
+    {
+      "title": "arxiv.org",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE_5Bq0tVDz5tQMloavMajmw-1pgWqsdU9NMy6C3wP1D6aFeQVvBWi9xeRy6XE5ffGyxyXtOUpZpabwLoYVvQPHLwD3SZvp62PiLhbqoAXDd8ijTZSQZal2TAo=",
+      "domain": ""
+    },
+    {
+      "title": "reddit.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEIaNY86zQY8G_NYBIzBCZd9Q9NTdNalzEf7FO9n90nxUtmf20c-kuUGiSAxL-0Ww5KOe1ropLpVaZQupswbZvpQ8d5Hp5o-LRvwGJzZuJmw7JSHj__Lx6Why-eClnuvl_vYLHhZR1CI-24E0RZb3U7-eUDaeiUv9ZxcvTXkWAdOkrsY8f7eUpqEv3OimR3FA_4TSMZ2_pQAw==",
+      "domain": ""
+    },
+    {
+      "title": "das3d.ch",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHA59mlXvHTwIsByNwEcXh3Qp80DCKgsJl2Lt0MqpfjtFCwE8YMQL36ImyQ-5UjRON0gTf63-w9uZt0oGLNO-pfydJOKQdTDsmLV-zFindSGCOrOj8kmAoDldNx36iBb-b2u5MXILjc7E76YZ4RnaMp",
+      "domain": ""
+    }
+  ]
+}

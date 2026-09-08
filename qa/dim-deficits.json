@@ -1,0 +1,21 @@
+{
+ "_law": "Signed dimensional deficits for dim_check.py (ORD-2026-08-22-front-door-dims). A row here converts a dim_check FAIL into a LOUD INTERIM — it must cite an ORD-/D- id that reproduces verbatim in qa/owner-orders.json or qa/open-decisions.json, or the signature does not count (a signature nobody can find was never given). signed_down_to_mm is the floor the signature covers: a worse instance than what was signed FAILS anyway — an instance signature never covers the class (R13, CLASS != INSTANCE, applied in the forgiving direction). Rows leave when the deficit clears, and the clearing round says so.",
+ "rows": [
+  {
+   "id": "DIMDEF-002",
+   "class": "bench_datum",
+   "cite": "D-115",
+   "since": "2026-08-24",
+   "note": "THE FOOT BENCH SITS 114 mm BELOW THE SLEEPING PLANE against a band that allows 50 (measured p2r60q: seat top 406, plane 520 from the mattress material). It is signed rather than fixed because the bench is a PURCHASE, not a coordinate: D-115 solved this same relation against the p2r57 plane of 425 and the answer was 'buy the piece whose natural height lands in the band'. p2r58 moved the plane to 520 and no piece on the shelf answers it — the whole catalogue holds SIX benches at the drawn 504 x 1008 window (3 free, 3 paid, measured 2026-08-24 with the server-side dimension filter), the only one that passes the style panel is the one already in the frame, and none of the six is both the drawn 1:2.0 proportion and inside the envelope. That is ASK-024, open since 2026-08-16 and amended 2026-08-24. RAISING THE SEAT BY TYPING A NUMBER IS REFUSED: it is the fifth setting of a typed height on this pair of masses and R9's stop-loss is two. signed_up_to_mm 120 is the CEILING, not a floor: for this class the measurement is how far BELOW the plane the top sits, so bigger is worse and a floor would have signed off on arbitrarily worse benches. Today's 114 is covered; a bench that lands further below than 120 is a new, worse instance and FAILS, per this file's own CLASS != INSTANCE law. It clears when a bench that answers both the ink and the plane is acquired, and the clearing round says so.",
+   "signed_up_to_mm": 120
+  }
+ ],
+ "_cleared_log": [
+  {
+   "id": "DIMDEF-001",
+   "cleared_round": "p2r72",
+   "cleared_date": "2026-08-25",
+   "how": "garment rails measure 879 mm (>=700 floor) on all 9 rails in both p2r72 dumps — yaw-90 + carcass-derived slot (D-136); the row leaves per this file's own law: rows leave when the deficit clears, and the clearing round says so."
+  }
+ ]
+}

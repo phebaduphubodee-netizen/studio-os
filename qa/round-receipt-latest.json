@@ -1,0 +1,139 @@
+{
+ "schema": "round-receipt@1",
+ "round": "bedroom_suite_eye_p2r91",
+ "quick": false,
+ "frame": true,
+ "written_utc": "2026-09-01T07:03:59+00:00",
+ "rungs": {
+  "rule_gate": {
+   "ran": true
+  },
+  "id_mask": {
+   "ran": true,
+   "measured": 215
+  },
+  "existence_check": {
+   "ran": true,
+   "exit": 0
+  },
+  "carry_check": {
+   "ran": true,
+   "exit": 0
+  },
+  "transform_check": {
+   "ran": true,
+   "exit": 0
+  },
+  "edge_highlight": {
+   "ran": true,
+   "exit": 0
+  },
+  "dim_check": {
+   "ran": true,
+   "exit": 0
+  },
+  "sheet_recon": {
+   "ran": true,
+   "exit": 0
+  },
+  "deliverable_check": {
+   "ran": true,
+   "exit": 0
+  },
+  "value_probe": {
+   "ran": true,
+   "exit": 0
+  },
+  "bed_pixels": {
+   "ran": true,
+   "exit": 0
+  },
+  "p2_exit": {
+   "ran": true,
+   "exit": 0
+  },
+  "delta": {
+   "ran": true,
+   "exit": 0
+  },
+  "gen_diff": {
+   "ran": true
+  }
+ },
+ "last_full": {
+  "round": "bedroom_suite_eye_p2r91",
+  "written_utc": "2026-09-01T07:03:59+00:00",
+  "rungs": {
+   "rule_gate": {
+    "ran": true
+   },
+   "id_mask": {
+    "ran": true,
+    "measured": 215
+   },
+   "existence_check": {
+    "ran": true,
+    "exit": 0
+   },
+   "carry_check": {
+    "ran": true,
+    "exit": 0
+   },
+   "transform_check": {
+    "ran": true,
+    "exit": 0
+   },
+   "edge_highlight": {
+    "ran": true,
+    "exit": 0
+   },
+   "dim_check": {
+    "ran": true,
+    "exit": 0
+   },
+   "sheet_recon": {
+    "ran": true,
+    "exit": 0
+   },
+   "deliverable_check": {
+    "ran": true,
+    "exit": 0
+   },
+   "value_probe": {
+    "ran": true,
+    "exit": 0
+   },
+   "bed_pixels": {
+    "ran": true,
+    "exit": 0
+   },
+   "p2_exit": {
+    "ran": true,
+    "exit": 0
+   },
+   "delta": {
+    "ran": true,
+    "exit": 0
+   },
+   "gen_diff": {
+    "ran": true
+   }
+  }
+ },
+ "proof": [
+  "bed_pixels:ran",
+  "carry_check:ran",
+  "deliverable_check:ran",
+  "delta:ran",
+  "dim_check:ran",
+  "edge_highlight:ran",
+  "existence_check:ran",
+  "gen_diff:ran",
+  "id_mask:ran",
+  "p2_exit:ran",
+  "rule_gate:ran",
+  "sheet_recon:ran",
+  "transform_check:ran",
+  "value_probe:ran"
+ ]
+}

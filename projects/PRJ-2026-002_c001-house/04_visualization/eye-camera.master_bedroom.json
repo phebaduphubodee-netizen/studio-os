@@ -1,0 +1,33 @@
+{
+  "_what": "Hand-placed EYE-LEVEL hero camera for the v4 master-bedroom suite (the L-shaped suite). Merge the 'eye_camera' block below into the room spec, then render with build_room --eye. Kept as a SIDECAR (not injected into 03_layout/v4/scene-graph.master_bedroom.json) because that spec is owner-signed geometry under active parallel-session review — the camera is a Stage-04 concern, not a Stage-03 geometry edit.",
+
+  "_why_manual": "camera_config.solve_eye_camera's AUTO heuristic takes the FARTHEST clear grid spot from the subject. For this L-suite that backs the lens into the SW corner (stand 1.20,3.55): ~55% of the frame is a dead blank wall (the full-height wardrobe/console face, counted as 'furniture' by frame_subject_share=0.927 yet reading as a wall), the bed is clipped into the right third, and the foot bench floats in the corner. A designer places the spot by hand instead. This is the exact case the new spec['eye_camera'] override (camera_config.py, 2026-07-11) exists for.",
+
+  "eye_camera": {
+    "stand_mm": [1350, 1500],
+    "aim_mm": [5150, 1000],
+    "lens_mm": 26,
+    "shift_y": -0.18,
+    "_note": "stand W of the bed foot, look E across the bed toward the slat feature wall (BF14, x5150); 26 mm reads the whole alcove + both side walls; shift_y -0.18 frames DOWN to kill the empty upper wall an eye-level level camera sees over a 0.6 m bed. Validated by camera_config _spot_is_clear (inside outline, >=0.3 m clear of built-ins, level LOS to 0.95x the aim past the wardrobe/console/slat-wall ray-blocks): standoff 3.83 m, subject share 0.93, manual=True."
+  },
+
+  "_alt_framings": {
+    "s26_tighter": {"stand_mm": [1350, 1500], "aim_mm": [5150, 1000], "lens_mm": 26, "shift_y": -0.26, "_note": "bed more dominant, more foreground floor, ~35% upper wall — pick if the beauty pass wants a lower headboard band."},
+    "diagonal_35mm": {"stand_mm": [1600, 2200], "aim_mm": [4900, 700], "lens_mm": 35, "_note": "3/4 diagonal across the bed; slat wall on the right — a second angle if a set of 2 is wanted."}
+  },
+
+  "_height_note": "Eye Z = camera_config.DEFAULT_EYE_CAM_HEIGHT_M = 1.15 m (designer M3.2 GS-15 calibration: 1.0-1.2 m so the ceiling doesn't read low). For a true standing-eye A/B set env EYE_CAM_HEIGHT_M=1.5 before rendering.",
+
+  "_render_command": "cd pipeline/scripts && python -c \"import json,copy; ec=json.load(open('../../projects/PRJ-2026-002_c001-house/04_visualization/eye-camera.master_bedroom.json',encoding='utf-8'))['eye_camera']; s=json.load(open('../../projects/PRJ-2026-002_c001-house/03_layout/v4/scene-graph.master_bedroom.json',encoding='utf-8')); s['eye_camera']={k:v for k,v in ec.items() if not k.startswith('_')}; json.dump(s,open('_hero_spec.json','w',encoding='utf-8'),ensure_ascii=False)\" && \"/c/Program Files/Blender Foundation/Blender 5.1/blender.exe\" -b --python build_room.py -- _hero_spec.json --render --eye   # -> pipeline/output/room_bedroom_suite_eye.png (clay control, 2000x1400, Cycles 256spp)",
+
+  "_beauty_pass_next": {
+    "status": "ATTEMPTED 2026-07-11 (owner said go) → BLOCKED: HTTP 429 RESOURCE_EXHAUSTED, 'Your prepayment credits are depleted', on every image model. Key is VALID and gemini-3-pro-image-preview is reachable (ListModels) — this is a BILLING state on the Google AI Studio project, not a code/key/model fault. No image produced, zero spend. UNBLOCK: top up at https://ai.studio/projects, then re-run _render_command below (the clay control is already built) and gate with critique.py --model pro.",
+    "how": "hybrid_render.py, registry render-hybrid@v004 (immutable), GEMINI_IMAGE_MODEL=gemini-3-pro-image-preview, using this clay as the structural control (docs/DECISIONS-render-assets.md; batch-manifest.md batches 001/002).",
+    "slots_from_batch001_master": {
+      "room_type": "master bedroom suite — the tall dark wall behind the bed is an upholstered headboard / slat feature wall; a low bench sits at the foot; wood floor",
+      "material_story": "light engineered-oak floor matt natural, full-height rift-oak veneer headboard/feature wall in matte lacquer, warm greige matte plaster walls + ceiling, stonewashed greige-oatmeal linen bedding with natural wrinkles, matte black + brushed brass accents",
+      "lighting_story": "low golden-hour evening key from the glazing, one dominant warm direction with soft deep shadows, warm cove glow + lit brass bedside sconces, 2700-3000 K",
+      "style_brief": "warm contemporary Thai-tropical minimal, quiet luxury, calm and lived-in"
+    }
+  }
+}

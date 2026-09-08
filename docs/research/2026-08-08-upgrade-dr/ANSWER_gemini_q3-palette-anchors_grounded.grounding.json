@@ -1,0 +1,169 @@
+{
+  "queries": [
+    "TOA paint thailand off-white cream LRV",
+    "Beger paint thailand off-white cream LRV",
+    "Jotun thailand paint off-white cream LRV",
+    "Nippon Paint thailand off-white cream LRV",
+    "TOA paint color code LRV sRGB",
+    "Beger paint color code LRV sRGB",
+    "Jotun thailand color code LRV sRGB",
+    "Nippon Paint thailand color code LRV sRGB",
+    "TOA SuperShield LRV values",
+    "BegerCool Diamond Shield LRV",
+    "Jotun Majestic True Beauty Sheen LRV",
+    "Nippon Paint Colour Creations LRV",
+    "TOA paint thailand technical data sheet LRV",
+    "Beger paint thailand technical data sheet LRV",
+    "Jotun thailand paint technical data sheet LRV",
+    "Nippon Paint thailand technical data sheet LRV",
+    "TOA color code LRV value",
+    "Beger color code LRV value",
+    "Jotun color code LRV value",
+    "Nippon Paint color code LRV value",
+    "TOA off-white paint colors sRGB hex",
+    "Beger off-white paint colors sRGB hex",
+    "Jotun off-white paint colors sRGB hex",
+    "Nippon Paint off-white paint colors sRGB hex",
+    "light reflectance value to CIE Y conversion formula",
+    "sRGB from LRV and hue formula",
+    "ASTM D2244 color tolerance paint",
+    "ISO 11664-4 colorimetry",
+    "BS 8493 Light reflectance value of a surface",
+    "PBR material library white oak veneer clear matte lacquer sRGB roughness",
+    "measured PBR white oak hardwax oil",
+    "Quixel Megascans oak veneer properties",
+    "Poliigon white oak material properties",
+    "architectural powder coat gloss units matte satin gloss black",
+    "AkzoNobel powder coating technical data sheet gloss levels",
+    "Axalta powder coating gloss levels",
+    "Jotun powder coatings technical data sheet gloss",
+    "gloss units at 60 degrees to GGX roughness conversion",
+    "GGX roughness from GU formula",
+    "Filmetrics refractive index of brass",
+    "refractiveindex.info brass",
+    "complex refractive index of polished brass",
+    "PBR measured satin brass material properties",
+    "Quixel Megascans brass hardware",
+    "Poliigon satin brass material",
+    "architectural powder coat black L* value",
+    "measured sRGB of black powder coating",
+    "minimum reflectance of black paint",
+    "Vantablack sRGB value",
+    "paint manufacturer batch-to-batch color tolerance dE00",
+    "TOA paint color tolerance",
+    "Beger paint color tolerance",
+    "Jotun paint color tolerance",
+    "Nippon Paint color tolerance",
+    "TOA paint machine-readable color data download",
+    "Beger paint fandeck data file",
+    "Jotun Thailand color data API",
+    "Nippon Paint Thailand color tool data export"
+  ],
+  "chunks": [
+    {
+      "title": "bu.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHKm-BkAHa3ihenh1ji5sCJF0JO79Dnq4DXcST-owTx15Fs0HPpUiwX8jhsIvNBDGgceGU5JekkxScB3SJHwwY4-q3T369WbhcyoBbNKGhThyebhM2uU3YMfWmMCFxI5qZYDAmlfwFMG3zvsqFg69sflqKWFRZqFNEvlmtAR8Gb",
+      "domain": ""
+    },
+    {
+      "title": "micomlab.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHbTz2vciurIKnAmAgf_DAxnwXrMV0zuj45mP0Ls-iqTQWT3hAJUMbW7WredOAt5P5EumGb5YZhR3pxSwBuVqC0uBE1R61uiNReTqWiEkwrWwRs-ZPuzMbZnBC2qFnWs_65IeoXrB8UQx3onzI=",
+      "domain": ""
+    },
+    {
+      "title": "cie.co.at",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFG9GvHscTnwcI9laC9zp7_DEfgh9jVmWfDJRs9U6VujRoM-hRpN54q69RX3FOh9FXnaG1qneWIIT6YaO7HA9Y5m_kU5ShSA5vnbPueWjpMRe9o8UdhuPMbo2EXGgLP-V-EjckHex2bVmLC7oS-m12DEubxXuxJ33UaaFcTqihbLmC5HTiSArc=",
+      "domain": ""
+    },
+    {
+      "title": "iskweb.co.jp",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFAKYpUwQskpZGcc9ildUcInck674hIv2E52BO2ec8yJ7iImAer3UG1R8QEOO3w5Zqj4uNYaDVwm9OVT3wCtRTrs41jM7F5YOlVbQ926AUe-z1hBKZlfy4mdwCLbQzTYti62r1hy4998a_SEGoC",
+      "domain": ""
+    },
+    {
+      "title": "thenbs.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE01DuD179B2zsW66WyfR_DcZXzr0Ap4S6YusnkdRPqs3PyE0DTZ0gx0WLJcNT1rEUsAzedMeJLoalfffJaJMBm-UtXteWnh_lnILTxdK1agegyi4114LWK27-nyOwMtbeaI0kDKrC6zsu0N73VZUBQdvUvl3P46EIsudmaJRlTARYdGzCYCgKQ",
+      "domain": ""
+    },
+    {
+      "title": "matestlabs.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH15HYlsJ0h9mPxRo3M5vuXOjob8A4Smkfhyb3coDvrnj5A_2WRsBRBVDOTVOjsZUV7oPbHjNjq8KFxslmyVXwskcV0i_Z8Mke4c43P2SSrynW5cXUJ-CdBH2AdtMz7FcepKNTQ_EcPOMX88g==",
+      "domain": ""
+    },
+    {
+      "title": "satra.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGn29Vkm-MvLyU_ZAprU-SXJ4LXpM67Mgq_XPKE7etUlqhLyN-ebhkYhJ2cG8G2luNNjYZ1iKlwU5vA-CsXt2KH2qaMpoXqnFUErCk3pPEM_bs_he_zQ2msPNB7bhOS7cRm9qn24CwHvcXe7nA=",
+      "domain": ""
+    },
+    {
+      "title": "iteh.ai",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGzbvTEPMtSYIFYF-OPi4I2aaWNWtakfsjm71k3G74EK8vrzuZ2KaOdeOVjypgmsqBA9fom15zxtEnGiih6QQS9528L5T6W0CGU_M59njvYQzPkHfHuAb36g_zXgXWvMl1UZZfIPXbpAnjHqv8Ev97wB0hmS2luABMUJ0iGuIUuhleoLKGuqFw8hHLGYc77cCl2DVB3tQ5984mJIagO1NA=",
+      "domain": ""
+    },
+    {
+      "title": "bsigroup.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFR_FSEv8cEsjJ3Dhr7oTaItWuqGaUq3ZqEFBnj93wLAkFXxenCeWyM5GlfggN6i2SklO_NzPgW0Nr2TpphHAR3zFN6WS4pspMMHnx_AizhSqHvqT3hveqU8vM9lvSbTlfdEQv73YpvEHU3vMMjqsdXj3XRxTjeBPCn4LQPG5hvK2NOOc3ObZPE5g==",
+      "domain": ""
+    },
+    {
+      "title": "dnk-cie.de",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFEBOFePDqfvmOgcYsj9lUlbhptRaifKA2IptWP8IGik_kxxdVddbCl43AoQZ56lHKIAzlH23B3zePqXi5BLwpDAk1rdUdBdiIlU5psRgZSIX8u8maGtnyywLfYvCwqSrdieGj1ag72BhD2LwEQ0KrBDceuqOLCzSceRyjEHYxBDwZXmv_-8V_DFqOOvhkd7avHeRHHJw==",
+      "domain": ""
+    },
+    {
+      "title": "sppcltd.co.uk",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEGdn1YDdvOwhzKyS-ZN84spTidn2qxcxL42dZE5gEWgGJF25rgDoa-2HuD6LrWI1jue9-EVL4ePe2WQKVDmagT4GgXpXWtX9I3pSTOHNwqKZ2f8d6mpa1HvCxm_jhG2LZ6hfNcQum3ym8Ci_8=",
+      "domain": ""
+    },
+    {
+      "title": "akzonobel.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEDqV7dLbbKNprV9oTPtJbWD-sEb7QNTrds7fuJWkbPO_CQpjMIcias0yD0w9kfTgzEsuF0DS_qbNG7_IJoo8VjW1ZLNjhgXslo7hMN2PlAZXzbNjsby7u9vUHsN1ExEk7FXBsjwleidRb5hABreDphU3PBTpL2A1-BzJwpgNePrfTnIojeRPS-qfCfmEMzOTYdf7yxws42gXbwMgVe",
+      "domain": ""
+    },
+    {
+      "title": "akzonobel.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEFpOEdyqDHxMd-MvSt5kCjaY6JQjx2atZUdUtXe6GiHfpqISisNpbRfQdj2BuJj0cRlw3NU6PhQYpdHDyTyEh5MHAON5IRo3qtJbn_Q7KHwWdhjqm7s9ZMZ3uGeWsSI7PmV_0xCubRlY1x2PfdmI0XUiwh6fE64j-_xx__gbOn5PlkcfA7Ax9-AVGCdgabGwA8ralv-yU=",
+      "domain": ""
+    },
+    {
+      "title": "scribd.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEpFpjl4l6YIs0wD2zBR2MyqTW3-GPhNIIkoR7BQHWRPxoAUUgw58D99DBYEUEkpLQpj4fSkzVQRQaw-c7m6oJI8snxc0Vo5dnsdOUmKdliPbt69GvhtfTZulHP11dGutF-1E5Vl_C-",
+      "domain": ""
+    },
+    {
+      "title": "refractiveindex.info",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFKlsak0AFLEemqXpM-havDfzrzMvIkEv2NGUJ1OZdmKa5BHnSMw9cCo6-_vF__hrC9Brq590Do23vi90EU5GC4oKk6jvYAQB4C3kKEp-8sKcQ0PB46ySlpcDwso4KClDwXFcA730yhOlY46wJU-yjXyVFSTyKaaA==",
+      "domain": ""
+    },
+    {
+      "title": "poliigon.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGWUZvwkXJ8EdsaAr82Y46_Bs9Xg5y7qbNxFJ4M7mftFnc1grg4yMtprp0UcbSEJPxGXLIh6ERqgHH4rTHF60_qfocrzErLiQKAUK11v4Q2ET_iab9aqYVvquNkngVxGob3ABRU-x0Tr9Ukccey0YD_d7rdv3WVOw0Kj9S7U58Y_r4=",
+      "domain": ""
+    },
+    {
+      "title": "poliigon.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEEuH_JzYnPhAMlHNAK_CaTnUWRW5XzeDE_Wo93iyj_vZ8tl1OXI3IA4p4kpG0mjAwwLxEOthiJmeHjXSeMVg_4WKLeCp1mp43t9qnFQZv3lo0d3AVDJTYztTKkYtoCQ3Ohqu_FrdKDGHWFPiSuKW-q-muziatk32fHaM017s4Xiic=",
+      "domain": ""
+    },
+    {
+      "title": "arxiv.org",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGPMdbXXdHz6FooMGt251J7h7rAWLoi6ngO2iSarGhMQRrnv6eeXr7kaosL70YYUD28Lr2qCuCUKDWQYnLWwdHQ00tyYYdPTLqQjlfRre1HR3PRrLgXvea9yr8beHo=",
+      "domain": ""
+    },
+    {
+      "title": "industrialphysics.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEv3_KXD5tKh8VV4iIOQyQvNlHH7PzgB3G3K4FCqlMionIGBLCHkTBQlJJbSKCTcUvOdrzV6lR9om_eij_pYPaiW7M8avZNnCAlncCxLhArJvBYZBfboiXkezC1ic541MYB7h8mI5bMEb0kUzZn",
+      "domain": ""
+    },
+    {
+      "title": "fire-test.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHvG2lV-flB6obybBJ3Miq_6bAXHRDb_9YTqA8p4Bw-wf9fF4IwQCoC0MBVAeYH8_f2VzwI9Aa42USu_HnDRHbFpSNSpA5Z5x_EkPMuABD7z9cJlNyW0BAPBBm-moMSaDi7MeYQlG3AeIQ=",
+      "domain": ""
+    },
+    {
+      "title": "infinitalab.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG0_d8Mfxc3kNVG-40PtPL-alhp9APRvMCe2szN7XGsUtIfTrtmNWb4foIt8uVcOkBVee_ozZxKqnvDwrpwYAOdJH72gyTJb3jtrzG3yyvj8uSY2dZ2R_4rzXRifik90x8-XPky4KrzV3PMmFIsv5Y=",
+      "domain": ""
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+ "_what": "The bar for 'could be sent to a client', cut from 658 delivered renders made by another studio and sold to its clients. Read by pipeline/scripts/deliverable_check.py.",
+ "_why_percentiles": "Every image threshold here is a percentile of DELIVERED WORK, not a number the builder chose. This repo has shipped nine scorers whose thresholds were picked to be satisfiable; a percentile of work that was actually sold is the one number the builder cannot quietly move. Nothing in this file may be edited to make our frame pass — recut it from a fresh census or leave it alone.",
+ "_why_not_a_conjunction": "Only 28.7% of the 658 pass all seven image rows, so an all-rows standard would reject 71% of work that was sold. Mandatory rows are correctness; scored rows are a distribution, and the pass count is the one that lands on the median of delivered work: D1 + 5 of 6 qualifies 51.4% (4/6 -> 61.7%, 6/6 -> 28.7%).",
+ "_what_the_image_rows_CANNOT_do": "MEASURED, NOT ASSUMED, AND IT CHANGED THE PLAN. Our best frame (room_bedroom_suite_eye_ld1.png) PASSES five of the six scored image rows. Its tone, its dynamic range and its 4-32 px structure are genuinely at delivered level. A sighted judge looking at the same frame called it not sendable and named blob pillows, flat cut-out garments, white-box books, uniform plasticky roughness and an amber-monochrome cast. Of those five, the image rows can see exactly one (D10). THE IMAGE ROWS ARE A FLOOR, NOT A SUFFICIENT CONDITION. The rows that must carry the weight are the SCENE rows, and beyond them the critic ladder and the owner's eye, which stay terminal.",
+ "pool": {
+  "n": 658,
+  "source": "_private/benchmark/candidates.json via look_bench.anchor_pool, minus the 2 reproduction-quarantined projects",
+  "census": "_private/benchmark/census-2026-08-09.json",
+  "_never_committed": "the pool and the census are client imagery and stay under _private/"
+ },
+ "normalisation": {
+  "long_edge_px": 1600,
+  "_why": "every row except D1 is measured after resampling, so a bigger render cannot buy detail or contrast"
+ },
+ "mandatory": [
+  "D1",
+  "D8",
+  "D9"
+ ],
+ "scored": [
+  "D2",
+  "D3",
+  "D4",
+  "D5",
+  "D6",
+  "D10"
+ ],
+ "scored_need": 5,
+ "_d7_note": "D7 (>=12 loose styling objects) is reported but not scored until the shelf can supply them: CATALOG.json measures the shortfall at 8 (4 usable styling models across 29 dirs). A row that no amount of building can satisfy is a procurement decision for the owner, not a gate. It becomes mandatory the moment styling_short_by reaches 0.",
+ "_scene_rows_need_a_scene": "D8 and D9 are MANDATORY, so a frame with no scene dump cannot qualify at all. That is deliberate: without them the standard is only checking tone, and tone is the half our frames already pass.",
+ "rows": {
+  "D1": {
+   "metric": "mp",
+   "direction": "min",
+   "threshold": 2.796,
+   "source": "pool p25 of 658 delivered frames",
+   "why": "resolution — measured on the ORIGINAL; the one row a bigger render may win"
+  },
+  "D2": {
+   "metric": "p1",
+   "direction": "max",
+   "threshold": 31.2875,
+   "source": "pool p75 of 658 delivered frames",
+   "why": "the frame has true darks — our shadow floor sits where delivered work's does"
+  },
+  "D3": {
+   "metric": "stops",
+   "direction": "min",
+   "threshold": 2.9028,
+   "source": "pool p25 of 658 delivered frames",
+   "why": "dynamic range p1->p99"
+  },
+  "D4": {
+   "metric": "clipped_pct",
+   "direction": "max",
+   "threshold": 0.3268,
+   "source": "pool p75 of 658 delivered frames",
+   "why": "blown highlights"
+  },
+  "D5": {
+   "metric": "octave_energy",
+   "direction": "band",
+   "threshold": [
+    6.4508,
+    12.7998
+   ],
+   "source": "pool p25/p90 of 658 delivered frames",
+   "why": "structure in the 4-32 px octave — two-sided, so noise cannot buy it"
+  },
+  "D6": {
+   "metric": "dark_share_pct",
+   "direction": "min",
+   "threshold": 0.744,
+   "source": "pool p25 of 658 delivered frames",
+   "why": "share of the frame below L=26"
+  },
+  "D10": {
+   "metric": "chroma_iqr_deg",
+   "direction": "min",
+   "threshold": 3.6875,
+   "source": "pool p25 of 658 delivered frames",
+   "why": "PROVISIONAL — the room has a colour story rather than one cast"
+  },
+  "D7": {
+   "metric": "loose_objects",
+   "direction": "min",
+   "threshold": 12,
+   "source": "declared by the plan",
+   "why": "loose styling objects, counted from per-object ids, not from gradient blobs"
+  },
+  "D8": {
+   "metric": "primitive_acquire_class",
+   "direction": "max",
+   "threshold": 0,
+   "source": "declared by the plan",
+   "why": "R8-ACQUIRE-class objects built as primitives"
+  },
+  "D9": {
+   "metric": "flat_shaded_curved",
+   "direction": "max",
+   "threshold": 0,
+   "source": "declared by the plan",
+   "why": "curved forms rendering flat-shaded"
+  }
+ }
+}

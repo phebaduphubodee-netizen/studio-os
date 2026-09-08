@@ -1,0 +1,9 @@
+{
+ "license_id": "cc0",
+ "source": "polyhaven.com",
+ "scope": "this directory and everything below it",
+ "redistributable": true,
+ "why_this_file_exists": "Until 2026-08-01 every asset in the repo was CC0, so the licence of anything under assets/ was answerable from the directory name. The owner cancelled the '฿0 + CC0/public-domain only' sourcing clause that day, and the tree now holds several licences at once — CC0 here, Trimble GML in the gitignored assets/shared/warehouse/ cache, and whatever a future acquisition carries. A directory name is not a record. This is the record, and scripts/asset_license.py reads it.",
+ "note": "A per-model SOURCE.json placed inside a subdirectory OVERRIDES this file for that model. That is deliberate: it is how one non-redistributable asset can be caught sitting inside an otherwise permissive tree, which is the exact failure a path-based .gitignore cannot see.",
+ "verify": "docs/LICENSING.md is the authority on what may be handed to a client. This file records what was declared; it does not adjudicate the claim."
+}

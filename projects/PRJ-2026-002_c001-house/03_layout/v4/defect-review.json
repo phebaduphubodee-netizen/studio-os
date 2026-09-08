@@ -1,0 +1,62 @@
+{
+ "schema": "studio-os/defect-review@0.1",
+ "note": "Owner signatures for floor2_defect_gate findings. A signed fingerprint stays dismissed across re-runs. Entries marked transcribed=true were NOT decided in this file -- they transcribe an owner decision already recorded elsewhere (source cited); revoke by deleting the entry. REVOKED 2026-07-10r2: 7155f0455ee6/9d6133f9e0c1 -- คำถอดความ 'ขอบปิดด้วย cabinetry+ประตู+pier' ตัดคำว่า 'มีกำแพง' ของ owner ทิ้ง (owner พูดว่า 'ในแบบมีกำแพงและ BF09-1...' ตั้งแต่รอบแรก); markup รอบ 2 ยืนยันกำแพงมีจริงบนแผ่น -- เติมเข้า walls-json แล้ว ลายเซ็นสองรายการนี้จึงถูกเพิกถอน",
+ "signed": [
+  {
+   "fingerprint": "82a588cc3271",
+   "by": "owner (transcribed)",
+   "date": "2026-07-05",
+   "transcribed": true,
+   "source": "READING-NOTES-v4.md confirm log: 'BF09-2 meets BF10 exactly at the SE corner + clears the ensuite door (gap y6698-7596) -- owner-directed 2026-07-05'; table row: 'next to ensuite door, runs south, S end meets BF10'",
+   "reason": "BF09-2 running south out of the wardrobe-bay outline into the dress zone is the owner's own placement (S end meets BF10). The bay outline is a zoning rectangle, not a containment contract for this piece."
+  },
+  {
+   "fingerprint": "c35b348275f5",
+   "by": "owner (transcribed)",
+   "date": "2026-07-10",
+   "transcribed": true,
+   "source": "owner 2026-07-10 (แชทสด): \"ในแบบมีกำแพงและ BF09-1 ยาวลงมาทิศใต้จนบรรจบกับ BF12-1 พอดี\" + \"ปลายใต้เสมอกัน\"",
+   "reason": "BF09-1 ขา E ยืดใต้ถึง y4674 (ปลายใต้เสมอ BF12-1) โดยคำสั่ง owner -- ออกนอก bay outline โดยเจตนา (ตู้ทำหน้าที่ปิดขอบ dress<->sitting)"
+  },
+  {
+   "fingerprint": "a9a01347d66e",
+   "by": "owner (transcribed)",
+   "date": "2026-07-10",
+   "transcribed": true,
+   "source": "ink probe 2026-07-10: ผนังใต้จริงอยู่ที่ y-698/-799 (patch เข้า walls-json แล้ว + หน้าต่าง w1/w2 เข้า openings-v4.json); เส้น 0.12pt ที่ -450 = แนว sill/outline nominal",
+   "reason": "ขอบ outline ห้อง (-450) ห่างแนวผนังจริง (-698) 248mm เกิน tolerance ของ C4b -- ผนัง+หน้าต่าง RENDER แล้ว ไม่ใช่กำแพงหาย; ถ้า owner ชี้ว่าขอบห้องจริงคือ -698 ค่อยแก้ outline แล้ว flag นี้จะหายเอง"
+  },
+  {
+   "fingerprint": "05bd38d31834",
+   "by": "owner (transcribed)",
+   "date": "2026-07-10",
+   "transcribed": true,
+   "source": "แผ่นจริง: ไม่มีหมึกกำแพงใด ๆ ที่ปากทาง bay (probe 2026-07-10) + ภาพแปลนที่ owner ส่ง -- ทางเข้า walk-in เปิดโล่ง 2.3m",
+   "reason": "ปากทางเข้าโซนตู้เสื้อผ้า = ช่องเปิดตามแบบ ไม่ใช่กำแพงหาย"
+  },
+  {
+   "fingerprint": "415fed34d04e",
+   "by": "owner (transcribed)",
+   "date": "2026-07-10",
+   "transcribed": true,
+   "source": "owner markup บน render 2026-07-10: \"ในแบบไม่มีกระจกแต่เป็นระเบียง\" -- SUPERSEDES การอ่าน 07-06 (indoor lounge)",
+   "reason": "ขอบใต้ sitting [5752,10650] = ขอบระเบียง (railing r1 ใน openings-v4.json, ราว 1000mm) ไม่ใช่กำแพงหาย; envelope จริงของห้อง = ประตูเลื่อน s1 ที่ y2050"
+  },
+  {
+   "fingerprint": "d06d754447d8",
+   "by": "owner (transcribed)",
+   "date": "2026-07-10",
+   "transcribed": true,
+   "source": "owner markup บน render 2026-07-10: ลูกศร \"หน้าต่าง\" ชี้ช่องผนังตะวันตกสองจุด (= w3/w4 ใน openings-v4.json)",
+   "reason": "ช่อง 600mm [2898,3498] ที่ v@-47 เป็นหน้าต่าง ไม่ใช่ประตู -- BF11 คือโต๊ะทำงานหน้าหน้าต่าง (ปกติ) ไม่ใช่ตู้บังประตู"
+  },
+  {
+   "fingerprint": "53cce32db02f",
+   "by": "owner (transcribed)",
+   "date": "2026-07-10",
+   "transcribed": true,
+   "source": "owner markup บน render 2026-07-10: ลูกศร \"หน้าต่าง\" ชี้ช่องผนังตะวันตกสองจุด (= w3/w4 ใน openings-v4.json)",
+   "reason": "ช่อง 600mm [4999,5599] ที่ v@-47 เป็นหน้าต่าง ไม่ใช่ประตู -- BF11 คือโต๊ะทำงานหน้าหน้าต่าง (ปกติ) ไม่ใช่ตู้บังประตู"
+  }
+ ]
+}

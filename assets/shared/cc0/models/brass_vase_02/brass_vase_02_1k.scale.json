@@ -1,0 +1,23 @@
+{
+ "file": "brass_vase_02_1k.gltf",
+ "class": "vase",
+ "axis": "z",
+ "measured_mm": 528.6,
+ "band_mm": [
+  80.0,
+  900.0
+ ],
+ "ok": true,
+ "in_band": true,
+ "thinnest_over_longest": 0.3977,
+ "min_ratio_for_class": 0.25,
+ "planar_refusal": null,
+ "bbox_mm": {
+  "x_mm": 210.2,
+  "y_mm": 210.2,
+  "z_mm": 528.6
+ },
+ "prims": 1,
+ "source": "styling props, this lane's own lathe range",
+ "in_band_under": null
+}

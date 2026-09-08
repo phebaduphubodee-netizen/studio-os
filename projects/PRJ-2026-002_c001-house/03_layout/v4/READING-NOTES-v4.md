@@ -28,7 +28,15 @@ master west x0 · party wall x5750 (sleeping interior x5500, north-wing x5650) �
 · suite north y8650 · ensuite south y5850 (x0–3150) · sitting north y6250 · master south niche y-450.
 Owner-circled zone dims: 5500 (master W) + 5100 (sitting W) = 10600 ✓; 2850/2950/700 west stack.
 
-## Sitting SOUTH = covered terrace + sliding glass door (owner 2026-07-06)
+## Sitting SOUTH = INDOOR lounge by the glass (NOT a terrace) — CORRECTED 2026-07-06
+> CORRECTION (owner 2026-07-06): "the tub chairs ARE floor 2; there is NO terrace — outside the
+> wall is grass BELOW; the trees are not on a balcony." So the south area is an INDOOR floor-2
+> lounge by the south glass facade (the 2 tub chairs + round table are real floor-2 furniture),
+> and the garden TREES are ground level (y<0), OUTSIDE/below the glass — not floor-2 planters.
+> Actioned: dropped the manifest `terrace` slab + tree-planters; the tan `sitting_terrace` floor
+> zone became the interior green `sitting_lounge` (y0–2050). Chairs kept + owner-aimed (rot 8/332,
+> converge just right of the left tree below). The prose BELOW is the superseded terrace reading.
+
 The sitting room is enclosed only down to the exterior door line; SOUTH of it is an OUTDOOR
 terrace lounge (2 tub chairs + 1 round table + trees). The envelope JOGS (owner: "an L wall
 juts from the west first, THEN the sliding door"):

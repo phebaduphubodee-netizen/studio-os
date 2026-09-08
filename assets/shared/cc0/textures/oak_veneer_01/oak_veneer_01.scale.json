@@ -1,0 +1,23 @@
+{
+ "slug": "oak_veneer_01",
+ "dimensions_mm": [
+  1830.0000429153442,
+  1830.0000429153442
+ ],
+ "tile_m": 1.83,
+ "aspect": 1.0,
+ "source": "https://api.polyhaven.com/info/oak_veneer_01",
+ "note": "The world size of one repeat, as published. R8: scale is ASSERTED on ingest, never assumed.",
+ "relief": {
+  "vendor_mean_slope_tan": 0.039215,
+  "vendor_mean_slope_deg": 2.2457,
+  "diffuse_mean_grad_per_m": 25.6055,
+  "gradient_linear_per_m": 24.7729,
+  "gradient_baseline_mm": 1.7871,
+  "bump_distance_m_from_diffuse": 0.001531,
+  "displacement_map_std_8bit": 0.31,
+  "displacement_map_usable_as_height": false,
+  "measured": "2026-08-29",
+  "method": "DERIVED by pipeline/scripts/relief_measure.py, which re-runs and is the authority on every figure here. Run it to check them; do not hand-edit. See that file for the three declared approximations (gradient baseline, sRGB-vs-linear, dark=low)."
+ }
+}

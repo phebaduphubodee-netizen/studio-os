@@ -1,0 +1,57 @@
+{
+  "order": "ORD-2026-08-25b-five-items-after-p2r74",
+  "item": 3,
+  "owner_sentence": "ผ้าที่พับและวางไว้ในตู้ built in ยังเป็นโมเดลปั้นเอง / ของที่วางในตู้ก็วางไม่เป็นธรรมชาติ",
+  "frames": [
+    "pipeline/output/room_bedroom_suite_eye_p2r75w.png"
+  ],
+  "verdict": "NOT-VISIBLE",
+  "evidence": [
+    {
+      "frame": "room_bedroom_suite_eye_p2r75w.png",
+      "bbox_px": [
+        820,
+        370,
+        1020,
+        500
+      ],
+      "arrow_tip_px": [
+        912,
+        432
+      ],
+      "crop": "crop1_top-shelf-crumple.png",
+      "what": "Sage cloth on the top shelf: visible portion is a smooth featureless crumpled lobe - no fold rolls, no edge thickness, no layer lines - shoved to the back-left of the shelf so the fascia occludes most of it. Reads as a dropped crumple, not folded storage."
+    },
+    {
+      "frame": "room_bedroom_suite_eye_p2r75w.png",
+      "bbox_px": [
+        1065,
+        665,
+        1275,
+        810
+      ],
+      "arrow_tip_px": [
+        1140,
+        724
+      ],
+      "crop": "crop2_right-bay-edge-jam.png",
+      "what": "Dark-sage folded cloth: believable fold roll and wrinkle irregularity (cloth-read passes), but it is jammed against the bay's left partition with the roll riding the shelf's front lip, the lone item in the bay - position reads placed-by-collision, not stored."
+    },
+    {
+      "frame": "room_bedroom_suite_eye_p2r75w.png",
+      "bbox_px": [
+        560,
+        300,
+        1300,
+        1300
+      ],
+      "arrow_tip_px": [
+        1185,
+        850
+      ],
+      "crop": "crop3_column-staged-sparse.png",
+      "what": "Whole shelf column: three lone cloths across roughly seven compartments, every other bay bare (arrow on the empty bay below the sage cloth). This is the isolated-single-item-on-empty-shelf staging pattern, not natural storage."
+    }
+  ],
+  "note": "Split verdict on the cloth half: the mint striped garment (lower-left shelf, ~[590,995]-[770,1090]) is genuinely believable folded satin - layered folds, rolled edges, collar and a label tag, flat stable contact - and the dark-sage fold also reads as real cloth. No identical folded-stack asset is visibly repeated (crumple vs flat fold vs striped garment; the two sage items share color but not silhouette or folds). The failure is (1) the top-shelf item, whose visible pixels show an unfolded featureless crumple hidden behind the fascia, and (2) placement naturalness overall: every occupied shelf holds exactly one isolated cloth and most bays are empty. Hand-built-vs-purchased provenance is not pixel-decidable; judged only on what the pixels show. Sub-verdicts: A folded-cloth read PARTIAL (2 of 3 believable), B duplication NONE VISIBLE, C placement NOT NATURAL."
+}

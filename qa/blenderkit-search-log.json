@@ -1,0 +1,144 @@
+{
+ "_what": "Every BlenderKit query this repo has asked, and what the tier actually measured. Written for the same reason as qa/warehouse-search-log.json: 'the paid tier has what we need' must be a checkable sentence, not a mood — the free-tier version of that sentence has now been wrong three times.",
+ "_asked": "2026-08-17 (p2r48), on the owner's instruction to run the FREE test before spending on ASK-002.",
+ "_route": "Public search API, no account: /api/v1/search/?query=... Free royalty_free assets download from /api/v1/downloads/<id>/?scene_uuid=<uuid>, which returns a signed file URL. ฿0 spent, no credentials created.",
+ "_the_caveat_that_decided_it": "`dictParameters.faceCount` is a WHOLE-ASSET number. Read as a per-sheet count it says 449 of 828 full-plan assets clear the ~73,088-face bar; measured per OBJECT on three downloaded samples it says something else entirely — see `measured`.",
+ "cover_span_mm": 1969.0,
+ "control_mm": 10.3,
+ "one_sheet_bar_faces": 73088,
+ "queries": [
+  "bed linen",
+  "duvet",
+  "bedding",
+  "blanket bed",
+  "bedspread",
+  "bed sheet",
+  "comforter",
+  "quilt bed",
+  "cloth bed cover",
+  "pillow bed"
+ ],
+ "catalogue": {
+  "distinct_model_assets": 1289,
+  "with_face_count": 1261,
+  "free": {
+   "n": 433,
+   "median_faces": 26580,
+   "max_faces": 1583452,
+   "assets_whose_TOTAL_clears_the_bar": 142
+  },
+  "full_plan": {
+   "n": 828,
+   "median_faces": 97378,
+   "max_faces": 4936021,
+   "assets_whose_TOTAL_clears_the_bar": 449
+  }
+ },
+ "downloaded": [
+  {
+   "slug": "bk_daxing",
+   "declared_faces": 575335,
+   "simulation": true
+  },
+  {
+   "slug": "bk_phoenix",
+   "declared_faces": 374441,
+   "simulation": true
+  },
+  {
+   "slug": "bk_stansted",
+   "declared_faces": 238163,
+   "simulation": true
+  }
+ ],
+ "measured": {
+  "_finding": "All three are FREE, category `bed`, `simulation: true`, royalty_free — the sim-authored class this repo told the owner the free tier does not hold. That claim was wrong, for the third time. But the density is NOT in the bedding: the densest object in each is the upholstered HEADBOARD (`capçal` is Catalan for headboard; `costures` is seams) at 2.05-2.12 x 1.18-1.22 x 0.16 m, 184,536 / 274,048 / 574,293 triangles. The BEDDING parts are the SAME MESHES in all three files — 59,840-triangle cover halves, a 52,317-triangle sheet, 25,610-triangle pillows — so across a 2.4x spread in whole-asset faceCount, the cloth does not get finer at all.",
+  "on_this_bed": {
+   "coverage": 0.817,
+   "fall_sides": 2,
+   "cover_part_edge_mm": 13.8,
+   "coarsest_field_edge_mm": 25.2,
+   "note": "identical for all three, because the cloth meshes are shared"
+  },
+  "versus_what_already_ships": {
+   "slug": "d4698c95_flat",
+   "coverage": 0.94,
+   "fall_sides": 4,
+   "edge_mm": 10.7,
+   "verdict": "the free BlenderKit sample is WORSE on every enforced number"
+  }
+ },
+ "what_this_does_and_does_not_settle": {
+  "settled": "Buying density in this library buys headboard tufting, not cloth. The catalogue's faceCount cannot be read as a per-sheet number, and the one sample where it could be checked showed bedding density flat across a 2.4x asset-face spread.",
+  "not_settled": "Whether some FULL-PLAN asset's bedding part specifically is finer than 10.7 mm. No free measurement can answer that, because the API publishes no per-object counts. Answering it costs one month of the full plan.",
+  "cheapest_next_test_if_he_wants_it": "One month of BlenderKit Full (~$10 if monthly is offered, $118.80/yr otherwise), download 5 bedding assets, run the same three commands. The instruments are built and cost nothing per candidate now."
+ },
+ "wholebed_2026_08_18": {
+  "_asked": "2026-08-18, the hour after the owner answered ASK-028 with 'ลุย BlenderKit'. Question: does the catalogue hold a WHOLE MADE BED that fills the drawn 7'x6.5' rectangle (made-bed field >= 0.88 both axes, ORD-2026-08-18-bed-too-small)?",
+  "_route": "Same public search API, no account. 12 text queries ('double bed'..'bed luxury'), 991 distinct assets, 588 bed-named, 174 inside the whole-asset size window (unordered horizontal axes 1.90-2.90 m, h <= 1.6). Every one of the 174 thumbnail-judged by a 12-agent fresh-context panel (whole made bed / duvet drapes / no footboard / headboard / modern): 129 bench_worthy = 118 full_plan + 11 free.",
+  "_exhaustion_correction": "The p2r53 sentence 'the free shelf is measured to exhaustion' was true only of the queries then run — NONE of these 11 free beds appears in either 08-18 rebench. Third instance of an exhaustion claim that was really a claim about our queries (p2r46, p2r47 before it). The claim is hereby narrowed: exhaustion is always relative to a recorded query list.",
+  "free_tier_bench": {
+   "staged": 11,
+   "route": "downloads are per-FILE (files[].downloadUrl of fileType blend), not per-asset — the naive /downloads/<asset_id>/ 404s. blend -> GLB via headless Blender, then wholebed_bench in the real room, fit rect 3204,51,2000,2149, same as the rebench.",
+   "pass": 0,
+   "passer": {
+    "assetBaseId": "81d895fd-ab4b-4d44-8c4c-126f386083d6",
+    "name": "Modern double Bed",
+    "licence": "royalty-free (free tier)",
+    "field_mm": [
+     1776,
+     2149
+    ],
+    "field_fill": [
+     0.888,
+     1.0
+    ],
+    "scale": 0.7789,
+    "plane_mm": 416.8,
+    "cover_edge_mm": 4.08,
+    "control_edge_mm": 10.27,
+    "tris_total": 1456528,
+    "note": "First hard-filter pass in this bench's history (0/7 and 0/18 the day before). Separable headboard, head end resolves, duvet drapes to the floor both sides. Brings its own flanking white drawer units and blue pillows — integration decisions, not audition failures.",
+    "render": "_private/deliv-001/bed-size-2026-08-18/bench-free-blenderkit/chunkB/81d895fd-ab4b-4d44-8c4c-126f386083d6_eye_ql.png"
+   },
+   "runner_up": "f0938871 field 1781x1980 (0.891x0.921) PASSES the field law but fails head-end resolution (one-mesh bed, orientation would be a coin flip — R9 refuses). If ever needed, orientation could be human-signed the way identity is (D-037's ladder), but with a clean passer there is no reason.",
+   "fails": "9 others: 7 read smaller than the ink (field_fill 0.27-0.94 on an axis), 3 unresolvable head end, 2 fused headboards colliding with the sheet-drawn band (SR-18). Full rows: _private/deliv-001/bed-size-2026-08-18/bench-free-blenderkit/wholebed_bench.json",
+   "passer_correction_p2r54": "THE PASS CLAIM STOOD FOUR HOURS AND WAS THE INSTRUMENT'S, NOT THE BED'S (D-109, fifth instance of the class this file's opening sentence guards against). The integration probe of 81d895fd's GLB placed every part: the field width that read 2149 (fill 1.00) was Wall_Fabric_1/2 — a two-layer fabric headboard WALL 2,759 mm wide standing on the floor BEHIND the bed, 590 mm past the frame each side — admitted as bedding because made_field's thin-panel exemption was frozen at 60 mm against f52472c1's burl panel and this wall is 163 mm thick. The bench scale 0.7789 was the wall fitted to the drawn width. CORRECTED RULES (wholebed_rules: plan_overlap_frac >= 0.5 for field membership; carry_ons strip; containment-capped fit): the bed's own soft field spans 1,988 mm native and reaches 1.00x0.835 at scale 0.903 — no legal scale reaches the 0.88 width cut. 81d895fd is therefore the SIGNED INTERIM (best honest field on the shelf, +254 mm width over f52472c1's 0.72), not a passer. The runner_up row below is likewise corrected: f0938871's field counted its own fused 976 mm frame as width, its flanks read bare (N 0.89 / W 0.89 at d250) and its plane 644 stands over the signed h600 envelope — refuted for cause, not just head-end. FINAL free-tier sentence, instrument-honest: 12 panel-passed free beds, 12 staged, ZERO pass the made-bed field cut. The route to the drawn bed is ASK-029's 135-candidate full-plan shelf."
+  },
+  "what_the_full_plan_still_holds": "118 panel-passed full-plan candidates, untouched — the ASK-029 key unlocks them. The free tier delivering a passer removes the bed from that ask's critical path; the subscription decision is now about the library (bench seats, alternates, other classes), not about this order.",
+  "exhaustive_recheck": {
+   "_trigger": "The owner asked, the same evening: 'มั่นใจแล้วใช่มั้ยว่าหาดี (หาแบบตรง keyword, หาครบทุกหน้าที่มี) แล้วในชั้นฟรี' — and the honest answer was NO: the first sweep capped every query at 3 pages and never walked the platform's own category tree. The very defect this file's opening sentence exists to prevent, caught by him within hours.",
+   "_route": "Every page of every channel, no caps: category_subtree:bed (611) and :bedroom (232) — the canonical 'every page there is' — full-text 'bed' (1242), the original 12 queries uncapped ('double bed' alone holds 835; the capped sweep had read 300), and 9 non-English terms. Non-English yield ~0 (postel 1, cama 1, кровать/yatak/letto 0; 'lit' 96 = English lighting noise): this platform's tags are English, so the p2r46 Portuguese lesson does NOT transfer.",
+   "totals": "2,147 distinct assets (first sweep saw 991), 210 in the drawn-bed size window (was 174) — 36 NEW, judged by a fresh 3-agent panel: 18 bench_worthy = 17 full_plan + 1 free.",
+   "free_delta": "The one new free candidate (7bd2641a, tufted-headboard double) benched in the real room: field 1945x1867 = fill 0.973x0.869 — fails the width axis by 0.011. FINAL free-tier sentence, now catalogue-true: 12 panel-passed free beds exist across all channels, all 12 staged and measured, exactly ONE passes every hard filter — 81d895fd. The full-plan shortlist grows to 135.",
+   "process_notes": "Two mechanical traps recorded: cp1252 stdout kills a sweep that prints non-Latin queries (set PYTHONIOENCODING=utf-8); and a bench slug must be READ from the download manifest, never retyped — one retyped uuid tail cost a wasted bench run."
+  }
+ },
+ "nightstand_bench_2026_08_22": {
+  "why": "p2r57 (D-115): owner's eye 'สัดส่วนมันดูเพี้ยนแปลก ๆ' -> bedside datum re-derivation + style swap. Queries for LOW nightstands (target top ~405 = plane 425 - 20) and foot benches (top <= 425) with REAL dims from the API.",
+  "domain_note": "API now at blendkit.com (verified rebrand 2026-06-10, ex blenderkit.com); same public no-account route as wholebed_2026_08_18.",
+  "queries": [
+   "asset_type:model+is_free:true+nightstand (3 pages, 198 results)",
+   "asset_type:model+is_free:true+bedside+table (3 pages, 172 results)",
+   "asset_type:model+is_free:true+bench (3 pages, 250 results)"
+  ],
+  "size_window_hits": 27,
+  "fetched": [
+   "b0f7d7c0 Minimalist wooden nightstand 400x303x416",
+   "9d193cdc Nightstand 408x342x374",
+   "e7e2deeb Nightstand 408x342x470",
+   "6239feef Classic modern bed side drawer 546x341x427",
+   "6e95a09b Arcom Lime Green Bedside 500x350x450",
+   "341b04e0 Modern Nightstand 02 450x450x450",
+   "5b8e98d7 Minimal modern bench 1007x396x409",
+   "aab1e047 Small Bench 1005x424x424"
+  ],
+  "all_royalty_free": true,
+  "spend": "THB 0 (free tier, no account); sidecars asserted 8/8 ok",
+  "picked": {
+   "nightstand": "341b04e0 (3-judge style panel #1 two of three; slot set to natural 400x400x400 -> top 400 = plane-25)",
+   "bench": "5b8e98d7 (panel unanimous; s 0.993 in the existing slot -> top 406 = plane-19)",
+   "refused_by_eye_and_panel": "6239feef — the best NUMBERS (fit top 392) but a classical crown-molding piece; unanimous clash — the exact style class both critics condemned at p2r56"
+  }
+ }
+}

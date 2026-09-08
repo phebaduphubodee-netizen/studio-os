@@ -1,0 +1,123 @@
+{
+  "_law": "THE TIERS A SEARCH HAS TO REACH BEFORE 'no such asset exists' IS A TRUE SENTENCE. R8 decides BUILD vs ACQUIRE; this file decides what ACQUIRE means, because the answer stopped being 'free only' on 2026-08-01 and the lane kept searching as if it had not.",
+  "_owner_order_2026_08_01": "฿0 + CC0/public-domain เท่านั้น ยกเลิกข้อนี้",
+  "_what_it_cost": "D-074 (2026-08-16) declared a SOURCING GAP for the bed cloth from a survey of 68 cached folders. Every one of those folders came from a FREE tier (Poly Haven CC0 + 3D Warehouse). The three paid tiers below have never been attempted once, in this repo's whole history, while docs/DECISIONS-render-assets.md has carried their verified prices and licences since 2026-07-01 with the note 'Status: DEFERRED — founder will decide later'. Forty-six days later the lane converted 'we have not bought one' into 'one does not exist' and went back to hand-modelling — which is the class R8 forbids, reached through a gap that was never measured.",
+  "_the_rule": "A gap is a statement about the WORLD. 'not-attempted' is a statement about US. A declaration that mixes them is refused by name in pipeline/scripts/sourcing_check.py, and the row becomes a PROCUREMENT ASK carrying a price — which is his call per purchase (R8), routed into the plan's owner channel and printed in the render path, never a blocking queue (R3).",
+  "paid_permitted": true,
+  "_paid_permitted_because": "R8 as amended 2026-08-01: 'any source whose licence permits commercial use of the RENDER ... CC-BY with attribution recorded, paid libraries'. The delivery law is unchanged and is not a sourcing question: a non-redistributable mesh never enters git, the client gets the assembled SCENE, and scale is ASSERTED on every ingest.",
+  "tiers": [
+    {
+      "id": "cc0",
+      "name": "Poly Haven / CC0 pool",
+      "tool": "pipeline/scripts/assets.py",
+      "cost": "฿0",
+      "licence": "CC0 — committable to git",
+      "owner_decision": false,
+      "note": "The only tier whose meshes may be committed. Vintage-heavy; modern-luxury furniture is its known hole (measured 2026-07-01)."
+    },
+    {
+      "id": "warehouse",
+      "name": "3D Warehouse",
+      "tool": "pipeline/scripts/warehouse.py",
+      "cost": "฿0",
+      "licence": "Trimble General Model License — use yes, redistribute as a model no",
+      "owner_decision": false,
+      "note": "The practitioner rung: his friend's main source. Gitignored cache (.gitignore:50). Style hit rate is low per query, so a search that returns nothing usable is a statement about the QUERY as often as about the tier. — MEASURED p2r46 (2026-08-17), and this tier's own sentence above turned out to be the finding: 68 cached models was the WHOLE shelf, of which TEN ever staged as bed cloth, and no query behind them was recorded anywhere. 12 fresh queries (Portuguese 'roupa de cama'/'colcha'/'edredom' beat every English term on this corpus) surfaced 8-384 MB bedding against the 1-3 MB covers this lane had been auditioning. Every query is now logged in qa/warehouse-search-log.json. THE TIER'S REAL LIMIT, measured rather than assumed: its dense meshes are SUB-METRE objects (pillow_set_a 63,492 tris on a 600 mm pillow = 10.3 mm; 799b6961 88,390 tris on 1089 mm parts = 9.55 mm), while every part big enough to be a 2 m bed cover carries 4k-22k tris and measures 20-45 mm. Fineness is a WORLD measurement, so a fine small mesh scaled up is a coarse mesh. A ~2 m cover at the 10.3 mm control needs ~75,408 triangles IN ONE SHEET; screen any candidate for it with mesh_density.py before spending a Blender import on it."
+    },
+    {
+      "id": "furnimesh",
+      "name": "FurniMesh (furnimesh.com)",
+      "tool": "pipeline/scripts/furnimesh.py",
+      "cost": "฿0",
+      "licence": "FurniMesh library licence — perpetual, royalty-free, unrestricted commercial use, no attribution (verified live 2026-08-22); use yes, redistribute as a model no",
+      "owner_decision": false,
+      "note": "The source docs/LICENSING.md ranked FIRST ('cleanest — the ONLY source legal to script-fetch') while the shelf held 0 files from it — the repo_first.py instance. FIRST ATTEMPTED 2026-08-22 (ORD-2026-08-22-process-review-actions item 3): fetcher landed, 17 models fetched across 4 loose classes (6 nightstand, 4 bench, 4 table lamp, 3 vase), every one scale-asserted — 9 in band, 8 refused. THE TIER'S MEASURED LIMIT, so nobody re-learns it: these are AI photo->3D models and 8 of 17 measure within 5 mm of exactly 1000 mm on their longest axis — the library normalizes to ~1.0 m, so a model's arrival size is NOT its real-world size. A FurniMesh mesh needs fit-to-slot scaling at placement (examples/furniture_catalog.example.json carries `fit: true` for exactly this class), and an in-band assertion here proves the UNIT is sane, not that the size is right. Cache gitignored; every query logged in qa/furnimesh-search-log.json."
+    },
+    {
+      "id": "cc-by",
+      "name": "CC-BY with attribution recorded",
+      "tool": "manual + docs/LICENSING.md",
+      "cost": "฿0",
+      "licence": "CC-BY — attribution must be recorded at ingest",
+      "owner_decision": false,
+      "note": "Permitted by R8 explicitly; never yet used."
+    },
+    {
+      "id": "paid-per-model",
+      "name": "3dsky / Dimensiva",
+      "tool": "manual purchase",
+      "cost": "$5-15 per model (3dsky); Dimensiva ~EUR 29/mo",
+      "licence": "royalty-free commercial (verified 2026-07-01, docs/DECISIONS-render-assets.md)",
+      "owner_decision": true,
+      "note": "Cheapest way to buy exactly one qualifying object. 'huge selection incl. exact boucle/marble/brass' — the file's own words. NEVER ATTEMPTED."
+    },
+    {
+      "id": "paid-subscription",
+      "name": "BlenderKit Full",
+      "tool": "Blender add-on (automatable download + placement)",
+      "cost": "Full plan, pricing-page markup verified 2026-08-22 evening: '30 day glimpse' $19.90 NON-recurring · Monthly $17.90 · Yearly $9.90/mo = $118.80/yr. The '$9.90/mo' recorded that morning (and in the ASK-029 text) was the Yearly tab the page opens on; the $118.80/yr of 07-01 was always the yearly figure. One month as ordered = the glimpse.",
+      "licence": "RF + CC0; client-delivered renders are permitted commercial use; models may not be resold",
+      "owner_decision": true,
+      "note": "The only paid tier that plugs into Blender, so the only one that scales past one purchase. APPROVED 2026-08-18 — the owner answered ASK-028 (and with it ASK-002, open 48 days) with 'ลุย BlenderKit'. Catalog measured the same day via the public search API, no account: 991 assets swept, 588 bed-named, 174 whole beds inside the drawn 7'x6.5' size window, 148 of them full-plan (qa/blenderkit-search-log.json wholebed_2026_08_18). Awaiting only his subscribe + API key (ASK-029); the declared-dims caveat stands — dims and faceCount are WHOLE-ASSET numbers, the bench measures the truth after download. || 2026-08-22 evening: ORDERED one month ('สมัคร blenderkit 1 เดือนเลย'); ASK-029 answered by that sentence, the action is ASK-031; ORD-2026-08-22-blenderkit-one-month not-obeyed/blocked_by ASK-031 until the key lands. Still unmeasured as a tier — the month is the measurement. COUNT RECONCILIATION: 991 assets in the first sweep -> 174 in the size window -> 129 bench-worthy (118 full-plan + 11 free, first panel); the exhaustive re-sweep (2,147 assets, 210 in window) raised the shortlist to 147 bench-worthy = 135 full-plan + 12 free. '148 of them full-plan' earlier in this note is the pre-panel size-window count.",
+      "census_2026_08_22": {
+        "route": "public search API, no account; counts = /search/?query=asset_type:<t>+<q> vs +is_free:true. `count` saturates at 10,000 (asset_type:material and asset_type:model unfiltered both read exactly 10000) — derive totals as is_free:true + is_free:false. An unknown qualifier key answers 0 (not an error), so the material zero is anchored by POSITIVE CONTROLS: scene 1,055+3,420=4,475 and brush 1,256+5,428=6,684 equal their unfiltered counts; hdr 4,952+9,581=14,533 equals the pricing page's own HDRI total; and the pricing page lists materials Free = Full = 37,912.",
+        "models_paywalled_pct": {
+          "bed": 77,
+          "curtain": 89,
+          "floor lamp": 78,
+          "vase": 77,
+          "plant": 77,
+          "armchair": 76,
+          "pillow": 76,
+          "rug": 73,
+          "bench": 73,
+          "wardrobe": 73,
+          "nightstand": 69,
+          "books": 68,
+          "table lamp": 66,
+          "candle": 65,
+          "mirror": 62,
+          "tray": 61,
+          "shirt": 95,
+          "clothes hanger": 83,
+          "coat": 70
+        },
+        "materials_paywalled_pct": 0,
+        "materials_note": "asset_type:material+is_free:false = 0; wood 4,864/4,864 free, fabric 5,730/5,730 free — the plan buys MODELS and HDRs, never materials",
+        "hdr_paywalled_pct": {
+          "interior": 62,
+          "sky": 75
+        },
+        "models_paywalled_pct_is": "NAME-HIT share (asset_type:model+<word>), not category share; category_subtree:bed is 83% (611, 106 free)",
+        "pricing_page_totals": {
+          "free": {
+            "models": 23383,
+            "materials": 37912,
+            "scenes": 1055,
+            "hdris": 4952,
+            "brushes": 1256
+          },
+          "full": {
+            "models": 80839,
+            "materials": 37912,
+            "scenes": 4475,
+            "hdris": 14533,
+            "brushes": 6684
+          }
+        }
+      },
+      "owner_go_2026_08_22": "สมัคร blenderkit 1 เดือนเลย ผมอยากจะรู้ว่ามันจะทำให้งานดีขึ้นยังไง",
+      "fetcher": "pipeline/scripts/blenderkit.py (built 2026-08-22; exit contract tested with network+Blender stubbed; live free-tier positive control fetch+export+sidecar 8.3 s; full-plan without key -> REFUSED naming ASK-031)",
+      "trial_criteria": "D-119 — frozen at the first paid download (digest printed by `status`); 'passed' = C3 frame-level (sighted-reader A/B + his eye) AND (C1 bed or C2 loose). Renewal is HIS call: at day 30 a procurement ask is filed with the measured numbers; if declined, this tier becomes 'searched' with numbers."
+    },
+    {
+      "id": "paid-pack",
+      "name": "Chocofur packs",
+      "tool": "manual purchase",
+      "cost": "~EUR 25/pack one-time (EUR 8.90/model); free CC0 tier exists",
+      "licence": "commercial renders OK",
+      "owner_decision": true,
+      "note": "One-time alternative to a subscription; Blender-native Cycles shaders. NEVER ATTEMPTED."
+    }
+  ]
+}

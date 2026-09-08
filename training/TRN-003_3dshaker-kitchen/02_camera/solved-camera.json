@@ -1,0 +1,101 @@
+{
+ "_what": "Camera solved from est-living/Timothy Kaye plate gh-11 (Garden House, McCluskey Studio) by the fSpy method, re-implemented as arithmetic. See NOTES.md step 2.",
+ "image": {
+  "file": "01_reference/plates/REF-HERO.png",
+  "w": 1440,
+  "h": 1920
+ },
+ "evidence": {
+  "family_A_kitchen_wall_lines": {
+   "A1_upper_top": {
+    "m": -0.26984,
+    "b": 534.93,
+    "rms_px": 0.21
+   },
+   "A4_tall_joint": {
+    "m": -0.09445,
+    "b": 862.85,
+    "rms_px": 0.13
+   },
+   "A5_splash_top": {
+    "m": -0.02538,
+    "b": 985.1,
+    "rms_px": 0.09
+   },
+   "A3_tall_plinth": {
+    "m": 0.17576,
+    "b": 1343.17,
+    "rms_px": 0.44
+   },
+   "A7_oak_top": {
+    "m": -0.28678,
+    "b": 512.73,
+    "rms_px": 0.33
+   }
+  },
+  "family_B_glazing_island_lines": {
+   "B1_win_transom": {
+    "m": 0.04296,
+    "b": 690.88,
+    "rms_px": 1.1
+   },
+   "B4_island_top": {
+    "m": -0.03109,
+    "b": 1270.75,
+    "rms_px": 3.92
+   }
+  },
+  "vp_A_pairwise_spread_px": {
+   "x": [
+    -1869.7,
+    -1769.9
+   ],
+   "y": [
+    1024.4,
+    1039.4
+   ]
+  }
+ },
+ "solution": {
+  "horizon_v_px": 1031.0,
+  "principal_point_px": [
+   720.0,
+   1031.0
+  ],
+  "vp_A_px": [
+   -1809.0,
+   1031.0
+  ],
+  "vp_B_px": [
+   7814.0,
+   1031.0
+  ],
+  "f_px": 4236.0,
+  "lens_mm_on_36mm": 105.9,
+  "hfov_deg": 19.29,
+  "camera_height_mm": 1480,
+  "axis_separation_deg": 90.02,
+  "yaw_from_kitchen_wall_deg": 30.85,
+  "blender_rotation_euler_deg": [
+   90.0,
+   0.0,
+   149.15
+  ],
+  "blender_shift_y": 0.0493,
+  "scale_source": "SP01 Michelle bar stool, 915 mm hoop apex over its own back feet -> 1596 mm; island -> 1466; oak bank at ceiling 3400 -> 1379; trimmed to 1480 by the two appliance widths (oven 803 vs 762 published, fridge 897 vs 914).",
+  "ceiling_mm": 3660,
+  "_rot_z_note": "Blender XYZ euler with rot_x=90 leaves the camera looking along +Y, so rot_z rotates that: forward = (-sin g, cos g, 0). To look along (-0.5128, -0.8586) the answer is g = 180 - 30.85 = 149.15 deg, NOT -30.85. The yaw off the kitchen wall is still 30.85 deg; only the euler encoding differs."
+ },
+ "checks": {
+  "orthogonality": "WITHDRAWN 2026-08-29 - THIS WAS NOT A CHECK. It read: 'the two axis directions come out 90.02 deg apart. Nothing forced this.' Something did: camera_solve.focal() sets f = sqrt(-(vpA-px)(vpB-px)), which is exactly the focal length that makes the two axes perpendicular. Re-run with the principal point forced to x=300, 600, 720 or 900 and the orthogonality is 90.0000 deg every time, with f moving from 3983 to 4331 px. The 0.02 was float noise. This was the lane's headline validation, quoted in RESUME.md and in the commit message.",
+  "against_the_tutorial": "3D Shaker's fSpy solve of this same photo put its camera at rotation Z = -30.302 deg. Mine, solved independently from sub-pixel edge fits, is -30.85 deg. 0.55 deg apart.",
+  "camera_height": "1379 mm here vs the 1.5 m they typed. They typed a round number because the box 'felt too big'; this is derived from the ratio of two horizontal lines on one plane (oak cabinet top vs its plinth) and is independent of focal length.",
+  "what_can_actually_be_checked": "REPRODUCTION OF LINES THE SOLVE DID NOT SET. With the derived camera and room_spec's declared dimensions, the five family-A lines land within 0.2-9.4 px of their fitted image lines. That is the real number and it is good. Family B does not: the transom missed by 38 px until TRANSOM_Z was re-derived from the line itself (2352 -> 2460 mm, spread 1.0 mm over 1.9 m of the glazing plane), and B4_island_top missed by 72 px because that fit is not on the feature it names - see room_spec.guide_lines().",
+  "stale_fields_2026_08_29": "camera_height_mm 1480, ceiling_mm 3660 and scale_source all predate the 2026-08-29 re-scale by 0.9601 (the SP01 Michelle stool is the LOW model, 815 mm not 915). room_spec.py carries the live numbers: CAM_H 1421, CEILING 3514. Every consumer in this folder reads room_spec, not these fields - fit_and_overlay.py says so in a comment - but the fields are left here rather than deleted because the solve's own arithmetic used them."
+ },
+ "assumptions": [
+  "the frame's verticals are vertical, so the camera is level and the principal point lies on the horizon (shift lens or a perspective correction in post)",
+  "no horizontal shift: principal point x = image mid-width",
+  "ceiling height 3400 mm - the one number that is asserted rather than measured; camera height scales with it"
+ ]
+}

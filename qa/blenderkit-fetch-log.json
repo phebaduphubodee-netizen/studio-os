@@ -1,0 +1,5597 @@
+{
+ "_what": "Every run of pipeline/scripts/blenderkit.py — searches, fetches, shortlist walks, refusals — appended atomically, never rewritten. probe/dry runs carry probe=true and never start the month clock; tests and reviewers point --log / $BLENDERKIT_LOG elsewhere (2026-08-22: 16 review-probe rows were stripped back to the 3 genuine control runs). Kept APART from qa/blenderkit-search-log.json, the hand-written 08-17/08-18 measurement record (byte-identical). ORD-2026-08-22-blenderkit-one-month reads THIS file: a non-probe run with tier 'full_plan' and fetched true is the day the paid month became real, and it carries the D-119 criteria digest.",
+ "runs": [
+  {
+   "at": "2026-08-23T01:59:47+00:00",
+   "cmd": "search",
+   "query": "asset_type:model bed modern",
+   "pages": 1,
+   "key_present": false,
+   "n": 8,
+   "free": 6,
+   "full_plan": 2,
+   "fetched": false,
+   "probe": true,
+   "date_local": "2026-08-22"
+  },
+  {
+   "at": "2026-08-23T01:59:48+00:00",
+   "cmd": "fetch",
+   "asset": "342709ec-5214-4627-a26d-134bdd639ee8",
+   "key_present": false,
+   "fetched": false,
+   "refusal": "full-plan asset and no BLENDERKIT_API_KEY in .env — this is ASK-029: subscribe at https://www.blendkit.com/plans/pricing, copy the API key from https://www.blendkit.com/profile into the repo .env as BLENDERKIT_API_KEY=<key>. Nothing else is missing.",
+   "probe": false,
+   "date_local": "2026-08-22"
+  },
+  {
+   "at": "2026-08-23T01:59:56+00:00",
+   "cmd": "fetch",
+   "asset": "fbb98c0b-a730-48a7-a878-8e4fa2402430",
+   "tier": "free",
+   "fetched": true,
+   "key_present": false,
+   "assert_class": "nightstand",
+   "resolution": "2K",
+   "scale": {
+    "ok": false,
+    "class": "nightstand",
+    "tier": "free",
+    "fetched_now": true,
+    "measured_mm": 940.2,
+    "band_mm": [
+     300.0,
+     800.0
+    ],
+    "bbox_mm": {
+     "x_mm": 500.0,
+     "y_mm": 390.0,
+     "z_mm": 940.2
+    },
+    "refusal": null,
+    "in_band_under": {}
+   },
+   "probe": false,
+   "date_local": "2026-08-22"
+  },
+  {
+   "at": "2026-08-22T23:38:46-04:00",
+   "date_local": "2026-08-22",
+   "cmd": "key",
+   "probe": false,
+   "key_present": false,
+   "asset": null,
+   "fetched": false,
+   "exit": 2,
+   "refusal": "no redirect arrived in time — the browser was not logged in, or the tab was closed; run `key --login` again"
+  },
+  {
+   "at": "2026-08-22T23:48:26-04:00",
+   "date_local": "2026-08-22",
+   "cmd": "key",
+   "probe": false,
+   "key_present": false,
+   "asset": null,
+   "fetched": false,
+   "exit": 2,
+   "refusal": "no redirect arrived in time — the browser was not logged in, or the tab was closed; run `key --login` again"
+  },
+  {
+   "at": "2026-08-22T23:49:13-04:00",
+   "date_local": "2026-08-22",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-22T23:51:15-04:00",
+   "date_local": "2026-08-22",
+   "cmd": "shortlist",
+   "probe": false,
+   "key_present": true,
+   "tier": "full_plan",
+   "assert_class": "whole_bed",
+   "resolution": "2K",
+   "limit": 10,
+   "n_rows": 135,
+   "fetched": true,
+   "fetched_ids": [
+    "b4915f0a-4d5e-48f8-a01b-a42a9249155a",
+    "317c797d-4439-4607-808d-af1ec1578d88",
+    "8968de2e-684c-45c7-aa22-b09cb45178e1",
+    "d8be9e01-8b4f-47a2-be7e-776b21b9eda4",
+    "b8359da9-db8d-40e2-a134-005b286c5ea6",
+    "93862856-49e7-4bf6-85e7-56dd36d13053",
+    "e2418055-2a3f-4cdc-9f04-3bd851b4cef9",
+    "17aff0ff-6f12-4293-a7fe-8956a0411867",
+    "b43e2f5c-d224-4b1a-9b04-c17a1d116c71",
+    "10b19e20-c34f-4b58-a548-48a811809054"
+   ],
+   "asserted_ids": [
+    "b4915f0a-4d5e-48f8-a01b-a42a9249155a",
+    "317c797d-4439-4607-808d-af1ec1578d88",
+    "8968de2e-684c-45c7-aa22-b09cb45178e1",
+    "d8be9e01-8b4f-47a2-be7e-776b21b9eda4",
+    "b8359da9-db8d-40e2-a134-005b286c5ea6",
+    "93862856-49e7-4bf6-85e7-56dd36d13053",
+    "e2418055-2a3f-4cdc-9f04-3bd851b4cef9",
+    "17aff0ff-6f12-4293-a7fe-8956a0411867",
+    "b43e2f5c-d224-4b1a-9b04-c17a1d116c71",
+    "10b19e20-c34f-4b58-a548-48a811809054"
+   ],
+   "scale": {
+    "b4915f0a-4d5e-48f8-a01b-a42a9249155a": {
+     "ok": true,
+     "tier": "full_plan",
+     "measured_mm": 2337.8,
+     "band_mm": [
+      1900.0,
+      3600.0
+     ],
+     "refusal": null
+    },
+    "317c797d-4439-4607-808d-af1ec1578d88": {
+     "ok": true,
+     "tier": "full_plan",
+     "measured_mm": 2416.1,
+     "band_mm": [
+      1900.0,
+      3600.0
+     ],
+     "refusal": null
+    },
+    "8968de2e-684c-45c7-aa22-b09cb45178e1": {
+     "ok": true,
+     "tier": "full_plan",
+     "measured_mm": 2311.5,
+     "band_mm": [
+      1900.0,
+      3600.0
+     ],
+     "refusal": null
+    },
+    "d8be9e01-8b4f-47a2-be7e-776b21b9eda4": {
+     "ok": true,
+     "tier": "full_plan",
+     "measured_mm": 2567.6,
+     "band_mm": [
+      1900.0,
+      3600.0
+     ],
+     "refusal": null
+    },
+    "b8359da9-db8d-40e2-a134-005b286c5ea6": {
+     "ok": true,
+     "tier": "full_plan",
+     "measured_mm": 2483.9,
+     "band_mm": [
+      1900.0,
+      3600.0
+     ],
+     "refusal": null
+    },
+    "93862856-49e7-4bf6-85e7-56dd36d13053": {
+     "ok": true,
+     "tier": "full_plan",
+     "measured_mm": 2914.0,
+     "band_mm": [
+      1900.0,
+      3600.0
+     ],
+     "refusal": null
+    },
+    "e2418055-2a3f-4cdc-9f04-3bd851b4cef9": {
+     "ok": true,
+     "tier": "full_plan",
+     "measured_mm": 2377.4,
+     "band_mm": [
+      1900.0,
+      3600.0
+     ],
+     "refusal": null
+    },
+    "17aff0ff-6f12-4293-a7fe-8956a0411867": {
+     "ok": true,
+     "tier": "full_plan",
+     "measured_mm": 2828.9,
+     "band_mm": [
+      1900.0,
+      3600.0
+     ],
+     "refusal": null
+    },
+    "b43e2f5c-d224-4b1a-9b04-c17a1d116c71": {
+     "ok": true,
+     "tier": "full_plan",
+     "measured_mm": 2634.8,
+     "band_mm": [
+      1900.0,
+      3600.0
+     ],
+     "refusal": null
+    },
+    "10b19e20-c34f-4b58-a548-48a811809054": {
+     "ok": true,
+     "tier": "full_plan",
+     "measured_mm": 2740.0,
+     "band_mm": [
+      1900.0,
+      3600.0
+     ],
+     "refusal": null
+    }
+   },
+   "refusals": {},
+   "skipped": {
+    "by_reason": {
+     "past --limit 10 in rank order": 125
+    },
+    "first_ids": [
+     "f1be76f8-01ae-4a53-a81e-3b703f688fe3",
+     "31e39968-e5f3-45b8-a34c-9151f25be8ab",
+     "dc376b1b-fad1-42dd-a349-9507a46f1741",
+     "faf62273-6f13-4cd2-95ea-adef83f57048",
+     "f8b1c86b-d5bb-4caf-9f8e-17cab267b760"
+    ]
+   },
+   "stopped_by": null,
+   "exit": 0,
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-22T23:58:21-04:00",
+   "date_local": "2026-08-22",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-23T00:44:06-04:00",
+   "date_local": "2026-08-23",
+   "cmd": "bench",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "blend": "room_bedroom_suite_eye_p2r57.blend",
+   "rect": "3204,226,2000,1800",
+   "ids": [
+    "10b19e20-c34f-4b58-a548-48a811809054",
+    "b43e2f5c-d224-4b1a-9b04-c17a1d116c71",
+    "17aff0ff-6f12-4293-a7fe-8956a0411867",
+    "e2418055-2a3f-4cdc-9f04-3bd851b4cef9"
+   ],
+   "out": "<out>",
+   "result_lines": [
+    "WHOLEBED 17aff0ff-6f12-4293-a7fe-8956a0411867 -> PASS",
+    "WHOLEBED staging e2418055-2a3f-4cdc-9f04-3bd851b4cef9 ...",
+    "WHOLEBED render engine=CYCLES device=GPU samples=48 res%=50",
+    "WHOLEBED e2418055-2a3f-4cdc-9f04-3bd851b4cef9 -> projected mattress [1550, 1710] mm is no standard bed size (worst 195 mm from full) — ORD-2026-08-22-front-door-dims",
+    "WHOLEBED BENCH COMPLETE 1/4 pass hard filters"
+   ]
+  },
+  {
+   "at": "2026-08-23T00:53:27-04:00",
+   "date_local": "2026-08-23",
+   "cmd": "style-panel",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "bundle": "_private/deliv-001/bed-size-2026-08-22/style-panel-bolzan",
+   "result": {
+    "B_17aff0ff_bolzan_paid": "inside 3/3 PASS",
+    "D_9ea98a45_free_soft": "inside 3/3",
+    "C_81d895fd_free_in_frame": "edge 3/3",
+    "A_f0938871_free": "edge 3/3",
+    "E_10b19e20_ikea_paid": "edge 3/3"
+   },
+   "anchors": "5 delivered-pool bedrooms tagged contemporary-neutral before the run (no strict Japandi in the pool)",
+   "note": "C1 style half met by the Bolzan bed; the bench render's black-white print is the GLB route binding the 'velvet' texture as base colour (R4 line), not the asset"
+  },
+  {
+   "at": "2026-08-23T01:05:16-04:00",
+   "date_local": "2026-08-23",
+   "cmd": "bench",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "blend": "room_bedroom_suite_eye_p2r57.blend",
+   "rect": "3204,226,2000,1800",
+   "ids": [
+    "93862856-49e7-4bf6-85e7-56dd36d13053",
+    "b8359da9-db8d-40e2-a134-005b286c5ea6",
+    "d8be9e01-8b4f-47a2-be7e-776b21b9eda4",
+    "8968de2e-684c-45c7-aa22-b09cb45178e1",
+    "317c797d-4439-4607-808d-af1ec1578d88",
+    "b4915f0a-4d5e-48f8-a01b-a42a9249155a"
+   ],
+   "out": "<out>",
+   "result_lines": [
+    "WHOLEBED staging 317c797d-4439-4607-808d-af1ec1578d88 ...",
+    "WHOLEBED render engine=CYCLES device=GPU samples=48 res%=50",
+    "WHOLEBED 317c797d-4439-4607-808d-af1ec1578d88 -> head end unresolvable — placement would be a coin flip (R9); fills 0.74x1.00 of the drawn footprint (< 0.88); made-bed field fills 0.00x0.00 of the drawn rectangle (< 0.88) — the bed reads smaller than the ink draws it (ORD-2026-08-18-bed-too-small); projected mattress [1404, 1477] mm is no standard bed size (worst 428 mm from twin) — ORD-2026-08-22-front-door-dims",
+    "WHOLEBED staging b4915f0a-4d5e-48f8-a01b-a42a9249155a ...",
+    "WHOLEBED render engine=CYCLES device=GPU samples=48 res%=50",
+    "WHOLEBED b4915f0a-4d5e-48f8-a01b-a42a9249155a -> projected mattress [1711, 1843] mm is no standard bed size (worst 157 mm from th_king_6ft) — ORD-2026-08-22-front-door-dims",
+    "WHOLEBED BENCH COMPLETE 0/6 pass hard filters"
+   ]
+  },
+  {
+   "at": "2026-08-23T01:07:30-04:00",
+   "date_local": "2026-08-23",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-23T01:49:45-04:00",
+   "date_local": "2026-08-23",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-23T01:57:25-04:00",
+   "date_local": "2026-08-23",
+   "cmd": "bench",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "blend": "room_bedroom_suite_eye_p2r57.blend",
+   "rect": "3204,226,2000,1800",
+   "ids": [
+    "e2418055-2a3f-4cdc-9f04-3bd851b4cef9",
+    "17aff0ff-6f12-4293-a7fe-8956a0411867",
+    "b4915f0a-4d5e-48f8-a01b-a42a9249155a"
+   ],
+   "out": "_private\\deliv-001\\bed-size-2026-08-22\\bench-full-blenderkit\\chunkC-mattress-d120",
+   "result_lines": [
+    "WHOLEBED staging b4915f0a-4d5e-48f8-a01b-a42a9249155a ...",
+    "WHOLEBED render engine=CYCLES device=GPU samples=48 res%=50",
+    "WHOLEBED b4915f0a-4d5e-48f8-a01b-a42a9249155a -> projected mattress [1661, 2000] mm is no standard bed size at +-50 (worst 137 mm from queen); best uniform scale 0.95 reaches th_queen_5ft within 69 mm — ORD-2026-08-22-front-door-dims; made bed 2116x2175 mm passes the drawn bed rectangle 1981x2134 (SR-07) by 125 mm across / 31 mm long — the sheet draws the widest bed this room takes (R12)",
+    "WHOLEBED BENCH COMPLETE 0/3 pass hard filters"
+   ]
+  },
+  {
+   "at": "2026-08-23T07:30:16-04:00",
+   "date_local": "2026-08-23",
+   "cmd": "bench",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "blend": "room_bedroom_suite_eye_p2r57.blend",
+   "rect": "3204,226,2000,1800",
+   "ids": [
+    "e2418055-2a3f-4cdc-9f04-3bd851b4cef9",
+    "17aff0ff-6f12-4293-a7fe-8956a0411867",
+    "b4915f0a-4d5e-48f8-a01b-a42a9249155a",
+    "81d895fd-ab4b-4d44-8c4c-126f386083d6"
+   ],
+   "out": "_private\\deliv-001\\bed-size-2026-08-22\\bench-full-blenderkit\\chunkD-mattress-d120-rev",
+   "result_lines": [
+    "WHOLEBED b4915f0a-4d5e-48f8-a01b-a42a9249155a -> projected mattress [1661, 2000] mm is 139 mm from the slot's standard th_king_6ft [1800, 2000] (bare-mattress tol +-50); best uniform scale 0.95 reaches th_queen_5ft within 69 mm — ORD-2026-08-22-front-door-dims; frame 2011x2175 mm passes the drawn bed rectangle 1981x2134 (SR-07) by 20 mm across / 31 mm long — the sheet draws the widest bed this room takes (R12)",
+    "WHOLEBED staging 81d895fd-ab4b-4d44-8c4c-126f386083d6 ...",
+    "WHOLEBED render engine=CYCLES device=GPU samples=48 res%=50",
+    "WHOLEBED 81d895fd-ab4b-4d44-8c4c-126f386083d6 -> projected mattress [1400, 1900] mm is 400 mm from the slot's standard th_king_6ft [1800, 2000] (bare-mattress tol +-50); it IS a full (within 28 mm) — a standard other than the slot's: change the spec's w/d (D-114 reverse_by) or a different purchase — ORD-2026-08-22-front-door-dims; the mattress itself fills 0.78x0.95 of the slot (< 0.88) — a smaller bed under wider bedding (ORD-2026-08-18-bed-too-small applied to the slab, D-120)",
+    "WHOLEBED BENCH COMPLETE 1/4 pass hard filters"
+   ]
+  },
+  {
+   "at": "2026-08-23T21:33:18-04:00",
+   "date_local": "2026-08-23",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-23T22:54:57-04:00",
+   "date_local": "2026-08-23",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+category_subtree:bed+dimensionX_gte:1.5+dimensionX_lte:2.2",
+   "pages": 1,
+   "n": 4,
+   "free": 4,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-23T22:56:17-04:00",
+   "date_local": "2026-08-23",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-24T02:33:47-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-24T08:45:37-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-24T09:00:15-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+nightstand+dimensionX_gte:0.40+dimensionX_lte:0.56+dimensionY_gte:0.40+dimensionY_lte:0.56+dimensionZ_gte:0.42+dimensionZ_lte:0.60",
+   "pages": 2,
+   "n": 38,
+   "free": 13,
+   "full_plan": 25,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:00:36-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+bench+dimensionZ_gte:0.34+dimensionZ_lte:0.50+dimensionX_gte:0.88+dimensionX_lte:1.18+dimensionY_gte:0.44+dimensionY_lte:0.62",
+   "pages": 2,
+   "n": 6,
+   "free": 3,
+   "full_plan": 3,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:00:38-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+bench+dimensionZ_gte:0.34+dimensionZ_lte:0.50+dimensionY_gte:0.88+dimensionY_lte:1.18+dimensionX_gte:0.44+dimensionX_lte:0.62",
+   "pages": 2,
+   "n": 1,
+   "free": 0,
+   "full_plan": 1,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:00:53-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+ottoman+dimensionZ_gte:0.34+dimensionZ_lte:0.50+dimensionX_gte:0.88+dimensionX_lte:1.18+dimensionY_gte:0.44+dimensionY_lte:0.62",
+   "pages": 2,
+   "n": 12,
+   "free": 1,
+   "full_plan": 11,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:00:55-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+bed+bench+dimensionZ_gte:0.34+dimensionZ_lte:0.50+dimensionX_gte:0.88+dimensionX_lte:1.18+dimensionY_gte:0.44+dimensionY_lte:0.62",
+   "pages": 2,
+   "n": 0,
+   "free": 0,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:00:56-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+pouf+dimensionZ_gte:0.34+dimensionZ_lte:0.50+dimensionX_gte:0.88+dimensionX_lte:1.18+dimensionY_gte:0.44+dimensionY_lte:0.62",
+   "pages": 2,
+   "n": 15,
+   "free": 4,
+   "full_plan": 11,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:00:57-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+bench+upholstered+dimensionZ_gte:0.34+dimensionZ_lte:0.50+dimensionX_gte:0.88+dimensionX_lte:1.18+dimensionY_gte:0.44+dimensionY_lte:0.62",
+   "pages": 2,
+   "n": 6,
+   "free": 3,
+   "full_plan": 3,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:00:59-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+end+of+bed+dimensionZ_gte:0.34+dimensionZ_lte:0.50+dimensionX_gte:0.88+dimensionX_lte:1.18+dimensionY_gte:0.44+dimensionY_lte:0.62",
+   "pages": 2,
+   "n": 0,
+   "free": 0,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:01:25-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+table+lamp+dimensionZ_gte:0.30+dimensionZ_lte:0.52+dimensionX_gte:0.18+dimensionX_lte:0.42+dimensionY_gte:0.18+dimensionY_lte:0.42",
+   "pages": 2,
+   "n": 200,
+   "free": 89,
+   "full_plan": 111,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:01:26-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+mushroom+lamp+dimensionZ_gte:0.30+dimensionZ_lte:0.52+dimensionX_gte:0.18+dimensionX_lte:0.42+dimensionY_gte:0.18+dimensionY_lte:0.42",
+   "pages": 2,
+   "n": 11,
+   "free": 5,
+   "full_plan": 6,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:01:28-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+bedside+lamp+dimensionZ_gte:0.30+dimensionZ_lte:0.52+dimensionX_gte:0.18+dimensionX_lte:0.42+dimensionY_gte:0.18+dimensionY_lte:0.42",
+   "pages": 2,
+   "n": 60,
+   "free": 22,
+   "full_plan": 38,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:01:29-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+dome+lamp+dimensionZ_gte:0.30+dimensionZ_lte:0.52+dimensionX_gte:0.18+dimensionX_lte:0.42+dimensionY_gte:0.18+dimensionY_lte:0.42",
+   "pages": 2,
+   "n": 6,
+   "free": 1,
+   "full_plan": 5,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:02:12-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+books+dimensionX_gte:0.16+dimensionX_lte:0.40+dimensionY_gte:0.12+dimensionY_lte:0.35+dimensionZ_gte:0.03+dimensionZ_lte:0.22",
+   "pages": 2,
+   "n": 129,
+   "free": 42,
+   "full_plan": 87,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:02:14-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+blanket+dimensionX_gte:0.30+dimensionX_lte:1.30+dimensionY_gte:0.25+dimensionY_lte:0.90+dimensionZ_gte:0.05+dimensionZ_lte:0.35",
+   "pages": 2,
+   "n": 13,
+   "free": 2,
+   "full_plan": 11,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:02:36-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+folded+clothes+dimensionX_gte:0.15+dimensionX_lte:0.50+dimensionY_gte:0.15+dimensionY_lte:0.50+dimensionZ_gte:0.04+dimensionZ_lte:0.45",
+   "pages": 2,
+   "n": 67,
+   "free": 23,
+   "full_plan": 44,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:02:38-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+basket+dimensionX_gte:0.20+dimensionX_lte:0.50+dimensionY_gte:0.20+dimensionY_lte:0.50+dimensionZ_gte:0.12+dimensionZ_lte:0.45",
+   "pages": 2,
+   "n": 119,
+   "free": 26,
+   "full_plan": 93,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:02:40-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+throw+dimensionX_gte:0.25+dimensionX_lte:1.30+dimensionZ_gte:0.04+dimensionZ_lte:0.40",
+   "pages": 2,
+   "n": 28,
+   "free": 5,
+   "full_plan": 23,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:12:07-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+nightstand+dimensionX_gte:0.40+dimensionX_lte:0.56+dimensionY_gte:0.40+dimensionY_lte:0.56+dimensionZ_gte:0.42+dimensionZ_lte:0.60",
+   "pages": 3,
+   "n": 38,
+   "free": 13,
+   "full_plan": 25,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:12:08-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+bench+dimensionZ_gte:0.34+dimensionZ_lte:0.50+dimensionX_gte:0.88+dimensionX_lte:1.18+dimensionY_gte:0.44+dimensionY_lte:0.62",
+   "pages": 3,
+   "n": 6,
+   "free": 3,
+   "full_plan": 3,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:12:12-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+table+lamp+dimensionZ_gte:0.30+dimensionZ_lte:0.52+dimensionX_gte:0.18+dimensionX_lte:0.42+dimensionY_gte:0.18+dimensionY_lte:0.42",
+   "pages": 3,
+   "n": 212,
+   "free": 92,
+   "full_plan": 120,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:12:15-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+books+dimensionX_gte:0.16+dimensionX_lte:0.40+dimensionY_gte:0.12+dimensionY_lte:0.35+dimensionZ_gte:0.03+dimensionZ_lte:0.22",
+   "pages": 3,
+   "n": 129,
+   "free": 42,
+   "full_plan": 87,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:12:16-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+blanket+dimensionX_gte:0.30+dimensionX_lte:1.30+dimensionY_gte:0.25+dimensionY_lte:0.90+dimensionZ_gte:0.05+dimensionZ_lte:0.35",
+   "pages": 3,
+   "n": 13,
+   "free": 2,
+   "full_plan": 11,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:12:18-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+folded+clothes+dimensionX_gte:0.15+dimensionX_lte:0.50+dimensionY_gte:0.15+dimensionY_lte:0.50+dimensionZ_gte:0.04+dimensionZ_lte:0.45",
+   "pages": 3,
+   "n": 67,
+   "free": 23,
+   "full_plan": 44,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:12:20-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+basket+dimensionX_gte:0.20+dimensionX_lte:0.50+dimensionY_gte:0.20+dimensionY_lte:0.50+dimensionZ_gte:0.12+dimensionZ_lte:0.45",
+   "pages": 3,
+   "n": 119,
+   "free": 26,
+   "full_plan": 93,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:12:25-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+plant+pot+dimensionZ_gte:0.25+dimensionZ_lte:1.20+dimensionX_gte:0.15+dimensionX_lte:0.70+dimensionY_gte:0.15+dimensionY_lte:0.70",
+   "pages": 3,
+   "n": 300,
+   "free": 68,
+   "full_plan": 232,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:12:28-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+vase+dimensionZ_gte:0.12+dimensionZ_lte:0.55+dimensionX_gte:0.08+dimensionX_lte:0.40+dimensionY_gte:0.08+dimensionY_lte:0.40",
+   "pages": 3,
+   "n": 300,
+   "free": 138,
+   "full_plan": 162,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:12:33-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+wall+art+dimensionZ_gte:0.25+dimensionZ_lte:1.40+dimensionX_gte:0.02+dimensionX_lte:1.40",
+   "pages": 3,
+   "n": 300,
+   "free": 131,
+   "full_plan": 169,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:13:24-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+nightstand+dimensionX_gte:0.40+dimensionX_lte:0.56+dimensionY_gte:0.40+dimensionY_lte:0.56+dimensionZ_gte:0.42+dimensionZ_lte:0.60",
+   "pages": 2,
+   "n": 38,
+   "free": 13,
+   "full_plan": 25,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:14:42-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+bench+dimensionZ_gte:0.34+dimensionZ_lte:0.50+dimensionX_gte:0.88+dimensionX_lte:1.18+dimensionY_gte:0.44+dimensionY_lte:0.62",
+   "pages": 3,
+   "n": 6,
+   "free": 3,
+   "full_plan": 3,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:14:44-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+ottoman+dimensionZ_gte:0.34+dimensionZ_lte:0.50+dimensionX_gte:0.88+dimensionX_lte:1.18+dimensionY_gte:0.44+dimensionY_lte:0.62",
+   "pages": 3,
+   "n": 12,
+   "free": 1,
+   "full_plan": 11,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:14:47-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+bedside+table+dimensionX_gte:0.40+dimensionX_lte:0.56+dimensionY_gte:0.40+dimensionY_lte:0.56+dimensionZ_gte:0.42+dimensionZ_lte:0.60",
+   "pages": 3,
+   "n": 60,
+   "free": 22,
+   "full_plan": 38,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:15:58-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+nightstand+dimensionX_gte:0.4499+dimensionX_lte:0.4501+dimensionZ_gte:0.4499+dimensionZ_lte:0.4501",
+   "pages": 1,
+   "n": 1,
+   "free": 1,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:15:59-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+bench+dimensionX_gte:1.0065+dimensionX_lte:1.0075+dimensionZ_gte:0.4088+dimensionZ_lte:0.4095",
+   "pages": 1,
+   "n": 1,
+   "free": 1,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-24T09:16:34-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-24T09:26:53-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-24T09:31:00-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-24T09:31:31-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-24T09:52:18-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "1cf77b3a-cbab-4fb1-aa9e-6029820303c1",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "nightstand",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 470.1,
+    "band_mm": [
+     300.0,
+     800.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T10:20:10-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-25T10:22:15-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "throw blanket bench",
+   "pages": 1,
+   "n": 100,
+   "free": 35,
+   "full_plan": 65,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T10:22:26-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "draped blanket",
+   "pages": 1,
+   "n": 100,
+   "free": 68,
+   "full_plan": 32,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T10:22:28-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "plaid blanket",
+   "pages": 1,
+   "n": 100,
+   "free": 15,
+   "full_plan": 85,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T10:22:30-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "folded blanket",
+   "pages": 1,
+   "n": 100,
+   "free": 41,
+   "full_plan": 59,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T10:22:31-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "bed runner cloth",
+   "pages": 1,
+   "n": 0,
+   "free": 0,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T10:22:50-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "throw blanket sofa drape",
+   "pages": 1,
+   "n": 100,
+   "free": 35,
+   "full_plan": 65,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T10:22:52-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "bedspread throw",
+   "pages": 1,
+   "n": 76,
+   "free": 24,
+   "full_plan": 52,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T10:23:19-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "b89bc1af",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "asset b89bc1af is not in the catalogue any more (search returned 0 other rows)"
+  },
+  {
+   "at": "2026-08-25T10:23:20-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "0cb10427",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "asset 0cb10427 is not in the catalogue any more (search returned 0 other rows)"
+  },
+  {
+   "at": "2026-08-25T10:23:21-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "e54a717c",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "asset e54a717c is not in the catalogue any more (search returned 0 other rows)"
+  },
+  {
+   "at": "2026-08-25T10:24:01-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "folded blanket",
+   "pages": 1,
+   "n": 100,
+   "free": 41,
+   "full_plan": 59,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T10:24:17-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "b89bc1af-06cc-41f3-ac42-a93c383372f2",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": null,
+   "resolution": "blend",
+   "scale": {
+    "ok": null,
+    "measured_mm": null,
+    "band_mm": null,
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T10:24:22-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "0cb10427-c1fd-417c-8f89-ffefa7ebdb28",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": null,
+   "resolution": "blend",
+   "scale": {
+    "ok": null,
+    "measured_mm": null,
+    "band_mm": null,
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T10:24:27-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "e54a717c-9647-4dba-90a4-8e6a9e10603e",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": null,
+   "resolution": "blend",
+   "scale": {
+    "ok": null,
+    "measured_mm": null,
+    "band_mm": null,
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T10:24:33-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "91685141-46db-4c62-be7d-96ec72c1d56c",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": null,
+   "resolution": "blend",
+   "scale": {
+    "ok": null,
+    "measured_mm": null,
+    "band_mm": null,
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T13:19:02-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "book stack",
+   "pages": 1,
+   "n": 100,
+   "free": 21,
+   "full_plan": 79,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T13:19:04-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "books decor",
+   "pages": 1,
+   "n": 100,
+   "free": 12,
+   "full_plan": 88,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T13:19:06-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "table lamp modern",
+   "pages": 1,
+   "n": 100,
+   "free": 39,
+   "full_plan": 61,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T13:19:07-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "bedside lamp",
+   "pages": 1,
+   "n": 100,
+   "free": 48,
+   "full_plan": 52,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T13:19:09-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "nightstand modern",
+   "pages": 1,
+   "n": 100,
+   "free": 40,
+   "full_plan": 60,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T13:19:11-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "bedside table",
+   "pages": 1,
+   "n": 100,
+   "free": 36,
+   "full_plan": 64,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T13:19:13-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "wicker basket",
+   "pages": 1,
+   "n": 100,
+   "free": 70,
+   "full_plan": 30,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T13:19:15-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "storage box fabric",
+   "pages": 1,
+   "n": 100,
+   "free": 38,
+   "full_plan": 62,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T13:19:16-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "shoes sneakers",
+   "pages": 1,
+   "n": 100,
+   "free": 50,
+   "full_plan": 50,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T13:19:18-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "headboard upholstered",
+   "pages": 1,
+   "n": 100,
+   "free": 38,
+   "full_plan": 62,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T13:26:16-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "6afdfecd-910b-4523-a88f-76385dfd6323",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "book_stack",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 58.2,
+    "band_mm": [
+     40.0,
+     350.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T13:26:21-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "e96bf8f6-ef13-4121-be3b-6e2c6ff7fecb",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "book_stack",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 51.8,
+    "band_mm": [
+     40.0,
+     350.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T13:26:25-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "55486511-6374-4c64-ab5b-76dfb0c6e2a4",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "book_stack",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 66.8,
+    "band_mm": [
+     40.0,
+     350.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T13:26:32-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "18d17256-c091-4d83-9afc-3dfc2247fa36",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "table_lamp",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 490.0,
+    "band_mm": [
+     250.0,
+     1100.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T13:26:38-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "19f02d7d-b343-46f5-864c-6d77cfe49bf0",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "table_lamp",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 419.8,
+    "band_mm": [
+     250.0,
+     1100.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T13:26:43-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "01bb0e45-4bcf-472e-ac3c-b2baf4d12336",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "table_lamp",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 404.1,
+    "band_mm": [
+     250.0,
+     1100.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T13:26:54-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "dcebfd80-b646-430f-8900-a9ad6869999e",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "table_lamp",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 300.0,
+    "band_mm": [
+     250.0,
+     1100.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T13:27:21-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "24c65eb4-765b-43f3-a171-266521dd06b1",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "nightstand",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 480.0,
+    "band_mm": [
+     300.0,
+     800.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T13:27:27-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "11ec5eeb-5d03-4442-9294-4be621522bff",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "nightstand",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 500.0,
+    "band_mm": [
+     300.0,
+     800.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T13:27:33-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "bc74535c-4460-41c2-b6b7-f756fcc08dd0",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "nightstand",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 550.0,
+    "band_mm": [
+     300.0,
+     800.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T13:27:38-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "6d4ccb0c-bf53-4a7a-bf67-3c7f28c2351a",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "nightstand",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 550.0,
+    "band_mm": [
+     300.0,
+     800.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T13:27:57-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "90a1129e-ffa0-4494-a990-3e59dfdcb3ef",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "basket_box",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 134.0,
+    "band_mm": [
+     120.0,
+     600.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T13:28:14-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "7302438e-83d7-4224-ab6f-3c2c51bfb518",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "basket_box",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 120.3,
+    "band_mm": [
+     120.0,
+     600.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T13:28:21-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "c590fee3-5d46-45cc-88c6-fb8a92bc56b5",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "basket_box",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 229.7,
+    "band_mm": [
+     120.0,
+     600.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T13:28:27-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "7355c546-8ed9-4352-b332-2c9f26160a4c",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "shoe_pair",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 236.0,
+    "band_mm": [
+     200.0,
+     360.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T13:28:31-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "4152f818-48ed-48e1-a76b-c0bf1bb0b54f",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "shoe_pair",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 261.6,
+    "band_mm": [
+     200.0,
+     360.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T13:28:38-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "d7e2a7bc-3060-40fa-864c-d4db2af3be9d",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "headboard",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2059.0,
+    "band_mm": [
+     1400.0,
+     2400.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T15:21:42-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "wool rug modern",
+   "pages": 1,
+   "n": 3,
+   "free": 2,
+   "full_plan": 1,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T15:21:43-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "rug beige minimal",
+   "pages": 1,
+   "n": 6,
+   "free": 0,
+   "full_plan": 6,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T15:21:45-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "folded clothes stack",
+   "pages": 1,
+   "n": 98,
+   "free": 32,
+   "full_plan": 66,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T15:21:47-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "folded sweater",
+   "pages": 1,
+   "n": 99,
+   "free": 34,
+   "full_plan": 65,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T15:21:49-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "potted plant indoor",
+   "pages": 1,
+   "n": 100,
+   "free": 20,
+   "full_plan": 80,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T15:21:51-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "olive tree pot",
+   "pages": 1,
+   "n": 100,
+   "free": 26,
+   "full_plan": 74,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T15:21:52-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "decor tray set",
+   "pages": 1,
+   "n": 100,
+   "free": 16,
+   "full_plan": 84,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T15:21:54-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "water carafe glass",
+   "pages": 1,
+   "n": 100,
+   "free": 79,
+   "full_plan": 21,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T15:21:57-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "alarm clock retro",
+   "pages": 1,
+   "n": 83,
+   "free": 38,
+   "full_plan": 45,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T15:27:02-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "0fd746ae-5d11-41d8-a41f-101ba6b4ce50",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "rug",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 3023.9,
+    "band_mm": [
+     1000.0,
+     5000.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T15:27:19-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "4fdb482d-2642-4388-ae57-8097afa99519",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "throw_folded",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 410.7,
+    "band_mm": [
+     200.0,
+     900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T15:27:35-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "0b960a0d-01f7-4038-95bf-6915f58360f1",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "throw_folded",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 395.1,
+    "band_mm": [
+     200.0,
+     900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T15:27:41-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "b54819e4-6551-4509-b76c-2bce9ada8cf8",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "throw_folded",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 320.4,
+    "band_mm": [
+     200.0,
+     900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T15:28:01-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "878fa112-8acc-426f-b7cf-2363711ec321",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "potted_plant",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 1271.0,
+    "band_mm": [
+     500.0,
+     1800.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T15:28:13-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "a98c3dbb-0b7c-4a2e-9fa7-dcb6f49053ed",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "potted_plant",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 1081.6,
+    "band_mm": [
+     500.0,
+     1800.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T15:28:43-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "654892e1-2af7-4e2d-9976-1cf6987ec9da",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "tray_decor",
+   "resolution": "blend",
+   "scale": {
+    "ok": false,
+    "measured_mm": 279.3,
+    "band_mm": [
+     150.0,
+     400.0
+    ],
+    "refusal": "thinnest axis is 17.8 mm against a longest of 279.3 — ratio 0.0637 below the class floor 0.1. This is a CUTOUT, not a tray_decor. A bounds check cannot see it, which is why this line exists"
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T15:28:50-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "8d6dd7a7-b9a0-43b5-826f-b0bb7dabd303",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "tray_decor",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 175.5,
+    "band_mm": [
+     150.0,
+     400.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T15:28:54-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "18261a8a-bd63-4bbb-a4df-7fb70f40b49d",
+   "fetched": false,
+   "exit": 2,
+   "refusal": "GLB export failed (blender exit 0, file missing): …aco.dll\n15:28:53 | INFO: Starting glTF 2.0 export\n15:28:53 | INFO: Extracting primitive: Mesh\n15:28:53 | INFO: Primitives created: 1\n15:28:53 | INFO: Extracting primitive: Cylinder.030\n15:2"
+  },
+  {
+   "at": "2026-08-25T15:28:58-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "ac0d7cbf-616c-42a4-91dd-5c94cfbd7bff",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "vase",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 266.6,
+    "band_mm": [
+     80.0,
+     900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T15:29:02-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "94bf975c-9a39-4e6d-af64-e268b03c8446",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "clock_small",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 145.7,
+    "band_mm": [
+     100.0,
+     300.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T15:29:07-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "04a809ed-65dc-411d-9c56-d8877c040f8a",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "clock_small",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 156.8,
+    "band_mm": [
+     100.0,
+     300.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T15:29:29-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "18261a8a-bd63-4bbb-a4df-7fb70f40b49d",
+   "fetched": false,
+   "exit": 2,
+   "refusal": "GLB export failed (blender exit 0, file missing): …aco.dll\n15:29:28 | INFO: Starting glTF 2.0 export\n15:29:28 | INFO: Extracting primitive: Mesh\n15:29:28 | INFO: Primitives created: 1\n15:29:28 | INFO: Extracting primitive: Cylinder.030\n15:2"
+  },
+  {
+   "at": "2026-08-25T19:25:09-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-25T19:29:59-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+shirt hanging",
+   "pages": 1,
+   "n": 100,
+   "free": 12,
+   "full_plan": 88,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:30:54-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+shirt hanging",
+   "pages": 2,
+   "n": 200,
+   "free": 13,
+   "full_plan": 187,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:30:57-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+hanging clothes",
+   "pages": 2,
+   "n": 200,
+   "free": 63,
+   "full_plan": 137,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:00-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+clothes hanger",
+   "pages": 2,
+   "n": 200,
+   "free": 68,
+   "full_plan": 132,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:03-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+dress hanging",
+   "pages": 2,
+   "n": 200,
+   "free": 59,
+   "full_plan": 141,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:04-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+blazer",
+   "pages": 2,
+   "n": 24,
+   "free": 4,
+   "full_plan": 20,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:07-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+hoodie hanger",
+   "pages": 2,
+   "n": 172,
+   "free": 9,
+   "full_plan": 163,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:10-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+linen shirt",
+   "pages": 2,
+   "n": 200,
+   "free": 42,
+   "full_plan": 158,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:13-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+folded clothes",
+   "pages": 2,
+   "n": 161,
+   "free": 33,
+   "full_plan": 128,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:17-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+folded towels",
+   "pages": 2,
+   "n": 102,
+   "free": 30,
+   "full_plan": 72,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:20-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+stack clothes folded",
+   "pages": 2,
+   "n": 200,
+   "free": 96,
+   "full_plan": 104,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:22-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+folded sweater",
+   "pages": 2,
+   "n": 92,
+   "free": 28,
+   "full_plan": 64,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:25-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+towel stack",
+   "pages": 2,
+   "n": 200,
+   "free": 66,
+   "full_plan": 134,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:28-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+closed book",
+   "pages": 2,
+   "n": 200,
+   "free": 88,
+   "full_plan": 112,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:30-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+open book",
+   "pages": 2,
+   "n": 72,
+   "free": 22,
+   "full_plan": 50,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:33-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+vase branch",
+   "pages": 2,
+   "n": 188,
+   "free": 14,
+   "full_plan": 174,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:35-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+ceramic vase small",
+   "pages": 2,
+   "n": 200,
+   "free": 84,
+   "full_plan": 116,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:37-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+dried flowers vase",
+   "pages": 2,
+   "n": 99,
+   "free": 21,
+   "full_plan": 78,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:39-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+handbag",
+   "pages": 2,
+   "n": 76,
+   "free": 17,
+   "full_plan": 59,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:42-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+leather bag",
+   "pages": 2,
+   "n": 200,
+   "free": 55,
+   "full_plan": 145,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:45-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+leather shoes",
+   "pages": 2,
+   "n": 200,
+   "free": 78,
+   "full_plan": 122,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:47-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+oxford shoes",
+   "pages": 2,
+   "n": 13,
+   "free": 7,
+   "full_plan": 6,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:50-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+wooden vase",
+   "pages": 2,
+   "n": 200,
+   "free": 33,
+   "full_plan": 167,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:53-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+decorative bowl",
+   "pages": 2,
+   "n": 200,
+   "free": 73,
+   "full_plan": 127,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:55-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+throw blanket",
+   "pages": 2,
+   "n": 114,
+   "free": 31,
+   "full_plan": 83,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:31:58-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+plaid blanket",
+   "pages": 2,
+   "n": 200,
+   "free": 0,
+   "full_plan": 200,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:32:02-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+blanket folded bed",
+   "pages": 2,
+   "n": 200,
+   "free": 36,
+   "full_plan": 164,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:32:05-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+magazine",
+   "pages": 2,
+   "n": 200,
+   "free": 66,
+   "full_plan": 134,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:32:08-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+magazine stack",
+   "pages": 2,
+   "n": 200,
+   "free": 63,
+   "full_plan": 137,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T19:47:00-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "b8343587-bb5a-4534-9ab7-3189c05cb15a",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "garment_hung",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 660.8,
+    "band_mm": [
+     400.0,
+     1900.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T19:47:19-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "6fc15682-70da-4fb6-8fac-22617c28276f",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "garment_hung",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 641.0,
+    "band_mm": [
+     400.0,
+     1900.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T19:47:40-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "0c4fe8e5-4985-4126-9247-976cc76082bf",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "garment_hung",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 660.8,
+    "band_mm": [
+     400.0,
+     1900.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T19:47:59-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "52ae357f-e517-47d2-84dc-911928919697",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "garment_hung",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 641.0,
+    "band_mm": [
+     400.0,
+     1900.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T19:48:20-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "550f674a-4eb2-4728-985e-4fb627929fb8",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "garment_hung",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 660.8,
+    "band_mm": [
+     400.0,
+     1900.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T19:48:39-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "13858ca1-270e-422d-94e1-e04bfad179e0",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "garment_hung",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 641.0,
+    "band_mm": [
+     400.0,
+     1900.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T19:49:05-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "1f6d368c-59f7-45f7-aa72-90ba9d832287",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "garment_hung",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 1446.5,
+    "band_mm": [
+     400.0,
+     1900.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T19:49:14-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "2751554e-41f5-49f4-9de0-b2411b475fb3",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "throw_folded",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 393.9,
+    "band_mm": [
+     200.0,
+     900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T19:49:19-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "f601337c-54e5-45f9-89b0-061af71e9a29",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "throw_folded",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 236.8,
+    "band_mm": [
+     200.0,
+     900.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T19:49:27-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "0623e2fd-7a59-4489-9eba-fbfad9239e13",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "throw_folded",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 434.7,
+    "band_mm": [
+     200.0,
+     900.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T19:49:40-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "f8573a9c-0797-4607-9416-199f8da16fd8",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "handbag",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 284.2,
+    "band_mm": [
+     250.0,
+     500.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T19:50:16-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "8e006d2e-6010-48cf-8699-e9fc4e72ef1a",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "shoe_pair",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 341.6,
+    "band_mm": [
+     200.0,
+     360.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T19:50:24-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "265d7b9b-adfd-4633-9980-31e4ff5744fd",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "tray_decor",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 315.8,
+    "band_mm": [
+     150.0,
+     400.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T19:50:27-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "ae43e44c-78a8-4102-ae84-eddcc6e53ab7",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "vase",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 332.3,
+    "band_mm": [
+     80.0,
+     900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T20:12:41-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "b8343587-bb5a-4534-9ab7-3189c05cb15a",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": false,
+   "assert_class": "garment_hung",
+   "resolution": "1K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 660.8,
+    "band_mm": [
+     400.0,
+     1900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T20:12:42-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "6fc15682-70da-4fb6-8fac-22617c28276f",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": false,
+   "assert_class": "garment_hung",
+   "resolution": "1K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 641.0,
+    "band_mm": [
+     400.0,
+     1900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T20:12:43-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "0c4fe8e5-4985-4126-9247-976cc76082bf",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": false,
+   "assert_class": "garment_hung",
+   "resolution": "1K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 660.8,
+    "band_mm": [
+     400.0,
+     1900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T20:12:44-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "52ae357f-e517-47d2-84dc-911928919697",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": false,
+   "assert_class": "garment_hung",
+   "resolution": "1K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 641.0,
+    "band_mm": [
+     400.0,
+     1900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T20:12:46-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "550f674a-4eb2-4728-985e-4fb627929fb8",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": false,
+   "assert_class": "garment_hung",
+   "resolution": "1K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 660.8,
+    "band_mm": [
+     400.0,
+     1900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T20:12:47-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "13858ca1-270e-422d-94e1-e04bfad179e0",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": false,
+   "assert_class": "garment_hung",
+   "resolution": "1K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 641.0,
+    "band_mm": [
+     400.0,
+     1900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T20:12:48-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "1f6d368c-59f7-45f7-aa72-90ba9d832287",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": false,
+   "assert_class": "garment_hung",
+   "resolution": "1K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 1446.5,
+    "band_mm": [
+     400.0,
+     1900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T20:12:49-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "2751554e-41f5-49f4-9de0-b2411b475fb3",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": false,
+   "assert_class": "throw_folded",
+   "resolution": "1K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 393.9,
+    "band_mm": [
+     200.0,
+     900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T20:12:50-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "f601337c-54e5-45f9-89b0-061af71e9a29",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": false,
+   "assert_class": "throw_folded",
+   "resolution": "1K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 236.8,
+    "band_mm": [
+     200.0,
+     900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T20:12:51-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "0623e2fd-7a59-4489-9eba-fbfad9239e13",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": false,
+   "assert_class": "throw_folded",
+   "resolution": "1K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 434.7,
+    "band_mm": [
+     200.0,
+     900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T20:12:52-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "f8573a9c-0797-4607-9416-199f8da16fd8",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": false,
+   "assert_class": "handbag",
+   "resolution": "1K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 284.2,
+    "band_mm": [
+     250.0,
+     500.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T20:12:53-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "8e006d2e-6010-48cf-8699-e9fc4e72ef1a",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": false,
+   "assert_class": "shoe_pair",
+   "resolution": "1K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 341.6,
+    "band_mm": [
+     200.0,
+     360.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T20:12:54-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "265d7b9b-adfd-4633-9980-31e4ff5744fd",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": false,
+   "assert_class": "tray_decor",
+   "resolution": "1K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 315.8,
+    "band_mm": [
+     150.0,
+     400.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T20:12:55-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "ae43e44c-78a8-4102-ae84-eddcc6e53ab7",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "ae43e44c-78a8-4102-ae84-eddcc6e53ab7 offers no '1K' file (has: blend, gltf, gltf_godot, thumbnail)"
+  },
+  {
+   "at": "2026-08-26T12:06:04-04:00",
+   "date_local": "2026-08-26",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-27T02:45:37-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+books+stack",
+   "pages": 1,
+   "n": 40,
+   "free": 13,
+   "full_plan": 27,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-27T02:46:06-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+tray+decor",
+   "pages": 1,
+   "n": 30,
+   "free": 8,
+   "full_plan": 22,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-27T02:46:07-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+hat+box",
+   "pages": 1,
+   "n": 5,
+   "free": 0,
+   "full_plan": 5,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-27T02:47:23-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+folded+towels",
+   "pages": 1,
+   "n": 25,
+   "free": 9,
+   "full_plan": 16,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-27T02:58:25-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+bookend",
+   "pages": 1,
+   "n": 20,
+   "free": 13,
+   "full_plan": 7,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-27T02:58:26-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+perfume",
+   "pages": 1,
+   "n": 20,
+   "free": 18,
+   "full_plan": 2,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-27T02:58:37-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+closet+decor",
+   "pages": 1,
+   "n": 25,
+   "free": 9,
+   "full_plan": 16,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-27T03:32:02-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "03ede500-5e3a-4e0f-9e79-6d6d1b8dd8ea",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "asset 03ede500-5e3a-4e0f-9e79-6d6d1b8dd8ea is not in the catalogue any more (search returned 0 other rows)"
+  },
+  {
+   "at": "2026-08-27T03:32:19-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+closet+decor",
+   "pages": 1,
+   "n": 25,
+   "free": 9,
+   "full_plan": 16,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-27T03:32:37-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "03ede500-eb18-49b5-b9da-643bfd6e5549",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "garment_hung",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 834.3,
+    "band_mm": [
+     400.0,
+     1900.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-27T03:32:58-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+books+stack",
+   "pages": 1,
+   "n": 40,
+   "free": 13,
+   "full_plan": 27,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-27T03:32:59-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+folded+towels",
+   "pages": 1,
+   "n": 40,
+   "free": 15,
+   "full_plan": 25,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-27T03:33:00-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+hat+box",
+   "pages": 1,
+   "n": 5,
+   "free": 0,
+   "full_plan": 5,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-27T03:33:02-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+tray+decor",
+   "pages": 1,
+   "n": 40,
+   "free": 10,
+   "full_plan": 30,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-27T03:33:22-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "91bbbed5-0591-42d9-aa85-15de468d58d6",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "garment_hung",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 834.9,
+    "band_mm": [
+     400.0,
+     1900.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-27T03:33:27-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "ef06e40e-e28c-417c-8953-2eb65410395f",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "garment_hung",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 848.0,
+    "band_mm": [
+     400.0,
+     1900.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-27T03:33:33-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "d7d65e9d-9e2a-420a-8e5c-cac8d45d9ed3",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "book_stack",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 213.5,
+    "band_mm": [
+     40.0,
+     350.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-27T03:33:39-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "9c2e5e24-d178-46d4-ab76-5e7f6a1922de",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "book_stack",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 103.4,
+    "band_mm": [
+     40.0,
+     350.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-27T03:34:10-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "8f19d91a-c95b-43e4-8814-f08a16156b59",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "handbag",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 262.2,
+    "band_mm": [
+     250.0,
+     500.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-27T03:34:11-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "b89bc1af-06cc-41f3-ac42-a93c383372f2",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": false,
+   "assert_class": "throw_folded",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 375.3,
+    "band_mm": [
+     200.0,
+     900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-27T03:34:17-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "49a3897a-98bf-4af1-8764-646262553a46",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "tray_decor",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 313.3,
+    "band_mm": [
+     150.0,
+     400.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-27T03:34:27-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "d3644708-6506-4934-ba0b-f8c0bb3206c2",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "tray_decor",
+   "resolution": "blend",
+   "scale": {
+    "ok": false,
+    "measured_mm": 409.1,
+    "band_mm": [
+     150.0,
+     400.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-27T04:08:45-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-27T10:14:56-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-09-01T01:33:30-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-09-01T01:38:50-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "wooden clothes hanger",
+   "pages": 1,
+   "n": 100,
+   "free": 82,
+   "full_plan": 18,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T01:39:18-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "perfume bottle tray",
+   "pages": 1,
+   "n": 100,
+   "free": 42,
+   "full_plan": 58,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T01:39:20-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "small potted plant",
+   "pages": 1,
+   "n": 100,
+   "free": 21,
+   "full_plan": 79,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T01:39:21-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "book stack bookend",
+   "pages": 1,
+   "n": 100,
+   "free": 39,
+   "full_plan": 61,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T01:39:23-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "storage box fabric",
+   "pages": 1,
+   "n": 100,
+   "free": 38,
+   "full_plan": 62,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T01:40:34-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "round hat box",
+   "pages": 1,
+   "n": 100,
+   "free": 67,
+   "full_plan": 33,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T01:40:35-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "alarm clock retro",
+   "pages": 1,
+   "n": 85,
+   "free": 38,
+   "full_plan": 47,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T01:41:05-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "e4487f27",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "asset e4487f27 is not in the catalogue any more (search returned 0 other rows)"
+  },
+  {
+   "at": "2026-09-01T01:41:27-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "wooden clothes hanger",
+   "pages": 1,
+   "n": 100,
+   "free": 82,
+   "full_plan": 18,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T01:41:30-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "perfume bottle tray",
+   "pages": 1,
+   "n": 100,
+   "free": 42,
+   "full_plan": 58,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T01:41:32-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "alarm clock retro",
+   "pages": 1,
+   "n": 85,
+   "free": 38,
+   "full_plan": 47,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T01:41:58-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "e4487f27-58e8-4ea3-aec5-ce5b1aae2407",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "hanger",
+   "resolution": "2K",
+   "scale": {
+    "ok": false,
+    "measured_mm": 380.0,
+    "band_mm": [
+     300.0,
+     600.0
+    ],
+    "refusal": "thinnest axis is 7.0 mm against a longest of 380.0 — ratio 0.0184 below the class floor 0.02. This is a CUTOUT, not a hanger. A bounds check cannot see it, which is why this line exists"
+   }
+  },
+  {
+   "at": "2026-09-01T01:42:02-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "c9334eaf-4279-4f5c-b5ce-277f2ef4b20f",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "vase",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 100.9,
+    "band_mm": [
+     80.0,
+     900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-01T01:42:06-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "b4d3ed11-b129-4e28-aed9-66da021b7bbc",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "vase",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 138.4,
+    "band_mm": [
+     80.0,
+     900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-01T01:42:11-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "ed37bde3-3357-4d85-ac64-f7347bf64c66",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "clock_small",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 163.4,
+    "band_mm": [
+     100.0,
+     300.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-01T01:42:27-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "ce055de1-9a0d-4dc0-96db-64eb49b7f2fa",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "hanger",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 393.3,
+    "band_mm": [
+     300.0,
+     600.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-01T13:41:55-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-09-01T13:55:05-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "curtain",
+   "pages": 1,
+   "n": 100,
+   "free": 21,
+   "full_plan": 79,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T20:57:37-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-09-01T21:34:01-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+bed set",
+   "pages": 2,
+   "n": 32,
+   "free": 11,
+   "full_plan": 21,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T21:34:04-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+bedding",
+   "pages": 2,
+   "n": 200,
+   "free": 48,
+   "full_plan": 152,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T21:34:07-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+duvet",
+   "pages": 2,
+   "n": 200,
+   "free": 30,
+   "full_plan": 170,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T21:34:08-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+made bed",
+   "pages": 2,
+   "n": 26,
+   "free": 11,
+   "full_plan": 15,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T21:34:11-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+bolster",
+   "pages": 2,
+   "n": 200,
+   "free": 95,
+   "full_plan": 105,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T21:34:14-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+pillow set",
+   "pages": 2,
+   "n": 200,
+   "free": 49,
+   "full_plan": 151,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T21:42:49-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "ee42aa0e-7c9d-4f04-8507-2a3406f021f5",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "whole_bed",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 3175.2,
+    "band_mm": [
+     1900.0,
+     3600.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-01T21:43:09-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "62253e5c-3402-4741-a1d9-7a9f6beed3dd",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "whole_bed",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2432.6,
+    "band_mm": [
+     1900.0,
+     3600.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-01T21:43:24-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "afcfd29e-71cb-4e7c-bc0a-a705cd23a14a",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "whole_bed",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2287.3,
+    "band_mm": [
+     1900.0,
+     3600.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-01T21:43:37-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "1f83314d-f3e6-4bd8-ab93-83bc473a8b42",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "whole_bed",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 3509.2,
+    "band_mm": [
+     1900.0,
+     3600.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-01T21:43:38-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "ba112721-b9de-4f39-add0-cca49c37c626",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "ba112721-b9de-4f39-add0-cca49c37c626 offers no '2K' file (has: blend, thumbnail)"
+  },
+  {
+   "at": "2026-09-01T21:43:49-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "a682383b-dfca-4044-9491-14d074f620f9",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "whole_bed",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2033.6,
+    "band_mm": [
+     1900.0,
+     3600.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-01T21:43:53-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "45daf5df-7d9b-472e-a164-0ebc554583af",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "pillow_set_lying",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 390.5,
+    "band_mm": [
+     120.0,
+     420.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-01T21:43:59-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "2767f3fa-8d08-427b-8d0c-1fbebd208a19",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "pillow_set_lying",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 249.6,
+    "band_mm": [
+     120.0,
+     420.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-01T21:45:10-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "ba112721-b9de-4f39-add0-cca49c37c626",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "whole_bed",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2171.7,
+    "band_mm": [
+     1900.0,
+     3600.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-02T10:03:51-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-09-02T10:04:09-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "curtain",
+   "pages": 2,
+   "n": 200,
+   "free": 43,
+   "full_plan": 157,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T10:04:12-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "curtain track",
+   "pages": 2,
+   "n": 200,
+   "free": 42,
+   "full_plan": 158,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T10:04:15-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "sheer curtain",
+   "pages": 2,
+   "n": 200,
+   "free": 85,
+   "full_plan": 115,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T10:04:18-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "curtain rod",
+   "pages": 2,
+   "n": 200,
+   "free": 41,
+   "full_plan": 159,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T10:04:20-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "drapery",
+   "pages": 2,
+   "n": 200,
+   "free": 172,
+   "full_plan": 28,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T10:07:48-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "b72cedda-ff26-4c02-8ce1-e991a2127f62",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "curtain",
+   "resolution": "2K",
+   "scale": {
+    "ok": false,
+    "measured_mm": 3302.4,
+    "band_mm": [
+     1400.0,
+     3300.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T10:07:54-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "06fd1db1-cd52-41d1-943f-8666d97f5aee",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "curtain",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2380.0,
+    "band_mm": [
+     1400.0,
+     3300.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-02T10:08:07-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "e30d9431-cf5a-459e-81f0-e083b0e7a3eb",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "curtain",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 3194.9,
+    "band_mm": [
+     1400.0,
+     3300.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T10:08:10-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "dc081fef-8f2a-48a4-8bec-2c361f9f474e",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "dc081fef-8f2a-48a4-8bec-2c361f9f474e offers no '2K' file (has: blend, gltf, gltf_godot, thumbnail)"
+  },
+  {
+   "at": "2026-09-02T10:08:13-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "ee15c366-d4da-459e-a0fc-9f4cd074d4cf",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "ee15c366-d4da-459e-a0fc-9f4cd074d4cf offers no '2K' file (has: blend, gltf, gltf_godot, thumbnail)"
+  },
+  {
+   "at": "2026-09-02T10:08:15-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "89167e7c-c092-4f38-80d3-9752b2c94f1b",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "89167e7c-c092-4f38-80d3-9752b2c94f1b offers no '2K' file (has: blend, thumbnail)"
+  },
+  {
+   "at": "2026-09-02T10:08:30-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "16d7a3a5-ce4b-4b1e-b21e-e85fd713c47a",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "curtain",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2902.8,
+    "band_mm": [
+     1400.0,
+     3300.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T10:08:32-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "caddb0d4-ac25-4d78-8dfa-d379b96507a7",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "caddb0d4-ac25-4d78-8dfa-d379b96507a7 offers no '2K' file (has: blend, gltf, gltf_godot, thumbnail)"
+  },
+  {
+   "at": "2026-09-02T10:09:44-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "b72cedda-ff26-4c02-8ce1-e991a2127f62",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": false,
+   "assert_class": "curtain",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 3302.4,
+    "band_mm": [
+     1400.0,
+     3500.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-02T10:09:54-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "dc081fef-8f2a-48a4-8bec-2c361f9f474e",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "curtain",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2996.2,
+    "band_mm": [
+     1400.0,
+     3500.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T10:10:09-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "ee15c366-d4da-459e-a0fc-9f4cd074d4cf",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "curtain",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2481.8,
+    "band_mm": [
+     1400.0,
+     3500.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T10:10:21-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "89167e7c-c092-4f38-80d3-9752b2c94f1b",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "curtain",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 1656.6,
+    "band_mm": [
+     1400.0,
+     3500.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T10:10:43-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "caddb0d4-ac25-4d78-8dfa-d379b96507a7",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "curtain",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2997.1,
+    "band_mm": [
+     1400.0,
+     3500.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T12:44:10-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+wall+art+is_free:true",
+   "pages": 1,
+   "n": 100,
+   "free": 100,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T12:44:12-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+painting+frame+is_free:true",
+   "pages": 1,
+   "n": 100,
+   "free": 100,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T12:44:13-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+plant+is_free:true",
+   "pages": 1,
+   "n": 100,
+   "free": 100,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T12:44:16-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+plant+pot+is_free:true",
+   "pages": 1,
+   "n": 100,
+   "free": 100,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T12:44:17-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+cushion+is_free:true",
+   "pages": 1,
+   "n": 100,
+   "free": 100,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T12:44:19-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+throw+blanket+is_free:true",
+   "pages": 1,
+   "n": 32,
+   "free": 32,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T12:44:20-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+tray+is_free:true",
+   "pages": 1,
+   "n": 100,
+   "free": 100,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T12:44:22-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+books+stack+is_free:true",
+   "pages": 1,
+   "n": 100,
+   "free": 100,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T12:44:23-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+carafe+is_free:true",
+   "pages": 1,
+   "n": 7,
+   "free": 7,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T12:52:37-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-09-02T12:54:03-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-09-02T12:56:51-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "bed bench upholstered",
+   "pages": 1,
+   "n": 12,
+   "free": 2,
+   "full_plan": 10,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T13:57:43-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "rug",
+   "pages": 2,
+   "n": 200,
+   "free": 122,
+   "full_plan": 78,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T13:57:46-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "carpet wool",
+   "pages": 2,
+   "n": 200,
+   "free": 175,
+   "full_plan": 25,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T13:57:48-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "berber rug",
+   "pages": 2,
+   "n": 13,
+   "free": 13,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T13:57:51-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "persian rug",
+   "pages": 2,
+   "n": 200,
+   "free": 15,
+   "full_plan": 185,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T13:57:53-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "shag rug",
+   "pages": 2,
+   "n": 5,
+   "free": 4,
+   "full_plan": 1,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T13:58:54-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "d326591b-509f-4755-a812-39aa8f8c1f14",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "rug",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2846.2,
+    "band_mm": [
+     1000.0,
+     5000.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-02T13:59:04-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "217e01bc-f1ba-40b8-913a-77752d0bd8f6",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "rug",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 3842.3,
+    "band_mm": [
+     1000.0,
+     5000.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T13:59:17-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "f48cece3-6487-45c8-900e-eb30b6b0c7aa",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "rug",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2186.0,
+    "band_mm": [
+     1000.0,
+     5000.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T13:59:28-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "a8f4c331-e4f5-4bf9-b23f-6ef0086da13c",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "rug",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2231.5,
+    "band_mm": [
+     1000.0,
+     5000.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T13:59:33-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "3efaabe9-24e9-48e1-bad7-aaa5ee13f999",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "rug",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 3002.8,
+    "band_mm": [
+     1000.0,
+     5000.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T13:59:35-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "9287710c-48ff-4000-bbfc-af15455617f1",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "9287710c-48ff-4000-bbfc-af15455617f1 offers no '2K' file (has: blend, gltf, gltf_godot, resolution_0_5K, thumbnail)"
+  },
+  {
+   "at": "2026-09-02T13:59:41-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "9287710c-48ff-4000-bbfc-af15455617f1",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "rug",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 4257.2,
+    "band_mm": [
+     1000.0,
+     5000.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-02T13:59:43-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "021601af-f4f6-441b-bb8d-06519918937c",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "021601af-f4f6-441b-bb8d-06519918937c offers no '2K' file (has: blend, resolution_0_5K, resolution_1K, thumbnail)"
+  },
+  {
+   "at": "2026-09-02T13:59:48-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "021601af-f4f6-441b-bb8d-06519918937c",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "rug",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 3000.0,
+    "band_mm": [
+     1000.0,
+     5000.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T15:22:21-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "armchair",
+   "pages": 2,
+   "n": 200,
+   "free": 45,
+   "full_plan": 155,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T15:22:25-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "lounge chair",
+   "pages": 2,
+   "n": 200,
+   "free": 60,
+   "full_plan": 140,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T15:22:29-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "ottoman",
+   "pages": 2,
+   "n": 200,
+   "free": 56,
+   "full_plan": 144,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T15:22:33-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "accent chair",
+   "pages": 2,
+   "n": 200,
+   "free": 70,
+   "full_plan": 130,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T15:22:36-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "upholstered chair",
+   "pages": 2,
+   "n": 200,
+   "free": 62,
+   "full_plan": 138,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T15:23:54-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "a34e3cdf-3c4d-4d42-86b3-4983041a30ad",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "chair",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 793.4,
+    "band_mm": [
+     600.0,
+     1300.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T15:24:33-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "62520f38-c105-4ba0-9da7-630385d79af6",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "chair",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 798.5,
+    "band_mm": [
+     600.0,
+     1300.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-02T15:24:35-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "e0095b9b-011b-4dba-a15c-2f1dc4137008",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "e0095b9b-011b-4dba-a15c-2f1dc4137008 offers no '2K' file (has: blend, gltf, gltf_godot, resolution_0_5K, thumbnail)"
+  },
+  {
+   "at": "2026-09-02T15:24:54-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "e0095b9b-011b-4dba-a15c-2f1dc4137008",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "chair",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 877.5,
+    "band_mm": [
+     600.0,
+     1300.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T15:25:10-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "33c5f315-9c8a-47d6-bf78-20fea703aaa1",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "chair",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 821.9,
+    "band_mm": [
+     600.0,
+     1300.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T15:26:40-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "10542494-93ae-4480-9f2e-0c52cedd3993",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "ottoman",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 690.1,
+    "band_mm": [
+     250.0,
+     800.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T15:26:59-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "6429a852-65eb-45d5-9b7d-be39b4e9bf52",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "chair",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 647.5,
+    "band_mm": [
+     600.0,
+     1300.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T16:10:57-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "wardrobe organizer",
+   "pages": 2,
+   "n": 200,
+   "free": 85,
+   "full_plan": 115,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T16:11:04-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "closet storage",
+   "pages": 2,
+   "n": 200,
+   "free": 83,
+   "full_plan": 117,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T16:11:08-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "folded clothes",
+   "pages": 2,
+   "n": 200,
+   "free": 60,
+   "full_plan": 140,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T16:11:11-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "shelf decor set",
+   "pages": 2,
+   "n": 200,
+   "free": 82,
+   "full_plan": 118,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T16:11:17-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "closet",
+   "pages": 2,
+   "n": 200,
+   "free": 49,
+   "full_plan": 151,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T16:13:04-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-09-02T16:13:24-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "3e38f13d-906e-49b5-a922-5cee37b96d50",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "3e38f13d-906e-49b5-a922-5cee37b96d50 offers no '2K' file (has: blend, thumbnail)"
+  },
+  {
+   "at": "2026-09-02T16:14:07-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "3e38f13d-906e-49b5-a922-5cee37b96d50",
+   "fetched": false,
+   "exit": 2,
+   "refusal": "GLB export failed (blender exit 0, file missing): …\\scripts\\addons_core\\io_scene_gltf2\\extern_draco.dll\n16:13:52 | INFO: Starting glTF 2.0 export\n16:13:52 | INFO: Extracting primitive: Plane\n16:13:52 | INFO: Primitives created: 1\n16:13:52 |"
+  },
+  {
+   "at": "2026-09-02T16:14:30-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "885a71e4-b78a-4055-848a-05a5c1cba67a",
+   "fetched": false,
+   "exit": 2,
+   "refusal": "GLB export failed (blender exit 0, file missing): …-05-19 01:37:34)\nEXPORT_GLB subsurf_raised_to_render_levels=0\nINFO Draco mesh compression is available, use library at <path> Files\\Blender Foundation\\Blender 5.1\\5.1\\scripts\\addons_core\\io"
+  },
+  {
+   "at": "2026-09-02T16:14:31-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "748845d0-24a2-491f-9ac3-8e1dd49bcde3",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "748845d0-24a2-491f-9ac3-8e1dd49bcde3 offers no '2K' file (has: blend, thumbnail)"
+  },
+  {
+   "at": "2026-09-02T16:18:41-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "748845d0-24a2-491f-9ac3-8e1dd49bcde3",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "wardrobe",
+   "resolution": "blend",
+   "scale": {
+    "ok": false,
+    "measured_mm": 2590.2,
+    "band_mm": [
+     1800.0,
+     3000.0
+    ],
+    "refusal": "thinnest axis is 810.5 mm against a longest of 5663.4 — ratio 0.1431 below the class floor 0.15. This is a CUTOUT, not a wardrobe. A bounds check cannot see it, which is why this line exists"
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T16:18:54-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "b19781fd-a05e-4611-81af-2fd9f088a0ac",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "wardrobe",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2773.7,
+    "band_mm": [
+     1800.0,
+     3000.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T16:20:40-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-09-02T16:21:00-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "748845d0-24a2-491f-9ac3-8e1dd49bcde3",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": false,
+   "assert_class": "wardrobe",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2590.2,
+    "band_mm": [
+     1800.0,
+     3000.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-02T17:00:47-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-09-02T17:00:58-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "cushion",
+   "pages": 2,
+   "n": 200,
+   "free": 63,
+   "full_plan": 137,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T17:01:00-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "throw pillow",
+   "pages": 2,
+   "n": 140,
+   "free": 42,
+   "full_plan": 98,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T17:01:03-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "throw blanket",
+   "pages": 2,
+   "n": 138,
+   "free": 42,
+   "full_plan": 96,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T17:04:49-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "e5fc6314-4935-40da-aa59-f453ccd8d9e4",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "pillow_set_standing",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 499.2,
+    "band_mm": [
+     350.0,
+     800.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-02T17:05:21-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "c4450c29-d8d8-4cf8-87d0-59de63cccb8a",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "pillow_set_lying",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 346.0,
+    "band_mm": [
+     120.0,
+     420.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T17:06:07-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "aac13b32-4f80-41c6-ac05-03a50286e6d5",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "pillow_set_lying",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 167.9,
+    "band_mm": [
+     120.0,
+     420.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T17:06:13-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "402c662f-417f-4511-9937-19d5cdaa2b46",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "pillow_set_lying",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 178.5,
+    "band_mm": [
+     120.0,
+     420.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T17:06:33-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "da65b0fa-93a5-4557-845e-49678fd45b08",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "pillow_set_lying",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 292.3,
+    "band_mm": [
+     120.0,
+     420.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T17:06:44-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "7ca290af-d472-4f5e-8627-8188c514a6ea",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "pillow_set_lying",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 226.6,
+    "band_mm": [
+     120.0,
+     420.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T20:33:16-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "pendant lamp",
+   "pages": 2,
+   "n": 200,
+   "free": 64,
+   "full_plan": 136,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T20:33:19-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "wall lamp",
+   "pages": 2,
+   "n": 200,
+   "free": 98,
+   "full_plan": 102,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T20:33:21-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "floor lamp",
+   "pages": 2,
+   "n": 200,
+   "free": 63,
+   "full_plan": 137,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T20:52:55-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-09-02T20:53:20-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "a2ff3a79-aa21-43ac-a433-eb173edfae99",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "pendant_lamp",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 689.8,
+    "band_mm": [
+     150.0,
+     1200.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T20:53:29-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "a6068c83-3f5a-4c2e-9dec-83d1e0e56dae",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "pendant_lamp",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 1143.0,
+    "band_mm": [
+     150.0,
+     1200.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T20:53:34-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "dafcda42-8866-47f1-b1d5-cfe14bcce47e",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "pendant_lamp",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 150.0,
+    "band_mm": [
+     150.0,
+     1200.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T20:54:04-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "85f6c3d5-881f-41b9-8df8-2558fcb6664d",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "floor_lamp",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 1516.8,
+    "band_mm": [
+     1200.0,
+     1900.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T20:54:22-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "a6313486-c051-44cf-a1da-56ae35af21a5",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "wall_lamp",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 704.1,
+    "band_mm": [
+     100.0,
+     900.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T20:54:41-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "a8348982-1590-4606-ac18-eed82475fb5e",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "floor_lamp",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 1605.1,
+    "band_mm": [
+     1200.0,
+     1900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-07T18:03:52-04:00",
+   "date_local": "2026-09-07",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  }
+ ]
+}

@@ -1,0 +1,30 @@
+{
+  "fired": "2026-08-08",
+  "trigger": "Owner order to spend both DR channels; the 2026-08-04 triage's topic 4 explicitly said NOT a new DR — ask the EXISTING corpora, because they already hold the authorities a DR would re-scrape.",
+  "asks": [
+    {
+      "notebook_id": "79476082-dfe5-4842-8daf-d78c9249f939",
+      "notebook_title": "INTERIOR-AI design lighting rendering 2026-06",
+      "answer_file": "NLM_lighting_ask.md",
+      "headline": "DISAGREES with four of the five lighting values our knowledge base carries. Each is a real published number attached to the wrong thing: 3:1 is Gordon's task-to-surround contrast (accent:ambient is 5:1); 20:1 is fenestration-to-adjacent (field of view is <40:1); 108-215 lux is hotel-bedroom READING (IES bedroom ambient is 6-15 fc = 65-162 lux); 323-538 lux is the KITCHEN general standard (reading areas 20-50 fc = 215-538 lux). CRI>=90 disagreed as a general requirement.",
+      "also_returned": "Cove geometry from Gordon 5th ed.: pocket setback 7.5in (190 mm) min, fascia lip 2in (51 mm) min, lamp centreline to ceiling 12in (305 mm) min rapid-start, lip height set by sight-line analysis. Cove = Kelly's Ambient Luminescence.",
+      "not_in_sources": [
+        "cove lumens per metre",
+        "ceiling gradient length",
+        "bedside lamp lumen output",
+        "shade luminance",
+        "sconce mounting heights",
+        "practical-to-ambient ratio that reads as ON",
+        "blown-out window threshold",
+        "which layer dominates a hero photograph"
+      ]
+    },
+    {
+      "notebook_id": "a5a43395-e085-4fe6-a46c-4a8f7b438cc2",
+      "notebook_title": "Design Systems and Integration Protocols Interface",
+      "answer_file": "NLM_photographer_ask.md",
+      "headline": "NOT IN SOURCES for every photographer-practice question (layer on/off, exposure approach, amateur-vs-professional signatures). The corpus does not hold the photography practice CLAUDE.md attributes to it.",
+      "CONTAMINATION_WARNING": "The light-story answer it DID give cites `Automated Vision QA for Interiors.pdf` and `Knowledge Base Architecture for a World-Class AI Interior Design Studio Powered by Claude Code` — BOTH OUR OWN DOCUMENTS. `nlm_provenance.py a5a43395` reports 103 retrievable / 1 synthesised / 11 UPLOADED, and the 11 uploads are all our own AI-studio material. This corpus can corroborate our own beliefs. Every prior answer staged from a5a43395 needs re-checking for which sources it cited."
+    }
+  ]
+}

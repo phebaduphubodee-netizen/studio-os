@@ -1,0 +1,132 @@
+{
+  "schema": "dd-decisions@0.1",
+  "element": 7,
+  "dd": "element7-wardrobe-bay_DD-2026-07-21.md",
+  "date": "2026-07-21",
+  "note": "Identity-only probes (director review 2026-07-21 fix b): each names a DECIDED thing that must EXIST in the wired set — never a dimension, EXCEPT the junction pins, which pin ink-stated RELATIONSHIPS between two spec data (both operands spec-derived via ink_faces; no literal in code). Second manifest after e6's.",
+  "decisions": [
+    {
+      "id": "D-E7-1",
+      "title": "Ink adoption: three trued wardrobe rects; BF09-2 drawn 501.5; slide-lane position load-bearing; ink_faces record",
+      "probes": [
+        "spec carries exactly three kind='wardrobe' fixtures in the wardrobe subroom with the ink-trued rects (east leg to the north wall owning the corner; north leg butting at x5054.1; BF09-2 off-wall)",
+        "the string 'flush to ensuite east wall' no longer exists in the spec",
+        "a BF09-2 depth label-conflict flag (drawn 501.5 vs label 60) exists in the spec note, paired with BF11's",
+        "subrooms[wardrobe].ink_faces exists (party bay face / north interior / east face / lane / open-south span) as machine-readable data",
+        "junction pins pass as pure tests over the canonical file: north_leg.x+w == east_leg.x; east_leg.y+d == ink_faces.north_interior_y; north_leg.y+d == ink_faces.north_interior_y; bf092.x == party_face + lane — moving any one datum alone goes red",
+        "the 4.0mm east-leg overshoot past the outline edge is disclosed in a spec note"
+      ]
+    },
+    {
+      "id": "D-E7-2",
+      "title": "Zone-not-wall: zone-open-south opening record + RAISE consumer",
+      "probes": [
+        "opening id 'zone-open-south', type 'opening', spans the full south edge of the wardrobe subroom",
+        "wardrobe_bay RAISES when handed a wardrobe subroom without zone-open-south",
+        "the 2298.0-clear-span / concealed-column disclosure exists on the record",
+        "no artifact claims the bedroom side needs a twin record (single-wall edge, unlike the door baycut)"
+      ]
+    },
+    {
+      "id": "D-E7-3",
+      "title": "Build lane: subroom-TYPE routing to pure wardrobe_bay.py; bathroom.py + millwork.py byte-untouched; 'mineral' row in the closed vocabulary",
+      "probes": [
+        "pipeline/scripts/wardrobe_bay.py exists, pure (no bpy), with its own pytest file",
+        "build_room routes subrooms of type 'wardrobe' to wardrobe_bay.bay_parts BEFORE the bathroom dispatch (source-text pin: the call + type predicate exist in the subroom loop)",
+        "canonical spec pins subrooms[wardrobe].type == 'wardrobe'",
+        "zero objects named fix__* exist for the bay masses in the built set (white-slab absence)",
+        "FIXTURE_MAT_OBJECT carries exactly one new row 'mineral'; unknown bay mats still RAISE",
+        "bathroom.py and millwork.py are byte-untouched by e7 (scope pins)",
+        "leaf geometry derives from millwork.millwork_parts (the module imports and calls it — no re-implementation)",
+        "a wardrobe fixture yielding zero parts RAISES; unknown fixture kinds inside the bay RAISE; unknown design keys RAISE"
+      ]
+    },
+    {
+      "id": "D-E7-4",
+      "title": "[AMENDED 2026-07-22 THE DRESSING GALLERY] Fronts: OPEN oak-and-brass dressing on the two BF09-1 masses + a mirror-backed niche jewel; BF09-2 the ONE cool closed anchor. (Superseded the original 'closed handleless matte-mineral, zero oak/brass' — owner rejected the recede-to-grey box TWICE; his render verdict outranks anti-monopoly theory. See refinement-wardrobe-dressing-gallery_2026-07-22.md.)",
+      "probes": [
+        "the bay's built parts carry the MATERIAL MIX oak + brass + microcement + mirror (never all-microcement again); every part routes to a KNOWN suite material (no silent default)",
+        "warm oak is the body (oak parts > microcement parts); the closed anchor's leaves route microcement",
+        "the two BF09-1 masses carry open:true and build the open dressing composition (rails/drawers/shelves/niche tokens present); BF09-2 stays closed",
+        "the east mass carries niche_mirror:true and builds exactly one mirror part (the focal jewel); removing the mirror emission RAISES",
+        "divider stations still live as spec fixture data and VALIDATE (in-run, ascending); the open composition follows the boundary station (move it -> composition shifts)",
+        "a leafless OAK scribe-filler exists at the north leg's west end (MIN_BAY constant, not a hardcoded 73.0); the L-corner stays BLIND oak carcass (front_stop)",
+        "no handle/pull/knob part or SKU string exists (handleless; the rails are functional hang hardware, not door pulls)",
+        "per-mass front faces are DERIVED toward the clear floor; a sign/face swap goes red"
+      ]
+    },
+    {
+      "id": "D-E7-5",
+      "title": "[AMENDED 2026-07-22] Internals now BUILT as the open dressing (rails/drawers/shelves/niche) on the open masses; the ONE closed anchor (BF09-2) keeps flat microcement leaves + a horizontal counter-datum reveal; open_front is now DELIBERATELY borrowed (the enclosed twin of BF09-3).",
+      "probes": [
+        "open:true now BUILDS the open dressing composition (retired the e7-era RAISE — the flag is HONORED); a closed mass has no open flag and renders flat microcement leaves",
+        "the closed anchor's counter-datum reveal (design.counter_reveal_mm) splits its leaves into lower+upper (a composed calm face, NOT a blank locker, NOT fluted)",
+        "the BF09-2 sliding-or-side-hang fabricator note exists with the depth flag",
+        "no artifact states a hinge count for the 2800 leaves"
+      ]
+    },
+    {
+      "id": "D-E7-6",
+      "title": "E5 bay-lighting amendment: no-camera-sees premise dies; row LOOK-verified; derivation only",
+      "probes": [
+        "the amended bay note exists in spec.lighting.ambient and the no-camera-sees claim is gone from every artifact",
+        "no spec.lighting.fixtures override array exists (S9 closed)",
+        "a LOOK record for the bay ambient row exists in the e7 BUILD doc with the pre-computed can positions + clip disclosures",
+        "the mr39 claim everywhere reads 'no closet/dressing row' (never 'no single-house row')"
+      ]
+    },
+    {
+      "id": "D-E7-7",
+      "title": "Three bay cameras, all in_subroom 'wardrobe' (view 1 stands outside, disclosed); MUST-SEE lists pinned; coverage map",
+      "probes": [
+        "eye_camera_variants carries exactly wardrobe_bay_entry / wardrobe_bay_dressing / wardrobe_bay_doorlane, ALL with in_subroom 'wardrobe'",
+        "view 1's note discloses the standing-outside stretch of in_subroom semantics",
+        "BF09-2's east fronts appear in the MUST-SEE of BOTH view 1 and view 3 (the predicted-8th-omission pin)",
+        "a per-decision coverage map exists and every D-E7 id appears in it",
+        "view 1's LOOK record states the south edge read OPEN; view 3's states the doorway read OPEN with the mouth stub",
+        "zone-open-south landed in the same commit as the cameras (ordering law: no LOOK against a false room)"
+      ]
+    },
+    {
+      "id": "D-E7-8",
+      "title": "wardrobe_bay_story_bits: gated on the subroom, wired unconditionally, derived from spec data",
+      "probes": [
+        "wardrobe_bay_story_bits exists, is called inside material_story, and its lines appear in material_story(canonical)",
+        "a spec without the wardrobe subroom emits none of its lines",
+        "the openness clause looks up zone-open-south BY ID and RAISES if absent (cross-block pin)",
+        "the passage clause derives its width from the baycut rect (no hardcoded 898)",
+        "[AMENDED 2026-07-22] armour lines exist for: OPEN-oak-and-brass-dressing (keep it open, do not flatten to closed/grey), the mirror-niche jewel, the cool closed anchor, south-open, bare-floor, oak-floor-continues; the open/closed mass counts DERIVE per-mass from spec data"
+      ]
+    },
+    {
+      "id": "D-E7-9",
+      "title": "Slide-south working read (owner flag OPEN); baycut NARROWED to the clear passage; mouth stub rendered; track = GAP",
+      "probes": [
+        "the surface-slide-south record exists WITH its owner-confirm-open flag",
+        "door-ensuite-baycut rect is the NARROWED [3150,6698,3150,7596] with the mouth note; the ensuite-side door-ensuite rect is byte-untouched",
+        "no artifact claims a pocket cavity in the 101.6 wall; no track/roller SKU is named; no lane-clearance value is asserted as a requirement or decision — the 9.5/side arithmetic residue appears ONLY inside an explicit NOT-QUOTABLE / hardware-tier disclaimer (review catch E7-F4: it is step 4 of the four-way slide derivation, not a quotable clearance)",
+        "no leaf mass exists at the ensuite doorway in the built set"
+      ]
+    },
+    {
+      "id": "D-E7-10",
+      "title": "Bare floor + companion absences (anti-reopen)",
+      "probes": [
+        "zero spec items or fixtures exist inside the bay clear floor beyond the three masses",
+        "the bare-floor armour line exists and derives from this record",
+        "no artifact quotes a statutory closet illuminance or invents in-cabinet lighting",
+        "the mr55 corridor line is phrased as studio application, not statutory command"
+      ]
+    },
+    {
+      "id": "D-E7-11",
+      "title": "Bay floor = the bedroom oak floor continuing (critic catch)",
+      "probes": [
+        "the decision exists in the DD; the oak-floor-continues armour line rides in wardrobe_bay_story_bits",
+        "no new floor identity, threshold strip, or floor-transition geometry exists in the bay"
+      ]
+    }
+  ],
+  "merge_rulings": "Three conflicts the verify pass surfaced were ruled by the main loop and recorded in the DD: (1) bathroom tripwire vs byte-untouched pin -> subroom-TYPE routing + source-text pin, bathroom.py untouched; (2) baycut full-1000 vs narrowed -> NARROWED to the 898 clear passage rendering the ink's rebate, ensuite side untouched; (3) view 1 no-in_subroom impossibility -> all three views carry in_subroom 'wardrobe', view 1 stands outside (disclosed).",
+  "provenance": "workflow wf_649ed584-d02 (5 ground / 1 decide / 4 verify lenses / 2 critics; 0 core REFUTED; AMENDs: mr39+mr55 citation fixes, shelf-span over-correction fix, S12 grounding softened, view-1 camera mechanics, baycut narrowing; critic adds: D-E7-11 floor finish, BF09-2 MUST-SEE coverage, junction pins, ink_faces machine-readable record, LFS lane restatement)"
+}

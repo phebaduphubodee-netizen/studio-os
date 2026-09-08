@@ -1,0 +1,14 @@
+{"components": [
+ {"name": "deck", "op": "box_round", "size_mm": [1800, 800, 300], "bevel_mm": 15, "rest_on": "floor",
+  "x_anchor": {"ref": "origin", "ref_face": "center", "own_face": "center", "gap_mm": 0},
+  "y_anchor": {"ref": "origin", "ref_face": "center", "own_face": "center", "gap_mm": 0}},
+ {"name": "cush", "op": "box_round", "size_mm": [560, 600, 160], "bevel_mm": 35, "bevel_segments": 3, "crown_mm": 40, "subsurf": 1, "rest_on": "deck",
+  "x_anchor": {"ref": "deck", "ref_face": "min", "own_face": "min", "gap_mm": 20},
+  "y_anchor": {"ref": "deck", "ref_face": "center", "own_face": "center", "gap_mm": 0}},
+ {"name": "arm", "op": "extrude_profile", "profile_plane": "xz", "depth_mm": 750, "bevel_mm": 10, "subsurf": 1,
+  "profile_mm": [[0,0],[180,0],[180,420],[160,520],[120,560],[60,540],[20,480],[0,400]],
+  "rest_on": "floor",
+  "x_anchor": {"ref": "deck", "ref_face": "min", "own_face": "max", "gap_mm": 0},
+  "y_anchor": {"ref": "deck", "ref_face": "center", "own_face": "center", "gap_mm": 0}},
+ {"name": "arm_r", "mirror_of": "arm", "mirror_about": "deck"}
+]}

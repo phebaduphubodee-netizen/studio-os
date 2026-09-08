@@ -1,0 +1,1486 @@
+{
+ "_law": "HIS ORDERS, HELD BY THE MACHINE. Every row carries his words verbatim, the file those words still live in, what they command, where the repo obeys them, and — where it can be written as one — an ASSERTION against the actual code. The builder may not edit, soften, retire or out-argue a row here. He reverses his own orders, from the image, at any time, and that reversal is a decision row carrying new words and a later date.",
+ "_what_it_cost_to_learn": "2026-08-16, his count, not mine: he ordered the bed cloth ACQUIRED on 08-14 and again on 08-15 (\"เอาผ้าที่ปั้นเองออก แล้วเอาโมเดลเตียงที่หามาใส่ให้ดู\"). D-072, decided_by 'builder', put the hand-simulated cloth back as the default over one missing component, and the next round went on tuning its numbers. Ten decision rows in the register decide that one subject against an R8 stop-loss of two. Not one rung noticed, and the reason is exact: HIS WORDS WERE IN THE REGISTER THE WHOLE TIME, IN A FIELD NO CHECKER READS — D-052 and D-054 quote the order in `question` and leave `owner_override` null, so `decisions_check`'s lock (rule 4) never armed and the row stayed re-decidable by the builder who wrote it. build_room.py states it at its sharpest: line 1651 cites 'owner order 2026-08-14' and line 1668 read `_BED_CLOTH_ACQ = False`.",
+ "_the_trap_this_file_names": "A CLASS order and an INSTANCE verdict are not the same object, and treating one as repealing the other is what happened on 2026-08-16. He ordered the CLASS acquired (08-14, 08-15). He then failed one INSTANCE by eye — \"ผ้าบนเตียงยังเละอยู่เลย\" about set 8635b5b9 — and the lane read that as permission to return to hand-simulating and spend the next round tuning its tone. The answer to 'this bought one is a mess' is A DIFFERENT PURCHASE. An instance verdict narrows what may ship; it never repeals the class.",
+ "_how_to_overrule": "Say it while looking at a frame. The builder files a decision row with `decided_by: 'owner'`, your words in `owner_override`, and `override_date`; if it retires an order here, that order's `standing` goes false and `retired_by` names the row. Nothing in this file ever waits for you — R3 stands.",
+ "_subject_ratchet_from": "D-080",
+ "orders": [
+  {
+   "id": "ORD-2026-08-01-freeform-acquire",
+   "date": "2026-08-01",
+   "verbatim": "เวลาคุณต้องปั้น model ที่มีส่วนเว้าส่วนโค้ง มันมักจะเพี้ยนเสมอ ตั้งแต่ทำมาในทุก project",
+   "recorded_at": "CLAUDE.md",
+   "commands": "Free-form geometry (figures, plants, cut flowers, drapery, upholstery, animals, food) is ACQUIRED, never hand-modelled. Two shape iterations on a hand-built organic object means the CLASS was misclassified.",
+   "subject": "freeform-build-vs-acquire",
+   "scope": "class",
+   "standing": true,
+   "retired_by": null,
+   "obeyed_where": "CLAUDE.md, docs/DECISIONS-render-assets.md",
+   "obeyed_how": "R8 is the rule text; the acquire path exists end to end (warehouse.py -> asset_scale -> model_fit -> build_room import).",
+   "obeyed_assert": []
+  },
+  {
+   "id": "ORD-2026-08-01-paid-sources-unfenced",
+   "date": "2026-08-01",
+   "verbatim": "฿0 + CC0/public-domain เท่านั้น ยกเลิกข้อนี้",
+   "recorded_at": "CLAUDE.md",
+   "commands": "The free-only fence is CANCELLED. Any source whose licence permits commercial use of the RENDER is in scope, paid libraries included; a spend is his call per purchase.",
+   "subject": "asset-sourcing-tiers",
+   "scope": "class",
+   "standing": true,
+   "retired_by": null,
+   "obeyed_where": "qa/sourcing-tiers.json, pipeline/scripts/sourcing_check.py, docs/DECISIONS-render-assets.md",
+   "obeyed_how": "The tier roster names three paid tiers with verified prices and licences, and a gap declared without attempting them is refused by name.",
+   "obeyed_assert": [
+    {
+     "file": "qa/sourcing-tiers.json",
+     "pattern": "\"paid_permitted\": true",
+     "why": "Re-fencing sourcing to free-only is re-imposing the thing he cancelled by name."
+    }
+   ]
+  },
+  {
+   "id": "ORD-2026-08-02-placement-derived",
+   "date": "2026-08-02",
+   "verbatim": "ผมสังเกตว่าที่ผ่านมาทั้งหมดคุณชอบวาง model เบี้ยว ลอย ไม่ตรงแกน ไม่สมจริง",
+   "recorded_at": "CLAUDE.md",
+   "commands": "A position derivable from a contact must never be typed. Declare the relationship; a `nudge` is the defect wearing a knob.",
+   "subject": "placement-derivation",
+   "scope": "class",
+   "standing": true,
+   "retired_by": null,
+   "obeyed_where": "pipeline/scripts/placement.py, pipeline/scripts/placement_check.py",
+   "obeyed_how": "placement.py solves rest_on / centre_on / measured offsets and refuses nudge synonyms by name; placement_check reads the BUILT scene with no allowlist.",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/placement.py",
+     "pattern": "NUDGE_KEYS",
+     "why": "The ban on typed fudge factors is the operative half of this order."
+    }
+   ]
+  },
+  {
+   "id": "ORD-2026-08-02-gemini-judges-every-render",
+   "date": "2026-08-02",
+   "verbatim": "เพิ่มกฏเลย ใช้ gemini ตัวช่วยวิเคราะห์และตัดสินในฐานะ designer หลังผล render ออกทุกครั้ง",
+   "recorded_at": "CLAUDE.md",
+   "commands": "A cross-vendor designer's eye (C3) judges EVERY render, not only big gates. Every returned item gets a written accept-and-lane or a refutation carrying a measurement.",
+   "subject": "critic-ladder",
+   "scope": "class",
+   "standing": true,
+   "retired_by": null,
+   "obeyed_where": "CLAUDE.md, pipeline/scripts/critique_call.py",
+   "obeyed_how": "critique_call.py builds the bundle and calls Gemini directly; the owner-paste ritual is the fallback, not the default. ASSERTED 2026-08-24 (p2r62): `rule_gate.critic_lag` counts rounds since BOTH judges last saw a frame and prints it into the render path. It read 4 the morning it was written — r58-r61 were playblast-only rounds closed on the builder's own eye. The counter PRINTS and does not block: the frame under judgment does not exist yet when a pre-render gate runs, so a refusal here would fall on the render that clears it. The blocking form belongs where a ROUND CLOSES and is not built (D-128).",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/rule_gate.py",
+     "pattern": "_lag, _last, _half = critic_lag\\(",
+     "why": "His order is about the RENDER SERIES, not the source tree, so the assertion pins the counter's CALL SITE inside the live gate — not the existence of critique_call.py, which was true on all four of the rounds r58-r61 that no judge ever saw."
+    },
+    {
+     "file": "pipeline/scripts/rule_gate.py",
+     "pattern": "CRITIC LADDER: \\{_lag\\} round\\(s\\) since both judges saw a frame",
+     "why": "The number has to reach the render path, because that is the channel he reads (R11). A lag nobody prints is the queue-with-no-consumer defect wearing a counter."
+    }
+   ]
+  },
+  {
+   "id": "ORD-2026-08-04-stop-and-ask-for-critique",
+   "date": "2026-08-04",
+   "verbatim": "เวลาต้องการคำวิจารณ์ให้หยุดแล้วมาถาม claude ui",
+   "recorded_at": "CLAUDE.md",
+   "commands": "When the lane needs a designer's critique the builder STOPS and routes the question to a separate-context critic instead of self-judging. (Channel amended 2026-08-05: the Cowork app is retired; C2 is a fresh-context local agent, blind by bundle construction.)",
+   "subject": "critic-ladder",
+   "scope": "class",
+   "standing": true,
+   "retired_by": null,
+   "obeyed_where": "CLAUDE.md, pipeline/scripts/critique_call.py",
+   "obeyed_how": "R7c is the rule text; the bundle builder refuses target/anchors by code so blindness is enforced by the ask's construction. ASSERTED 2026-08-24 (p2r62): `rule_gate.critic_lag` counts rounds since BOTH judges last saw a frame and prints it into the render path. It read 4 the morning it was written — r58-r61 were playblast-only rounds closed on the builder's own eye. The counter PRINTS and does not block: the frame under judgment does not exist yet when a pre-render gate runs, so a refusal here would fall on the render that clears it. The blocking form belongs where a ROUND CLOSES and is not built (D-128).",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/rule_gate.py",
+     "pattern": "def critic_lag\\(critique_dir, round_now\\)",
+     "why": "C2 is half the ladder and the half that is easiest to skip, because it costs a spawned agent rather than an API call. The counter refuses to call a round judged on one answer."
+    },
+    {
+     "file": "pipeline/scripts/rule_gate.py",
+     "pattern": "both = \\[n for n, \\(c2, c3\\) in j\\.items\\(\\) if c2 and c3\\]",
+     "why": "`and`, not `or` — a bundle dir holding a single ANSWER reads like the ladder ran in a directory listing. Three rounds in this lane's history (r34, r36, r44) are exactly that, and nothing had ever counted them."
+    }
+   ]
+  },
+  {
+   "id": "ORD-2026-08-05-object-must-justify-itself",
+   "date": "2026-08-05",
+   "verbatim": "คุณไม่เคยตั้งคำถามของแต่ละชิ้นว่ามันอยู่ตรงนี้สมเหตุสมผลมั้ย",
+   "recorded_at": "CLAUDE.md",
+   "commands": "Every mass answers identity / exists-in-the-reference / could-be-built / verdict before a frame is judged. An object invented to satisfy a structure is a declared assumption, not a measurement.",
+   "subject": "object-justification",
+   "scope": "class",
+   "standing": true,
+   "retired_by": null,
+   "obeyed_where": "pipeline/scripts/rule_gate.py, CLAUDE.md",
+   "obeyed_how": "rule_gate's R10 half refuses a mass with no justification and prints the count on every run.",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/rule_gate.py",
+     "pattern": "masses, all justified",
+     "why": "The per-mass verdict is the operative half of this order."
+    }
+   ]
+  },
+  {
+   "id": "ORD-2026-08-05-privacy-is-git-only",
+   "date": "2026-08-05",
+   "verbatim": "ผมไม่สนเรื่อง privacy แล้ว ขอแค่อย่าส่งงานลูกค้าเพื่อนผมออกไป github",
+   "recorded_at": "CLAUDE.md",
+   "commands": "The hard line is GIT: the friend's delivered client work must never be committed or pushed. Local sighted comparison is open; sending the reference to an external vendor stays off by default (benchmark leakage), which is the builder's call and his to override.",
+   "subject": "privacy-fence",
+   "scope": "class",
+   "standing": true,
+   "retired_by": null,
+   "obeyed_where": ".gitignore, CLAUDE.md",
+   "obeyed_how": "_private/ is gitignored, and the critique bundle builder refuses target/anchor images by code.",
+   "obeyed_assert": [
+    {
+     "file": ".gitignore",
+     "pattern": "^_private/",
+     "why": "The one line that keeps his friend's delivered work out of git."
+    }
+   ]
+  },
+  {
+   "id": "ORD-2026-08-08-owner-is-out-of-the-gate",
+   "date": "2026-08-08",
+   "verbatim": "เอาผมออกจาก gate เลย ไม่ต้องรอผม สุดท้ายทุกขั้นตอนที่ render ออกมาผมก็นั่งดูทุกรูปตลอดอยู่แล้ว",
+   "recorded_at": "qa/open-decisions.json, CLAUDE.md",
+   "commands": "Nothing waits for his signature, ever. The builder closes rounds. He overrules from the image at any time, and every call taken in his name is written down before the render that depends on it, with the one edit that undoes it.",
+   "subject": "owner-gate-role",
+   "scope": "class",
+   "standing": true,
+   "retired_by": null,
+   "obeyed_where": "qa/open-decisions.json, pipeline/scripts/decisions_check.py, pipeline/scripts/rule_gate.py",
+   "obeyed_how": "`pending` is refused by name; the decision log prints into the render path on every gate run.",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/decisions_check.py",
+     "pattern": "DECIDERS = \\(\"builder\", \"owner\"\\)",
+     "why": "A third decider value is a queue, and the queue is what this order abolished."
+    }
+   ]
+  },
+  {
+   "id": "ORD-2026-08-09-every-mechanism-opens-the-picture",
+   "date": "2026-08-09",
+   "verbatim": "ผมขอบังคับให้ทุกกลไก ทุกขั้นตอนต้องมองรูปจริง",
+   "recorded_at": "CLAUDE.md",
+   "commands": "Every mechanism and every step must open the real image. A gate made of declaration-readers says so by name and never prints like one that looked.",
+   "subject": "gate-opens-the-picture",
+   "scope": "class",
+   "standing": true,
+   "retired_by": null,
+   "obeyed_where": "pipeline/scripts/rule_gate.py, pipeline/scripts/pixel_check.py",
+   "obeyed_how": "rule_gate prints OPENED THE PICTURE and declarations-only on every run. SAID PLAINLY, because the flattering reading is available: pixel_check itself is declared STRUCTURALLY INAPPLICABLE on DELIV-001 (rule_gate.py:474) and that is TRUE — this lane is not a reproduction and has no target frame to compare against. So the order is carried here by a different picture-opening rung: the signed tonal ladder, which since 2026-08-16 FAILS THE BUILD rather than printing a violation past it (D-076). Both asserts below have to hold, because the first one alone would go green on a lane where nothing opens the picture at all.",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/rule_gate.py",
+     "pattern": "OPENED THE PICTURE",
+     "why": "The line that stops a roster of blind rungs from reading as coverage."
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_ladder_stop",
+     "why": "On this lane the ladder is the rung that opens the picture AND can stop a build; without it the order is obeyed only on lanes we are not building."
+    }
+   ]
+  },
+  {
+   "id": "ORD-2026-08-11-sheet-first",
+   "date": "2026-08-11",
+   "verbatim": "คุณมองแบบออกมั้ย?",
+   "recorded_at": "CLAUDE.md",
+   "commands": "No build round touches an element until that element's crop of the DRAWING OF RECORD is open beside it, and when a derived doc disagrees with the sheet the conflict reopens the derivation, never the sheet.",
+   "subject": "sheet-of-record",
+   "scope": "class",
+   "standing": true,
+   "retired_by": null,
+   "obeyed_where": "pipeline/scripts/sheet_recon.py, pipeline/scripts/build_room.py, pipeline/scripts/plan_status.py, qa/sheet-recon.json",
+   "obeyed_how": "BOTH halves, 2026-08-24. (1) The two blocking rows were triaged with the sheet crop actually open — 3000 dpi over each pocket, 100 mm grid, and a stroke histogram, which is what R12 requires before a drawing call and is why the previous session deliberately left them UNRESOLVED rather than signing from a ledger edit. The crop refuted our own rects: SR-09 and SR-10 stored the LAMP CIRCLE (300x300, curve=True, fill=0.08) as the nightstand, because the real carcass is drawn at pen 0.12, touches the casework web, and is fused by close_mm=18 into the merged_blob the size screen drops — so the extractor could only ever see the lamp. Re-derived from strokes to 460x460 / 460x457 inside pen-0.60 niches, and SR-18's head band from [5140,-46,60,2352] (which ran through both niches) to [5143,80,60,2088]. R12's own direction: the conflict reopened the derivation, not the sheet. Both nightstands are then SUPERSEDED — a fourth verdict state added the same day, because the owner's hug order moved them off their drawn rects and with three states such a row could only be `matched` (a lie), `declared_gap` (a lie the other way) or UNRESOLVED for ever. Superseded is the strictest state in the file: it demands an order id that EXISTS and a `built_as` mesh PRESENT IN THE FRAME, so 'we moved it' can never be where 'we lost it' hides — which is the headboard defect DRW-1 was built for. (2) build_room.py now SPAWNS `sheet_recon.py --gate <dump> --no-save` beside existence_check and dim_check, on the same layer reasoning (pure python, and the dump is full-scale geometry at any render rung, so it runs on quick too), honouring the exit contract: 1 fails the build, 2 COULD-NOT-RUN is a hard stop and never counts as clear. --no-save exists because this is the only rung a build spawns that would otherwise WRITE a tracked file; the verdicts are still recomputed in full. Live gate on the frame of record now: 21 drawn | 19 matched | 2 superseded | 0 UNRESOLVED (0 blocking), exit 0.",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "\"sheet_recon\\.py\"\\), \"--gate\", dump_path, \"--no-save\"\\]",
+     "why": "THE ARGV, not the name. The previous version of this assertion was the bare string `sheet_recon.py`, which a COMMENT satisfies — and build_room already carried two comments naming this module while never spawning it, so that pattern would have gone green on the exact state it was written to refuse. This row has made that mistake once already in the other direction (its old assertion matched two COULD-NOT-RUN strings in plan_status), so the pattern is now a piece of executable argv that cannot exist unless the process is actually launched."
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_sr\\.returncode == 2",
+     "why": "The COULD-NOT-RUN branch. Spawning is not enough: R11's sentence is that 'could not look' must never print like 'looked and it was fine', so the hard stop on exit 2 is asserted separately from the spawn. A wiring that ran the gate and swallowed exit 2 would satisfy the assertion above and still be the defect."
+    },
+    {
+     "file": "pipeline/scripts/sheet_recon.py",
+     "pattern": "'moved' is never where 'lost' hides",
+     "why": "The anti-hiding guard on the new SUPERSEDED state. Superseded is the only verdict that lets a drawn mass leave its rect and still clear the gate, so the one thing that makes it safe — built_as must name a mesh PRESENT IN THIS FRAME — is asserted by name. Delete that check and two of this file's 37 tests go red; delete this assertion and nothing would notice."
+    },
+    {
+     "file": "pipeline/scripts/sheet_recon.py",
+     "pattern": "SHEET-RECON: %\\(drawn\\)d drawn",
+     "why": "The session-open summary line. Kept as a separate assertion from the gate above so the two halves cannot be confused again: this one proves a line can print, not that the verdict it prints is live — it replays the ledger's stored value, and on 2026-08-23 that stored value disagreed with the live gate."
+    }
+   ],
+   "status": "obeyed",
+   "_was_not_obeyed": {
+    "since": "2026-08-11",
+    "because": "MEASURED 2026-08-23, and the row said `obeyed` on the strength of an assertion that matched two COULD-NOT-RUN strings. Its single obeyed_assert was {plan_status.py, /SHEET-RECON/}, and the only two lines in that file matching it are 394 'SHEET-RECON unknown — sheet_recon is not importable' and 396 'SHEET-RECON unknown — qa/sheet-recon.json could not be read'. So the rung that R13 built to read the LINE instead of the comment above it was reading the failure message. THE BLOCKING HALF DOES NOT EXIST IN THE RENDER PATH: `git log -S 'sheet_recon.py' -- build_room.py rule_gate.py` returns nothing for the whole history, so `sheet_recon --gate` has never once been spawned by a build; build_room's only two mentions of it are comments, and it dutifully writes camera.floor_poly_mm into every scene dump SO THAT the recon can frustum-test, then never runs it. AND THE SURVIVING PRINT IS CURRENTLY FALSE: the session opener replays the ledger's STORED verdict — '21 drawn | 21 matched | 0 UNRESOLVED (0 blocking) [stored]' — while the live gate on the frame of record exits 1: `python sheet_recon.py --gate pipeline/output/room_bedroom_suite_eye_p2r57.scene.json` -> '21 drawn | 19 matched | 0 declared gaps | 2 UNRESOLVED (1 blocking) [floor_poly]'. The SHEET-FIRST half of the order (open the drawing crop before touching an element) is a working practice and is not what this row now denies; what is not-obeyed is the machinery R12 says enforces it.",
+    "restart_by": "Two builder actions, in this order. (1) TRIAGE THE 1 BLOCKING ROW: run `python pipeline/scripts/sheet_recon.py --gate pipeline/output/room_bedroom_suite_eye_<frame>.scene.json` on the frame of record and resolve each UNRESOLVED drawn mass into a match or a human-signed gap — the gate cannot be wired while it fails, because a rung that is red on every render is a rung somebody switches off (R13's own words). (2) SPAWN IT FROM THE RENDER PATH, out of process beside existence_check / dim_check / deliverable_check in build_room.py, honouring the exit contract: 1 fails the build, 2 COULD NOT RUN is a hard stop on a full-fidelity frame and never counts as clear. The assertion below is written against that end state, so it clears itself the moment the wiring lands.",
+    "cleared": "2026-08-24"
+   }
+  },
+  {
+   "id": "ORD-2026-07-28-see-your-own-work-and-be-able-to-stop",
+   "date": "2026-07-28",
+   "verbatim": "project นี้ไม่ยั่งยืน เพราะคนทำ (คุณ) มองไม่เห็นว่าตัวเองกำลังทำอะไรและไม่สามารถหยุดสิ่งที่กำลังทำไปในทางที่ผิดไว้ได้",
+   "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r44-2026-08-16.md",
+   "commands": "Give the builder sight of its own work and a way to STOP — R1 stop-loss (two cycles per mechanism), R2 gate artifact, R4-R6. The caps are the machine-readable half, and the caps file's own law says only the owner raises one.",
+   "subject": "round-and-frame-caps",
+   "scope": "class",
+   "standing": true,
+   "retired_by": null,
+   "status": "not-obeyed",
+   "since": "2026-09-02",
+   "not_obeyed_because": "HIS OWN LATER WORDS REMOVED THE HALF THAT WAS OBEYED. This order was carried out by making the cap 'a machine-read number that blocks' (see obeyed_how). On 2026-09-02 he answered the gate's refusal at 97 > 96 with \"ปลด cap เลย\" and the cap became the sentinel `uncapped`, so the third assertion — a NUMERIC cap_rounds for DELIV-001 — is false, and it is false because HE made it false. TWO THINGS THE BUILDER DID NOT DO, deliberately. It did not widen the assertion to accept the sentinel: that would change what his order requires in order to make his order pass, which is the D-072 wound by a politer name. And it did not retire the order, because retirement takes the whole row and this order's intent — that the builder can see what it is doing and can stop — is far larger than the cap, which was only ever one instrument for it. WHAT STILL SERVES THAT INTENT AND WAS NOT LIFTED: R1's per-mechanism stop-loss of two build+render cycles, the round/frame counter which still runs and still prints into the render path on every gate, and his eye (R3). What is gone is only the ceiling.",
+   "obeyed_where": "qa/curriculum-caps.json",
+   "obeyed_how": "2026-08-25 night: he answered ASK-023 through the debate approval (D-141, his verbatim in owner_override) — units.DELIV-001 carries the cap as two integers a program reads — 89/93 when this row was written, 96/105 since his 2026-08-29 extension (D-178). THE INTEGERS ARE DELIBERATELY NOT RESTATED AS A FACT HERE ANY MORE: this prose went stale the moment they moved, and nothing checks `obeyed_how`. What this order required was that the cap BE a machine-read number that blocks, which is true at either value, read by rule_gate.cap_check inside check_room on every build and BLOCKING on breach; breach also starts the real-client run (ORD-2026-08-22). The machine-readable half of R1 finally has its number, 28 days after the order.",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/rule_gate.py",
+     "pattern": "^def count_rounds_room\\(gate_dir\\):",
+     "why": "the lane's own round counter exists (builder half)"
+    },
+    {
+     "file": "pipeline/scripts/rule_gate.py",
+     "pattern": "\\(\\\"R1 cap\\\", \\\"round/frame caps are declared per reproduction unit",
+     "absent": true,
+     "why": "R1 cap may not be declared not-applicable to the only lane being built — re-declaring it re-breaks this order"
+    },
+    {
+     "file": "qa/curriculum-caps.json",
+     "pattern": "\\\"DELIV-001\\\"[\\s\\S]{0,120}?\\\"cap_rounds\\\": \\d",
+     "why": "THIS ONE IS EXPECTED TO FAIL and that is the honest interim state: a NUMERIC cap for DELIV-001 exists only when the owner sets one. The row prints not-obeyed until it holds"
+    }
+   ],
+   "blocked_by": "ASK-039"
+  },
+  {
+   "id": "ORD-2026-08-08-build-order-dimension-objects-light",
+   "date": "2026-08-08",
+   "verbatim": "",
+   "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r44-2026-08-16.md",
+   "commands": "Dimension first, then every object present, THEN light. Light is SOLVED from geometry, never layered on top: doing it early buries geometry error in an invisible light/material table (measured once at 240 W against a real 37 W). NO VERBATIM — the record of this order is a paraphrase in the builder's memory file, and this ledger refuses to invent his words, so it is filed with `commands` only.",
+   "subject": "phase-order",
+   "scope": "class",
+   "standing": true,
+   "retired_by": null,
+   "obeyed_where": "qa/deliverable-plan.json",
+   "obeyed_how": "The phase array was reordered on 2026-08-16 to P0 P1 P2 P4 P3 P5 — objects before light — after P3 had been opened and closed on 08-11 while P2 was still open. The reorder is recorded in the plan under its own key.",
+   "obeyed_assert": [
+    {
+     "file": "qa/deliverable-plan.json",
+     "pattern": "_phase_order_2026-08-16",
+     "why": "The array IS the sequence the lane follows, so the fix had to be in the array and not in a note about it."
+    }
+   ],
+   "verbatim_absent_because": "His words for this one survive only as a paraphrase in the builder's own memory file, outside the repo. Reconstructing a Thai sentence in his voice and storing it as `verbatim` would put words in his mouth to satisfy a checker — the order governs on its `commands` alone until he restates it."
+  },
+  {
+   "id": "ORD-2026-08-12-garment-scale-is-wrong",
+   "date": "2026-08-12",
+   "verbatim": "สเกลดูแปลก",
+   "recorded_at": "pipeline/scripts/build_room.py",
+   "commands": "From the p2r26 image: the hung garments read at the wrong scale (they render 570-637 mm against a real shirt's 700-760, because the run term shrank people to fit the furniture). Fix the scale.",
+   "subject": "garment-scale",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "obeyed",
+   "since": "2026-08-25",
+   "obeyed_where": "pipeline/scripts/build_room.py",
+   "obeyed_how": "p2r72, both halves. DROP: derived from the built wardrobe since p2r49 (z0 = _z_bot). HANG: face-on is the DEFAULT (_GARMENT_YAW90 = True) and the across-run slot is DERIVED from the BUILT carcass around each rail (the same law as the drop, one axis over) instead of the 190-360 mm loft placeholder — which is what let a 573 mm hanger hang at adult scale. GARMENT_SCALE_FLOOR raised to the row's own done-bar 0.8 (703 mm). The r6 A/B that refused yaw-90 ran against the placeholder depth, per this row's restart_by; the refusal is superseded by the derivation, not by taste. PIXEL PROOF ON DISK: pipeline/output/room_bedroom_suite_eye_p2r73w.png — FULL fidelity, camera corner_ne_legacy, the very view his p2r26 verdict was given from; every rail cluster z-span 879 mm at s_fit 0.885-1.000 (dim_check ok 9/9), garments inside their own bays within the 12 mm grace (p2r73 bay-from-walls rework after the code review measured hooks 50-95 mm off the bar and gable crossings in the first cut) and the shells read as adult garments in the frame. An earlier draft of this field named a wardrobe_bay_entry frame that was never rendered — corrected the same day by the register review before commit; the correction is itself an instance of ORD-2026-08-25's second half.",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "^\\s+z0 = _z_bot$",
+     "why": "the drop is the DERIVED clear space under the rail, not the placeholder's z-span — the half of this order that is carried out"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "GARMENT_SCALE_FLOOR = 0\\.8",
+     "why": "THIS ONE IS EXPECTED TO FAIL, and it is the definition of done. The floor refuses a set that reads as children's clothes; at 0.6 it admits 528 mm, which is child scale inside the rule written to refuse child scale. Obedience is when the geometry lets the floor stand at 0.8 (703 mm) WITHOUT emptying the rails — i.e. when the hang orientation is solved, not when a number is raised"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "^_GARMENT_YAW90 = True",
+     "why": "the mechanism that carries the hang half — flipping it back to False re-parks his order behind an opt-in, the R13 shape"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "BAY READ FROM ITS WALLS",
+     "why": "the bay-from-its-own-walls print (p2r73 third pass: run axis from the BAR, bounds and depth from the flanking GABLES — the loft placeholder had its axes swapped and every earlier derivation double-flipped) — deleting the derivation reverts the hang to the placeholder bay silently"
+    }
+   ],
+   "restart_by": "Hang the garments FACE-ON — yaw 90, shoulder span into the carcass DEPTH instead of across the rail run. The A/B that refused that at r6 (D-031) ran against a depth slot taken from the SAME styling placeholder this round proved wrong for the drop, so it is not settled evidence. It is the third mechanism at this site, so R1 requires it to enter as a NEW mechanism with its own gate — not as a re-turn of `_ADULT_SCALE`'s angle sweep, which is stopped and stays off."
+  },
+  {
+   "id": "ORD-2026-08-12-bed-cloth-still-looks-wrong",
+   "date": "2026-08-12",
+   "verbatim": "สภาพผ้าต่าง ๆ บนเตียงยังดูแปลก",
+   "recorded_at": "pipeline/scripts/build_room.py",
+   "commands": "From the p2r26 image: the state of the cloth on the bed still reads wrong. This is the verdict that opened the whole bed-cloth mechanism round and, two days later, R8's application to the class.",
+   "subject": "bed-cloth-build-vs-acquire",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": false,
+   "retired_by": "D-172",
+   "obeyed_where": "pipeline/scripts/build_room.py, projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+   "obeyed_how": "The obedience ROUTE moved: four solver mechanisms were tried and three R1-stopped (`_DUVET_TUCKS` still ships off as the residue of that), and the answer became acquisition rather than more tuning. So this order is now carried by the same line the 08-14 order asserts.",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "^_BED_CLOTH_ACQ = True",
+     "why": "Its obedience route is the acquire leg, not another tuck mechanism."
+    }
+   ],
+   "note": " || RETIRED 2026-08-28 by D-172 (his 'ลุยตามนั้น' on the ASK-022 proposal). แถวยังอยู่ในไฟล์และอ่านได้ — สิ่งที่แถวนี้ถืออยู่ถูกย้ายออกก่อนถอน ดู D-172 in_effect"
+  },
+  {
+   "id": "ORD-2026-08-13-gen-diff-runs-every-round",
+   "date": "2026-08-13",
+   "verbatim": "ไอเดียพี่ อนุมัติ ลุย",
+   "recorded_at": "qa/open-decisions.json",
+   "commands": "The gen-diff protocol — his own idea, approved — runs as a step at the end of every round: generate variants of our own frame and read what they change, as a diagnostic the builder's eye cannot supply.",
+   "subject": "gen-diff-protocol",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "obeyed",
+   "obeyed_where": "pipeline/scripts/build_room.py, pipeline/scripts/gen_diff.py",
+   "obeyed_how": "p2r49: gen_diff had ZERO call sites in the repo — it was a manual CLI that ran twice on 2026-08-14 and stopped, which is R13's exact shape (an order carried out as an OPT-IN is an order that was not carried out, because nobody types the flag; here there was not even a flag to type). It is now a STEP in the render path: `_gen_diff(name)` runs after every full-fidelity eye frame, spawned out of process for the layer reason (`google.genai` is not in Blender's bundled Python) and non-fatal because a variant is a hypothesis generator, not a gate. It cannot go quiet: a failed run prints NOT RUN with the reason, and turning it off costs an environment variable that prints when it is used.",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "^_GEN_DIFF_EVERY_ROUND = True$",
+     "why": "the default itself, at column 0 — an indented copy or a comment cannot satisfy it"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "^\\s+_gen_diff\\(name\\)$",
+     "why": "the CALL in the render path. The constant alone is the p2r46 defect (an assertion that asks whether a thing is NAMED, not whether it RUNS); this line is what makes the round actually fire it"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "\\\"gen_diff\\.py\\\"\\), png",
+     "why": "the argv fragment, so the spawn survives a rename of the wrapper"
+    }
+   ]
+  },
+  {
+   "id": "ORD-2026-08-14-bed-cloth-is-acquired",
+   "date": "2026-08-14",
+   "verbatim": "ทำเท่าไรคุณก็ปั้น model ให้สมจริงไม่ได้ซักที",
+   "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r31-2026-08-15.md",
+   "commands": "Stop hand-simulating the bed cloth. R8 applies to its class — the crease site had stopped three times — so the bed cloth is ACQUIRED, and the acquire leg is the lane's default, not a flag.",
+   "subject": "bed-cloth-build-vs-acquire",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "obeyed_where": "pipeline/scripts/build_room.py, projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+   "obeyed_how": "_BED_CLOTH_ACQ ships True; a failed acquisition raises or declares an honest gap and NEVER falls back to the solver bakes.",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "^_BED_CLOTH_ACQ = True",
+     "why": "This is the line that read False for five days under a comment citing this very order."
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_ACQ_CLOTH_FALLBACK_IS_REFUSED",
+     "why": "A silent fallback to the solver bakes obeys the flag and disobeys the order — the frame is what he judges, not the flag."
+    }
+   ]
+  },
+  {
+   "id": "ORD-2026-08-15-remove-the-hand-built-cloth",
+   "date": "2026-08-15",
+   "verbatim": "เอาผ้าที่ปั้นเองออก แล้วเอาโมเดลเตียงที่หามาใส่ให้ดู",
+   "recorded_at": "qa/open-decisions.json",
+   "commands": "Take the hand-simulated cloth OUT and put the acquired bed model IN, then show him the frame. This is the same order as 08-14 restated as an instruction about the frame he sees.",
+   "subject": "bed-cloth-build-vs-acquire",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "obeyed_where": "pipeline/scripts/build_room.py, projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+   "obeyed_how": "The canonical spec names an acquired cloth set and the build places it; the solver bakes are unreachable while the order stands. CARRIED OUT 2026-08-17 (p2r47) after two days NOT-OBEYED: `bed_models.cloth_set` = d4698c95_flat, which measures 94.0% coverage, 4/4 flanks and 121.6 mm relief on the built scene. It misses the builder's own fineness cut by 4.1% under a signed, name-and-number bounded exception (D-093) that prints on every build — recorded rather than hidden, because the half of his order that was never in doubt is that he asked to be SHOWN the acquired model in the frame.",
+   "obeyed_assert": [
+    {
+     "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+     "pattern": "\"cloth_set\": \"d4698c95_flat\"",
+     "why": "NAMES THE SET, not just the key. p2r46's finding was that this assertion asked whether an asset was NAMED and never whether it SURVIVES, so it read green while the spec pointed at a set both our rungs refuse. Pinning the slug means the next substitution has to come back through this row."
+    },
+    {
+     "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+     "pattern": "\"bed_cloth_gap\":",
+     "absent": true,
+     "why": "two live answers to one question is the defect: a named set AND a signed gap cannot both be in force (the gap block's own reverse_by says so)."
+    }
+   ]
+  },
+  {
+   "id": "ORD-2026-08-15-loose-furniture-is-acquired",
+   "date": "2026-08-15",
+   "verbatim": "ลบ furniture ที่ปั้นเองทุกชิ้น (ยกเว้น BF) แล้วหาจาก 3D Warehouse มาใส่ให้หมด",
+   "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r33-2026-08-15.md",
+   "commands": "Every hand-built LOOSE furniture piece comes out and is acquired; built-in millwork (BF) stays hand-built. The cut is built-in vs loose, not box-vs-curve.",
+   "subject": "loose-furniture-build-vs-acquire",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "obeyed_where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json, qa/deliverable-plan.json",
+   "obeyed_how": "bench, both nightstands, the tub chair and the head cushions are acquired meshes with model_assertions; the bed cloth is the open half.",
+   "obeyed_assert": []
+  },
+  {
+   "id": "ORD-2026-08-16-set-8635b5b9-is-refused",
+   "date": "2026-08-16",
+   "verbatim": "ผ้าบนเตียงยังเละอยู่เลย",
+   "recorded_at": "qa/open-decisions.json",
+   "commands": "Looking at p2r41 — the frame built on the ACQUIRED set 8635b5b9 — he failed the bed cloth. That set does not ship. IT DOES NOT REPEAL THE CLASS ORDER: the answer is a different acquisition, never a return to hand-simulating.",
+   "subject": "bed-cloth-build-vs-acquire",
+   "scope": "instance",
+   "names": "8635b5b9-669c-4efc-a23a-60936f2e0192",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": false,
+   "retired_by": "D-172",
+   "obeyed_where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json, qa/open-decisions.json",
+   "obeyed_how": "The spec no longer names that slug; the audition moves to the second measured survivor and to tiers never searched.",
+   "obeyed_assert": [
+    {
+     "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+     "pattern": "\"cloth_set\": \"8635b5b9",
+     "absent": true,
+     "why": "He failed this exact set from the image; shipping it again is deciding his verdict away. The pattern names the SHIPPING key only — the scale assertion for that file stays, because it is a true measurement and erasing it would be tidying away the evidence."
+    }
+   ],
+   "note": " || RETIRED 2026-08-28 by D-172 (his 'ลุยตามนั้น' on the ASK-022 proposal). แถวยังอยู่ในไฟล์และอ่านได้ — สิ่งที่แถวนี้ถืออยู่ถูกย้ายออกก่อนถอน ดู D-172 in_effect"
+  },
+  {
+   "id": "ORD-2026-08-16-fix-the-system-not-the-round",
+   "date": "2026-08-16",
+   "verbatim": "ในฐานะ project director แก้ไขเชิงระบบเกี่ยวกับเรื่องนี้ซะ อย่าให้ผิดซ้ำ",
+   "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r44-2026-08-16.md",
+   "commands": "Fix the mechanism that let a builder decision overrule a standing order, not just this instance of it. The machine must hold his orders; a rule that only exists as prose is the defect this repo has now named four times.",
+   "subject": "owner-orders-machinery",
+   "scope": "class",
+   "standing": true,
+   "retired_by": null,
+   "obeyed_where": "qa/owner-orders.json, pipeline/scripts/orders_check.py, pipeline/scripts/sourcing_check.py, pipeline/scripts/rule_gate.py",
+   "obeyed_how": "Orders are rows with assertions against the code; a builder row contradicting a standing order is refused by name; decisions per subject are counted; a gap that skipped a permitted tier is refused as an unmade purchase.",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/rule_gate.py",
+     "pattern": "import orders_check",
+     "why": "An orders ledger with no consumer would be the fifth instance of the defect it was built to end."
+    }
+   ]
+  },
+  {
+   "id": "ORD-2026-08-18-bed-too-small",
+   "date": "2026-08-18",
+   "verbatim": "ผมว่าเตียงมันเล็กเกินไป",
+   "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r53-2026-08-18.md",
+   "_retired_note": "RETIRED 2026-08-22 by D-114 carrying his newer words ('หาขนาดเตียงมาตรฐานแล้วขนาดให้เท่านั้นแล้วปรับของรอบ ๆ ให้มาชิดเตียงเอา'): this order's yardstick was the sheet's drawn rectangle; the 08-22 order replaces that yardstick with a standard bed size, which the current fit already meets within the studio's +-50mm rule. The bed was never too small against a standard — its drawn slot was larger than any standard and its neighbors stood at drawn positions 212-267mm away, which is what read as small.",
+   "commands": "The staged bed reads too small against the drawn 7'x6.5' bed. The made-bed field (mattress + bedding + pillows) must be judged against the sheet's rectangle before any whole-bed staging passes; a candidate whose soft field cannot reach the drawn footprint at a legal scale is refused, and the currently staged f52472c1 (mattress 1243 mm of a drawn 2149) may not ship un-remeasured.",
+   "subject": "bed-size-vs-sheet",
+   "scope": "instance",
+   "standing": false,
+   "retired_by": "D-114",
+   "status": "not-obeyed",
+   "since": "2026-08-18",
+   "not_obeyed_because": "The mechanism his order demanded EXISTS and refuses undersized beds (wholebed_rules made_field/field_verdict, in bench and build), and the p2r54 integration round CORRECTED ITS DENOMINATOR: the evening bench's 'first hard-filter pass in history' (81d895fd, field 0.888x1.00) was the instrument's error — the width that passed belonged to a 2,759 mm fabric headboard WALL riding in the file, admitted as bedding by a thin-panel exemption frozen against one candidate (D-109; fifth instance of an instrument answering its own question). Honest numbers with the corrected rules: 81d895fd's own soft field reaches 1.00x0.835 of the drawn rectangle at the containment-capped scale 0.903, and no legal scale reaches the 0.88 width cut (overflowing the drawn foot line is the ink's call, not a knob's). It is still the honest-best obtainable — +254 mm on the width axis he failed by eye vs the f52472c1 interim (0.90x0.72), draping flanks (0.11 vs f0938871's 0.89), resolvable head end, plane inside h600 — so p2r54 stages it as the SIGNED INTERIM (bed_field_deficit_signed {D-109, ASK-029}) and the deficit prints at every gate. The free tier is now instrument-honestly exhausted: 12/12 panel-passed free beds staged and measured, 0 pass the field cut (f0938871 refuted for cause: field counted its own fused 976 mm frame, flanks bare N/W 0.89, plane 644 over the signed h600). What stands between this order and the drawn bed is ASK-029 — the paid library's 135 panel-passed full-plan candidates, the only unmeasured shelf left, his payment. || CALIBRATED BY HIM MID-ROUND (D-110, 2026-08-18, his words verbatim in that row): the drawn size is a target with HIS tolerance, not a fixed spec — 'ไม่ได้ fix ขนาดนั้น แต่ไม่ได้อยากให้เปลี่ยนจากแบบเยอะเกินไป (แต่เปลี่ยนได้)'. The 0.88 line stays as the builder's signing threshold (nothing goes quieter), but whether 0.835 is 'too much' is now a question his EYE answers on the p2r54 render — not an automatic refusal, and not the builder's call in either direction. If he accepts the frame, this order retires by a decision row quoting him; if he rejects it, ASK-029 is the route back to a closer bed.",
+   "restart_by": "(retired row, standing false, retired_by D-114) — the key this row waited on landed 2026-08-22 night; the full-plan bench it named now runs under ORD-2026-08-22-blenderkit-one-month. Nothing further is owed on this row.",
+   "blocked_by": null,
+   "blocked_by_repointed": "2026-08-22 evening: ASK-029 ('which route') was ANSWERED by his order 'สมัคร blenderkit 1 เดือนเลย'; the thing he is still holding — pay + paste the key — is ASK-031. Nothing else on this retired row changed (standing false, retired_by D-114); orders_check requires blocked_by to name an OPEN ask, which is the only reason this field moved."
+  },
+  {
+   "id": "ORD-2026-08-22-process-review-actions",
+   "date": "2026-08-22",
+   "verbatim": "3 - 6 ลุย",
+   "recorded_at": "docs/process-review-2026-08-22.md",
+   "commands": "Carry out review items 3-5 of the 2026-08-22 process review: (3) complete the acquire pipe for the loose class — FurniMesh shelf populated from 0 files, ingest widened beyond the gltf-only path; (4) make the routine look cost seconds, not 68s — a glance rung (Eevee/Workbench snapshot) becomes the standard LOOK-while-working step, Cycles reserved for gates; (5) freeze the referee factory — a new instrument is admitted only when it gives eyes to a critic-debt class that has none (9 such classes exist), refused otherwise (mechanics in D-112).",
+   "subject": "process-vs-practitioner",
+   "scope": "class",
+   "standing": true,
+   "retired_by": null,
+   "obeyed_where": "pipeline/scripts/mesh_import.py, pipeline/scripts/furnimesh.py, pipeline/scripts/glance.py, qa/furnimesh-search-log.json, docs/process-review-2026-08-22.md, qa/open-decisions.json",
+   "obeyed_how": "All three items landed the same day the order did, each scrutinized by a fresh-context reviewer (pass-with-notes, 0 blocking): (3) mesh_import.py widens ingest to glb/gltf/obj/fbx/stl/dae fail-closed and is wired into 4 consumers; furnimesh.py fetched the tier's first 17 models (9 in scale band, 8 refused loudly; beds dry-only — that route stays ASK-029), licence re-verified verbatim on fetch day. (4) glance.py measured on the lane's own 118MB scene: ~2.7-5s per look amortized vs the 68s quick rung (~13-25x). (5) D-112 holds the instrument quota; note build_room.py still carries 3 gltf-only import calls — a named follow-up, not silence.",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/mesh_import.py",
+     "pattern": "def import_file",
+     "why": "The widened one-dispatch ingest is item 3's operative half; if this function goes, the pipe narrows back to gltf-only."
+    },
+    {
+     "file": "pipeline/scripts/furnimesh.py",
+     "pattern": "furnimesh",
+     "why": "The approved-but-never-fetched source now has a fetcher; its absence would re-open the '0 files' state the order names."
+    },
+    {
+     "file": "pipeline/scripts/glance.py",
+     "pattern": "DEFAULT_MODE = EEVEE",
+     "why": "The seconds-level look rung with its measured default; deleting or de-defaulting it re-imposes the 68s floor the order retired."
+    }
+   ]
+  },
+  {
+   "id": "ORD-2026-08-22-real-client-run-next",
+   "date": "2026-08-22",
+   "verbatim": "3 - 6 ลุย",
+   "recorded_at": "docs/process-review-2026-08-22.md",
+   "commands": "Review item 6: after DELIV-001 ships (P5 exit met), the next unit is a REAL CLIENT PROJECT run end-to-end (00_intake -> 08_handover) with acquired assets — the arena where speed against a real designer (friend's ruler: ~4 days/frame, ASK-030) is actually measured. Sequencing with the TRN-003 standing order is D-113: the curriculum is NOT retired by this row.",
+   "subject": "post-deliv-direction",
+   "scope": "class",
+   "standing": true,
+   "retired_by": null,
+   "status": "not-obeyed",
+   "since": "2026-08-22",
+   "not_obeyed_because": "The order's own trigger has not arrived: it commands what happens AFTER DELIV-001 ships, and DELIV-001 is still open at P2. Nothing about this row is a debt in the R13 sense — it cannot be obeyed earlier than its condition — but it is recorded not-obeyed rather than obeyed so that no rung ever prints a future promise as a completed act. The builder action that discharges it is named in restart_by and fires the day P5's exit is recorded.",
+   "restart_by": "DELIV-001 P5 exit recorded as met -> scaffold the client run (scripts/scaffold_project.py) and open its plan as the next unit. A named builder action with a future trigger, not a debt aging in silence: plan_status prints this row until it fires.",
+   "obeyed_where": "docs/process-review-2026-08-22.md",
+   "obeyed_how": "Cannot be obeyed before its trigger; recorded not-obeyed with restart_by per R13's third state.",
+   "obeyed_assert": []
+  },
+  {
+   "id": "ORD-2026-08-22-bed-standard-size-hug",
+   "date": "2026-08-22",
+   "verbatim": "หาขนาดเตียงมาตรฐานแล้วขนาดให้เท่านั้นแล้วปรับของรอบ ๆ ให้มาชิดเตียงเอา",
+   "recorded_at": "docs/process-review-2026-08-22.md",
+   "commands": "The bed's size target is a STANDARD bed size, not the sheet's drawn 2149x2000 rectangle; the surrounding pieces (two side tables, foot bench) move in to hug the bed instead of holding their drawn positions around the 7-ft slot. Numbers and the chosen standard are D-114: Thai king 6-ft 1800x2000 (declared assumption; the knowledge table's US Eastern King 1930x2032 is unreachable within the studio's own +-50mm rule at any uniform scale of this model), which the current fit already satisfies — so the bed geometry itself does not change; the actionable half is the hug.",
+   "subject": "bed-size-vs-sheet",
+   "scope": "instance",
+   "standing": true,
+   "retired_by": null,
+   "obeyed_where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json, qa/open-decisions.json, docs/process-review-2026-08-22.md",
+   "obeyed_how": "Spec item[1] bed slot narrowed 2149 -> 1800 (Thai king width; length 2000 already standard), side tables SR-09/SR-10 re-seated at hug gaps from the bed rect, bench already in contact at the foot (0.8mm) and untouched. Built and rendered as p2r56 the same day; the render is his channel to overrule from.",
+   "obeyed_assert": [
+    {
+     "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+     "pattern": "\"d\": 1800",
+     "why": "The bed slot at standard width IS the order; 2149 returning means the drawn-rectangle target quietly came back."
+    }
+   ]
+  },
+  {
+   "id": "ORD-2026-08-22-front-door-dims",
+   "date": "2026-08-22",
+   "verbatim": "ลุย",
+   "recorded_at": "docs/owner-advice-2026-08-22.md",
+   "commands": "The 'ลุย' approves items (2) and (3) of the builder's advice given the same sitting (his four messages verbatim in the recorded_at doc, ending 'ทำตัวฉลาด ๆ แล้วแนะนำผมหน่อยสิ'): (2) BEFORE P4, build the FRONT-DOOR rung — built dimensions judged against WORLD standards (standard mattress tables US+Thai, real garment lengths, ergonomic height bands), no allowlist, running at bench arithmetic and at the scene dump on every render including R5 quick — never waiting for pixels, because the p2r52 defect was arithmetic before it was ever an image; (3) the coverage map (qa/coverage-map.json, what-compares-against-what per rung) printed at every session open, with instrument admission governed by the existing D-112 quota, NOT by a new checker. Background measured that morning: 28 gate rungs, 3 world-standard, 1 blocking; nearest_bed_size would have failed the p2r52 mattress by 336 mm and nothing fed built numbers to it; his eye preceded green instruments 15 times in 33 days.",
+   "subject": "dims-vs-world-standard",
+   "scope": "class",
+   "standing": true,
+   "retired_by": null,
+   "obeyed_where": "pipeline/scripts/dim_check.py, pipeline/scripts/build_room.py, pipeline/scripts/wholebed_rules.py, pipeline/scripts/plan_status.py, qa/coverage-map.json, qa/dim-deficits.json",
+   "obeyed_how": "dim_check.py reads the scene dump and judges bed cluster / garment rails / side tables / bench against world bands, three-state (ok / signed-interim via qa/dim-deficits.json / fail), exit 0/1/2, spawned blocking from build_room._score_deliverable on every render rung; wholebed_bench projects the anchor mattress through the fit scale and wholebed_rules.verdict refuses a candidate whose projected mattress is no standard bed's size; plan_status prints the coverage map at session open. Thai mattress sizes sourced and distilled the same day (knowledge/_inbox/web-thai-mattress-sizes-2026-08-22.md), upgrading D-114's declared assumption.",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "dim_check\\.py\"\\), dump_path",
+     "why": "The spawn line that RUNS the rung on every render — the constant alone would be the p2r46 defect (named, not running)."
+    },
+    {
+     "file": "pipeline/scripts/dim_check.py",
+     "pattern": "^DIM_CHECK_VERSION = ",
+     "why": "The rung exists as a module a plain python can run (layer law)."
+    },
+    {
+     "file": "pipeline/scripts/wholebed_rules.py",
+     "pattern": "^    std = row\\.get\\(\"anchor_std\"\\)",
+     "why": "The bench-side half: verdict refuses a projected mattress that is no standard size, and refuses rows benched before the rule existed."
+    },
+    {
+     "file": "pipeline/scripts/plan_status.py",
+     "pattern": "^    lines \\+= coverage_lines\\(\\)",
+     "why": "The map has a consumer at every session open — a map nobody prints is the queue-with-no-consumer defect wearing a map."
+    }
+   ]
+  },
+  {
+   "id": "ORD-2026-08-22-blenderkit-one-month",
+   "date": "2026-08-22",
+   "verbatim": "สมัคร blenderkit 1 เดือนเลย ผมอยากจะรู้ว่ามันจะทำให้งานดีขึ้นยังไง",
+   "recorded_at": "docs/owner-advice-2026-08-22.md",
+   "commands": "Subscribe to Blendkit Full for ONE month — the '30 day glimpse' tab ($19.90, non-recurring; the monthly route he chose that morning) — and have that month REPORT HOW IT MADE THE WORK BETTER: as numbers, and as a frame he can look at, within 30 days of the first paid download. What counts as 'better' and whether to renew are NOT in his sentence: the criteria are the builder's proposal in D-119 (frozen at the first paid download), and renewal is HIS call, filed as a procurement ask at day 30.",
+   "subject": "paid-library-trial",
+   "scope": "class",
+   "standing": true,
+   "retired_by": null,
+   "status": "not-obeyed",
+   "since": "2026-08-22",
+   "not_obeyed_because": "The subscription is a payment with his card and an API key from his account — the builder has neither (ASK-031, open). Everything on the builder's side was carried out in advance: pipeline/scripts/blenderkit.py fetches by asset id with the key, exports .blend -> GLB in a spawned headless Blender (--factory-startup -Y), asserts scale (asset_scale.write_sidecar), writes SOURCE.json + LICENSE.txt, and `shortlist` walks the 135 panel-passed full-plan beds into the shelf; `status` prints the month clock (starts at the first PAID download, never a probe) and whether the D-119 criteria digest still matches. Proven end-to-end on the free tier before he pays: the exit contract is tested with the network and Blender stubbed (no key -> status 2, shortlist 2, full-plan fetch 2 naming ASK-031; transport failure 2; bad key stops the walk after one call), and a live free nightstand went download -> Blender 5.1 export -> GLB -> sidecar in 8.3 s with scale honestly REFUSED (940 mm vs 300-800). PRICE CORRECTED the same evening by a fresh-context reviewer: the $9.90/mo recorded that morning is the Yearly tab the pricing page opens on; one month is the '30 day glimpse' at $19.90, non-recurring. The order flips to obeyed on the day a paid asset is fetched AND the month's answer section exists — both assertions below read files, not prose. || UPDATE 2026-08-22 night: the key LANDED — `key --login` (the add-on's own OAuth flow, nothing copied) wrote it to .env after his click; /me says plan Full. blocked_by cleared; from here the order ages on the builder (restart_by), not on him.",
+   "blocked_by": null,
+   "obeyed_where": "pipeline/scripts/blenderkit.py, docs/blenderkit-month-2026-08-22.md, qa/blenderkit-month-classes.json, docs/blenderkit-month/style-panel-prompt.md, qa/open-decisions.json, .env.example",
+   "obeyed_how": "Not yet — nothing paid has been downloaded. When it is: the first full-plan fetch is logged in qa/blenderkit-fetch-log.json (a non-probe run with tier='full_plan' and fetched=true, carrying the D-119 criteria digest), the month clock starts, the shortlist runs into wholebed_bench with the fit rect DERIVED from the spec's bed item, and the answer to his second sentence is due as the '## 8. คำตอบของเดือน — ตอบแล้ว' section of docs/blenderkit-month-2026-08-22.md within 30 days.",
+   "obeyed_assert": [
+    {
+     "file": "qa/blenderkit-fetch-log.json",
+     "pattern": "\"probe\": false[^{}]*\"tier\": \"full_plan\"[^{}]*\"fetched\": true",
+     "why": "A PAID asset actually on the shelf is the only state in which 'subscribed for a month' is true of this repo. Probe and dry runs carry probe=true and cannot match. Until this line exists the order is not carried out; the day it exists, orders_check refuses 'not-obeyed' and the row must flip."
+    },
+    {
+     "file": "docs/blenderkit-month-2026-08-22.md",
+     "pattern": "^## 8\\. คำตอบของเดือน — ตอบแล้ว",
+     "why": "His second sentence is a question. It is answered only when the month's section is written with numbers and the A/B frame — the placeholder heading ('ยังไม่มี') does not match this pattern on purpose."
+    },
+    {
+     "file": "pipeline/scripts/blenderkit.py",
+     "pattern": "^KEY_NAME = \"BLENDERKIT_API_KEY\"",
+     "why": "The consumer of the key. Deleting it puts the paid month back to an ad-hoc script in _private/ that nothing at session open can see."
+    }
+   ],
+   "restart_by": "The key is in .env (2026-08-22 night, ASK-031 answered 'จ่ายตังแล้ว' + his click in the OAuth tab). What remains is the builder's alone: `python pipeline/scripts/blenderkit.py shortlist` (first paid download starts the clock and hashes D-119), wholebed_bench in the real room with the spec-derived rect, the C3 A/B pair through the sighted-reader panel, and the '## 8. คำตอบของเดือน — ตอบแล้ว' section with numbers by day 30 — the two obeyed_assert lines flip this row when both exist."
+  },
+  {
+   "id": "ORD-2026-08-23-style-before-objects",
+   "date": "2026-08-23",
+   "verbatim": "ต้องเลือกก่อนว่าห้องนี้จะเป็นสไตล์ไหนแล้วค่อยเอาของมาเติม + เปลี่ยนของ (เถียงผมได้) || ไม่จำเป็นต้องเป็นไม้โอ๊ค ผมเลือกตอนนั้นเพื่อจะให้งานเดิน จริง ๆ อยากได้หลาย ๆ variant แต่ตอนนี้เอาแนวนี้ให้รอดก่อน || ทำตัวเป็น project director และวางแผนแก้ปัญหานี้ระยะยาว",
+   "recorded_at": "qa/style-of-record.json",
+   "commands": "THE STYLE IS CHOSEN BEFORE OBJECTS ARE SELECTED, and it is chosen as DATA the machine reads — not as a document. Three sentences in one order, and the second narrows the first rather than contradicting it: (1) decide the room's style first, then fill and swap objects against it; (2) OAK IS NOT REQUIRED — he picked it only to unblock work and wants several variants eventually, but wants THIS direction to land first, so the variant machinery must exist while no variant is built yet; (3) fix it as project director, for the long term, meaning a mechanism and not a round. What is NOT in his sentence and stays the builder's: WHICH style. He disclaimed design authority in his own words on 2026-07-16c and ruled 'stop issuing A/B/C menus of taste for signature — decide, build it, render it, and put the picture in front of him'. So the builder names the style, records it as a decision row, and he overrules from the image.",
+   "subject": "style-governance",
+   "scope": "class",
+   "standing": true,
+   "retired_by": null,
+   "status": "not-obeyed",
+   "since": "2026-08-23",
+   "not_obeyed_because": "STY-1 is built and wired — qa/style-of-record.json + style_check.py in rule_gate.check_room() (the lane that actually renders; check() and enforce() serve the retired TRN-002 lane and would have been a queue with no consumer), style_measure.py taking the R11 pixel reading, style_lines at session open, two rows in the coverage census, 38 tests. But the order says objects are selected AGAINST the style, and that half does not exist yet: no acquired object carries a style_ref, so nothing stops the next carved-Louis side table the way STY-1 stops an unsigned material. Six of nine material slots are also still legacy-unsigned — declared, dated and printing their age, which is the honest state, not the finished one. The order flips when the two assertions below hold: the register is read by the production gate (already true, asserted so it cannot be quietly unwired) AND acquired masses carry a style verdict.",
+   "blocked_by": null,
+   "obeyed_where": "qa/style-of-record.json, pipeline/scripts/style_check.py, pipeline/scripts/style_measure.py, pipeline/scripts/rule_gate.py, pipeline/scripts/plan_status.py, qa/coverage-map.json",
+   "obeyed_how": "Not yet, and the missing half is named. STY-1 (the style is data, and the gate reads it) is done. STY-2 (objects are selected against it) is the work: a style verdict on every acquired mass, filed the way qa/object-existence.json already files identity — that ledger is scene-derived with no allowlist and already blocks, so it is the right home and a new register would be the wrong one.",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/rule_gate.py",
+     "pattern": "import style_check as STY",
+     "why": "The whole order reduces to whether the machine READS the style before it builds. This greps the production gate's own source, not a comment about it — R13's rule, applied to the rung R13's shape produced. Delete this import and the register becomes the 27th unread file in qa/, which is exactly the state his order was answering."
+    },
+    {
+     "file": "qa/style-of-record.json",
+     "pattern": "\"gap_worst\"",
+     "why": "R11: the one rung here that opened the picture. Its absence means the style register went back to being declarations about a room nobody measured — and every other rule in style_check can go green while the frame gets worse."
+    },
+    {
+     "file": "pipeline/scripts/existence_check.py",
+     "pattern": "style_verdict",
+     "why": "THE HALF THAT IS NOT BUILT, and the reason this row is honestly not-obeyed. His order is 'choose the style FIRST, then fill and swap objects' — STY-1 makes the style data the gate reads, but nothing yet judges an ACQUIRED object against it, so the next carved-Louis side table still enters the room and waits for a critic. orders_check refused this row on its first run for being pessimistic while every assertion held; this line is that refutation answered — the assert now names the missing work instead of the finished work, which is what an obeyed_assert is for."
+    }
+   ],
+   "restart_by": "STY-2, and it is the builder's alone: add a style verdict field to qa/object-existence.json rows (inside | edge | outside | not-judged with judged_by and since), one rule in existence_check.py refusing an in-frustum ACQUIRED mass that is not-judged past its date, and route the existing 3-agent sighted panel at it. Then sign the floor slot — the largest surface in the room and the 60% dominant this room has never had — as its own preset with variation >= 0.05, and re-measure the palette gap."
+  },
+  {
+   "id": "ORD-2026-08-24-fix-rug-surface-not-scale",
+   "date": "2026-08-24",
+   "verbatim": "แก้ผิวพรม ไม่ถอยสเกล",
+   "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r67-2026-08-24.md",
+   "commands": "His ruling on the rug regression (taken through the decision UI, locked in gate #66): keep the publisher-asserted texture scale and fix what the critics actually measured — no pile read, no edge thickness, no contact shadow (independently measured inverted: floor +15.9 codes toward the rug edge on p2r64, +9.49 on p2r69). Rolling the scale back would hide the three real defects under an over-large pattern, so the scale may not be retreated as a fix for the rug's look. The CLASS half stands: any future 'the rug looks worse since the scale fix' round starts at the surface, never at the tile number.",
+   "subject": "rug-surface",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": false,
+   "retired_by": "D-172",
+   "status": "obeyed",
+   "obeyed_where": "pipeline/scripts/build_room.py",
+   "obeyed_how": "p2r70: three mechanisms, all scoped to the rug. (1) CONTACT — the rolled-edge rings in _add_rug end 0.5 mm BELOW the floor top; the old skirt stopped at +2 mm (a slab-era z-fighting literal from 2026-07-02 whose rationale died in the 2026-08-10 pile rewrite), so the whole rug floated and the floor BRIGHTENED toward the edge instead of darkening. (2) EDGE — three perimeter rings with an outward binding bulge overhanging a tucked contact ring: a visible cross-section, and an occlusion wedge Cycles turns into the pool's tight dark rim. (3) PILE — _wire_rug_fibre: the part-metallic Metal map (mean 51/255, 89.5% nonzero) is cut from a wool rug, the never-wired AO map is multiplied in mean-normalised (x1.1752) so tuft contrast rises without moving the signed value 130, and Sheen 0.4 (the one nonzero pro value, at _SHEEN_CAP) gives the angular response C2 named. The tile numbers _rtile/_rtile_v are untouched.",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "\\(0\\.0030, -0\\.0005\\)\\)             # contact, tucked under the bulge",
+     "why": "the contact ring BELOW the floor top — the line that ends the 2 mm float; zeroing it back to +0.002 breaks this grep"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "^    _wire_rug_fibre\\(pile_m\\)",
+     "why": "the CALL in _add_rug — the fibre wiring runs on every built rug, not a flag someone must type"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_rtile = _tile_m_for\\(RUG_SLUG\\)",
+     "why": "the scale is NOT retreated: the tile still derives from the publisher sidecar door (TS-006's assert, shared)"
+    }
+   ],
+   "note": " || RETIRED 2026-08-28 by D-172 (his 'ลุยตามนั้น' on the ASK-022 proposal). แถวยังอยู่ในไฟล์และอ่านได้ — สิ่งที่แถวนี้ถืออยู่ถูกย้ายออกก่อนถอน ดู D-172 in_effect"
+  },
+  {
+   "id": "ORD-2026-08-25-p2-exit-is-his-eye",
+   "date": "2026-08-25",
+   "verbatim": "จะให้ปิด P2 ทั้งที่ผมยังไม่ชอบของในงาน ผมบอกไปแล้วว่าให้แก้อะไรบ้างเป็นข้อ ๆ แต่ผลที่ได้คือไม่มีอะไรเปลี่ยน",
+   "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/owner-verdict-2026-08-25-p2-exit.md",
+   "commands": "No phase closes while he still dislikes the objects in the frame — his eye is a standing exit condition ABOVE every builder-written condition (the r7 rows, crop harness and critic-silence clauses stay necessary, never sufficient). The builder proposal to close P2 to unlock P3/P4 is OVERRULED and locked to him. Second half: his itemized fix orders must land in the FRAME — an order proven obeyed by grep on code while the frame does not visibly change in his eye is obeyed in letter only; obedience of a visual order is demonstrated in pixels beside his words, or it is not demonstrated.",
+   "subject": "phase-exit",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "obeyed",
+   "since": "2026-08-25",
+   "restart_by": "Builder action, two halves: (1) audit every itemized visual order (2026-08-12..08-24) against the frame of record p2r71 with measurements — for each: his words, what the lane did, what the pixels show, verdict landed / landed-invisible / not-done / reverted — archived beside the renders; (2) carry the un-landed ones into build rounds until the pixel evidence exists, and add the owner-eye clause to the P2 exit test at the next plan review.",
+   "obeyed_where": "qa/deliverable-plan.json,projects/PRJ-2026-002_c001-house/04_visualization/audit-orders-vs-frame-2026-08-25.md",
+   "obeyed_how": "Both restart halves done the same day. (1) AUDIT: every itemized order measured against the frame (audit-orders-vs-frame-2026-08-25.md, commit 5bf6945). (2) BUILD: the four un-landed builder-side orders landed in pixels at p2r72-73 (garments 879mm face-on on their real bars, lamp un-trapped + lined, last hand-simulated cloth replaced by the panel-chosen acquired throw, floor slot signed) — DELIVERABLE QUALIFIES 9/1, commit 3b38fb3; the still-parked items (bench ASK-024, headboard ASK-032) are owner asks, printed every session. (3) MECHANISM: the OWNER-EYE CLAUSE is now exit condition (6) of P2 — his eye outranks every builder-written condition, and a visual order counts as obeyed only with pixels beside his words. His eye stays the live judge: this row being obeyed never means he likes the frame — it means nothing can close over him.",
+   "obeyed_assert": [
+    {
+     "file": "qa/deliverable-plan.json",
+     "pattern": "OWNER-EYE CLAUSE, added 2026-08-25 per ORD-2026-08-25-p2-exit-is-his-eye",
+     "why": "the clause itself, in the exit test the plan actually reads — deleting it reopens the R11 finish-line defect"
+    },
+    {
+     "file": "qa/deliverable-plan.json",
+     "pattern": "demonstrated in pixels beside his words \\(not by grep, not by register status\\)",
+     "why": "the second half of his sentence — obedience of a visual order is pixel-demonstrated, never letter-demonstrated"
+    }
+   ]
+  },
+  {
+   "id": "ORD-2026-08-25-six-items-after-p2r73",
+   "date": "2026-08-25",
+   "verbatim": "หาโมเดลหนังสือจาก blendkit มาใส่",
+   "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/owner-list-2026-08-25-six-items.md",
+   "commands": "Six itemized fixes given from the p2r73 frame pair, one row because they arrived as one list (full verbatim of all six lines reproduces in recorded_at): (1) BOOKS acquired from BlenderKit; (2) LAMPS: a NEW acquired model replaces the built brass pair — his eye failed it even after the p2r72 light fix, and this instance-family order overrules R8's lathe-build classing for lamps here; (3) GARMENT HANG: hangers must actually HOOK the bar (hook centre on the bar line, wrapping it) — instance verdict on the p2r73 mechanism, hangers currently float around the bar; (4) WARDROBE CONTENTS: ideas + acquisitions beyond clothes; (5) NIGHTSTANDS: a different purchase — he dislikes 1cf77b3a (CLASS≠INSTANCE, the acquire class order stands, the answer is another model); (6) HEADBOARD (the grey panel, not the slat wall): reads stiff and mismatched with the bed — supersedes the builder's option-ก parking of ASK-032; he has spoken from the image.",
+   "subject": "p2r73-six-items",
+   "scope": "instance-list",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "obeyed",
+   "since": "2026-08-25",
+   "obeyed_where": "pipeline/scripts/build_room.py,projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r74-2026-08-25.md",
+   "obeyed_how": "All six in pixels at p2r74 (three full frames: eye + his p2r26 wardrobe camera + the corridor). Books e96bf8f6 / lamps Kendra / nightstands Asta / headboard Padded Queen 2059 (+29 from the inked SR-18 band) — every id through the 3-judge blind panel at >=2/3 inside; hangers hook their bars within ±1.2 mm measured; wardrobe holds 2 acquired pieces on clear shelves with 2 dropped LOUDLY plus the ideas list in the gate. Two review passes killed two of my own defects before render (flush headboard −146 mm / tables 259 mm asymmetric; garments through gables). Both critics filed 16 items on the frame — none touches his six subjects. His eye can reverse any piece in one sentence (D-138 reverse_by).",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_BED_HEADBOARD_MODEL = \"d7e2a7bc",
+     "why": "item 6 — the id the frame wears"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_NIGHTSTAND_LAMP_MODEL = \"18d17256",
+     "why": "item 2 — the brass pair stays only as loud fallback"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_BENCH_BOOKS_MODEL = \"e96bf8f6",
+     "why": "item 1"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "hook\\(s\\) pulled onto the bar line",
+     "why": "item 3 — deleting the derivation refloats the hangers silently"
+    },
+    {
+     "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+     "pattern": "24c65eb4-765b-43f3-a171-266521dd06b1",
+     "why": "item 5 — the spec renders the panel winner, not 1cf77b3a"
+    }
+   ]
+  },
+  {
+   "id": "ORD-2026-08-25b-five-items-after-p2r74",
+   "date": "2026-08-25",
+   "verbatim": "พรมยังไม่สวย หาจาก blendkit มา",
+   "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/owner-list-2026-08-25b-five-items.md",
+   "commands": "Five itemized fixes from the p2r74 frames (full verbatim in recorded_at): (1) nightstands FACE THE ROOM — drawers currently open into the bed, an unopenable drawer fails R10 SENSE; (2) the LOWER-LEFT built-in rail's garments still float — instance verdict on the hook mechanism at that rail; (3) the folded cloth stacks in the built-in are still hand-built — the acquire class order reaches mill__style_fold*; (4) ADD the idea-list objects — his GO on lived-in styling; (5) the RUG is not beautiful — acquire from BlenderKit (his eye supersedes D-028's box-test keep).",
+   "subject": "p2r74-five-items",
+   "scope": "instance-list",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "not-obeyed",
+   "since": "2026-08-25",
+   "obeyed_where": "pipeline/scripts/build_room.py,pipeline/scripts/value_ladder.py",
+   "obeyed_how": "All five in pixels at p2r75 (eye + wardrobe fulls, build gate fully green for the first time incl. the ladder). (1) nightstands rot 90 — drawer fronts face the room, verified in the crop; (2) hooks clamped INTO the bar run (the end cluster hung in the 36 mm void past the bar tip); (3) every mill__style_fold stack replaced by the panel-passed sage sweatshirt stack on its own measured shelf face (two candidates failed the panel outside 3/3 and stayed out); (4) life: gold dish + water pitcher on the freed nightstand strips (both clocks failed the panel — no clock ships), ficus at the corridor clear-spot (2.75,3.85) after the first spot put 0.9 m of foliage in the camera throat — the clearance test now asks about the lens too; (5) rug acquired 0fd746ae at natural 2427x3024 (0.97 of the drawn slot, no stretch), vendor weave kept. BONUS CATCH: the p2r74 headboard gate variable (_hb_acq_done = True) had been dropped in an edit — every build since made BOTH headboards (.001 + welts hiding behind the panel); restored with a comment naming the class.",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_RUG_MODEL = \"0fd746ae",
+     "why": "item 5"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "b54819e4-6551-4509-b76c-2bce9ada8cf8",
+     "why": "item 3 — the one panel-passed stack id"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_bar_run\\[0\\] \\+ 0\\.025",
+     "why": "item 2 — the hook-into-bar-run clamp"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_hb_acq_done = True",
+     "why": "the restored gate variable — deleting it re-doubles the headboard silently"
+    },
+    {
+     "file": "pipeline/scripts/value_ladder.py",
+     "pattern": "\"bed__pillowsoft0\": \\(\"D-138\"",
+     "why": "the pillowcase declaration that ended the silent-behind-BEDPX eye failure"
+    }
+   ],
+   "visual": true,
+   "closure_verdicts": [
+    "projects/PRJ-2026-002_c001-house/04_visualization/closure-verdicts/ORD-2026-08-25b/item1/verdict-p2r77.json",
+    "projects/PRJ-2026-002_c001-house/04_visualization/closure-verdicts/ORD-2026-08-25b/item2/verdict.json",
+    "projects/PRJ-2026-002_c001-house/04_visualization/closure-verdicts/ORD-2026-08-25b/item3/verdict.json",
+    "projects/PRJ-2026-002_c001-house/04_visualization/closure-verdicts/ORD-2026-08-25b/item4/verdict.json",
+    "projects/PRJ-2026-002_c001-house/04_visualization/closure-verdicts/ORD-2026-08-25b/item5/verdict.json"
+   ],
+   "not_obeyed_because": "Sighted closure verifiers (blind per-item, 2026-08-25 night) refuted the p2r75 closure on 4 of 5: item1 VISIBLE-then-OVERTURNED by measurement (front_probe: the only pulled face sat at +X, inside wall BF14 — his 'หันหน้าเข้ากำแพง'); item2 NOT-VISIBLE (4 hooks still float, 2 on the named lower-left rail); item3 NOT-VISIBLE (top-shelf crumple + staged 3-items/7-bays placement); item4 NOT-VISIBLE (life confined to the bed cluster; shelf unit/desk nook bare); item5 VISIBLE (rug credible — ความสวยยังเป็นของตาพี่). The p2r75 gate's 'ลงพิกเซลครบ' was the self-judged-closure class; that phrase is now refused by name in gates.",
+   "restart_by": "item1 DONE at machine level (p2r77: derived facing, measured front -90; fresh verifier VISIBLE with arrows on both bar pulls — verdict-p2r77.json; his eye still final per OWNER-EYE clause); items2-4: the ORD-2026-08-25c styling round (its own not-obeyed row) + hook-clamp diagnosis from the built-scene dump + the garment-overlap id-mask check; the row returns to obeyed ONLY when items 2-4 also carry VISIBLE verdicts or his words on the frame."
+  },
+  {
+   "id": "ORD-2026-08-25c-story-driven-styling",
+   "date": "2026-08-25",
+   "verbatim": "ทำตัวเป็น interior designer แล้ว revise ลำดับนี้",
+   "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/owner-order-2026-08-25c-designer-styling.md",
+   "commands": "STYLING IS STORY-DRIVEN, START TO FINISH (his 'ลุยยาว ๆ ให้หมด' on the builder's designer-revised sequence, after his diagnosis 'ซ้ำกันไปหมด และดูจัดวางไม่เป็นธรรมชาติ'): (1) styling narrative from the client brief before any object; (2) references read as VIGNETTES (R4b), not statistics; (3) a shopping list with colours/materials/quantities BEFORE the catalogue — searches serve the list, unfillable lines are declared gaps; (4) styling composed in-camera vignette by vignette with a LOOK per step and sightline checks; (5) machines demoted to assistants — the panel judges the ENSEMBLE against the narrative, max 2 instances per asset id in frame, correctness gates unchanged. Natural asymmetry comes from the STORY (whose side of the bed, who reads, who drinks water), never from random jitter.",
+   "subject": "styling-program",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "not-obeyed",
+   "since": "2026-08-25",
+   "not_obeyed_because": "Ordered this hour; the narrative, list, ensemble panel and vignette passes have not yet all landed in pixels.",
+   "restart_by": "Builder: write styling-narrative.md from clients/+concept; vignette-read the reference pool; write the shopping list; wide-search/fetch/assert; ensemble panel; wire variety caps + story placements; LOOK per vignette; close with frames beside his words."
+  },
+  {
+   "id": "ORD-2026-08-25d-debate-proposals-approved",
+   "date": "2026-08-25",
+   "verbatim": "ลุยเต็มที่ ผมอนุมัติทุกอย่าง",
+   "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/owner-order-2026-08-25d-debate-approved.md",
+   "commands": "Blanket approval of ALL SIX debate proposals (docs/process-debate-2026-08-25.md) with the standing instruction that the aim is LONG-TERM SYSTEMIC repair, not point fixes ('มุ่งเน้นไปที่การแก้ปัญหาเชิงระบบระยะยาวไม่ใช่แก้ปัญหาเฉพาะหน้า'): (1) independent sighted closure verification + closure grammar demotion (visual orders close on pointed-at pixels or his words; 'ลงพิกเซลครบ' refused by name); (2) fail-closed front axis at ingest + derived facing (R9 for rotation); (3) wire-or-delete the unreached instruments + no new instrument without a consumer in the same commit; (4) the R1 cap as a fail-closed counter, breach starts the real-client run; (5) drain his ask queue to <=6 with defaults + one procurement sheet; (6) execute ORD-25c styling as one amended grammar-driven round (no shader bundling, 2 pixel checks, priced asks not silent gaps, gates say landed never closed). Dispute 1 read as approved-in-parallel: provisional accent textiles may land in the next render while the ORD-25c narrative sequence proceeds — his 'ทุกอย่าง' covers the parallel option; one sentence reverses.",
+   "subject": "process-debate-2026-08",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "obeyed",
+   "since": "2026-08-25",
+   "obeyed_where": "qa/model-front-registry.json,pipeline/scripts/front_registry.py,pipeline/scripts/front_probe.py,pipeline/scripts/orders_check.py,qa/curriculum-caps.json,docs/instrument-triage-2026-08-25.md,projects/PRJ-2026-002_c001-house/04_visualization/procurement-sheet-2026-08-26.md,projects/PRJ-2026-002_c001-house/04_visualization/closure-verdicts/ORD-2026-08-25b",
+   "obeyed_how": "Landed the same night: (1) five blind sighted verifiers ran on his five items (verdicts + arrowed crops in closure-verdicts/), orders_check now refuses 'obeyed' on visual rows without verdict files and refuses 'ลงพิกเซลครบ' in new gates; (2) front law: front_probe measured Asta -90 / tub chair 0 / bench null, model_rot fails closed, facing_derive derives rot via placement.face_rot, spec's three typed facings deleted, p2r77 rendered with drawer pulls facing the room (his item 1, status OPEN-AWAITING-HIS-EYE); (3) triage table 17/10/55 + facing_reader wired + 5 CLI-ONLY declarations; 4 code wires + 55 deletions carry D-142's dated default; (4) cap live: 89/93 in curriculum-caps.json, cap_check blocking (D-141, his words arm the lock); (5) asks 26 -> 6 open, ASK-023 answered with his words, money bundled into one sheet (D-143); (6) styling round stays ORD-25c's own not-obeyed row — its holder pane was stopped by him directly; amendments delivered to that pane in writing.",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "FAILS CLOSED since 2026-08-26",
+     "why": "proposal 2 — the fail-open default is dead"
+    },
+    {
+     "file": "qa/model-front-registry.json",
+     "pattern": "24c65eb4",
+     "why": "proposal 2 — the Asta's measured row exists"
+    },
+    {
+     "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+     "pattern": "facing_derive",
+     "why": "proposal 2 — facing is declared, not typed"
+    },
+    {
+     "file": "pipeline/scripts/orders_check.py",
+     "pattern": "closure_verdicts",
+     "why": "proposal 1 — visual closure needs a verdict file"
+    },
+    {
+     "file": "pipeline/scripts/rule_gate.py",
+     "pattern": "import front_registry as FRONT",
+     "why": "proposals 2+3 — the rung is in the path every build runs"
+    },
+    {
+     "file": "qa/curriculum-caps.json",
+     "pattern": "\"cap_rounds\": 96",
+     "why": "proposal 4 — the cap is a number a program reads. THE NUMBER MOVED 2026-08-29 (D-178, his own extension by D-141's declared route); the ORDER is unchanged and still obeyed, because what it required was that the cap be a machine-read number that BLOCKS — not that it be 89 forever. Pinned to the live integer so a silent change fails here. (The first draft justified the pin by calling the alternative a wildcard that 'asserts nothing'. That was false: ORD-2026-07-28 asserts the same fact about the same file with a DELIV-001-anchored `\\\"cap_rounds\\\": \\d`, which asserts that a numeric cap exists on that row. Both forms are legitimate; this one is stricter and costs an edit per extension.)"
+    },
+    {
+     "file": "qa/owner-asks.json",
+     "pattern": "ASK-034",
+     "why": "proposal 5 — the money sheet exists as a row"
+    }
+   ]
+  },
+  {
+   "id": "ORD-2026-08-26-builtin-contents-unnatural",
+   "date": "2026-08-26",
+   "verbatim": "ของในตู้ built-in ยังไม่เป็นธรรมชาติ",
+   "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/owner-verdict-2026-08-26-builtin-contents.md",
+   "commands": "Instance verdict on the frame of record (p2r78rc) confirming the ORD-2026-08-25c styling class is still not carried out AT THE BUILT-INS THE EYE CAMERA SEES. Measured on the same frame before any fix: BF09-3 display niche 0 objects on all 3 shelves, full-bay + tower shelves empty; bookshelf ex-TV all 18 shelf surfaces empty while its own spec prose declares display contents; every dressed zone (shoes/vessels/trays/baskets/bags) sits in the walk-in, outside the eye frustum. Mechanisms named in recorded_at: KNIT_KINDS refuses kind bookshelf (display prose has zero consumers), lane-D mill__bay name-prefix filter excludes BF09-3 cells from contents (allowlist-shaped scope, R9b class). The fix must dress what the CAMERA sees per the styling narrative's shelf story and the cited shelf-grid grammar (knowledge/styles/decor-placement-grammar.md S5), never by repealing the walk-in dressing.",
+   "subject": "builtin-contents",
+   "scope": "instance",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "not-obeyed",
+   "since": "2026-08-26",
+   "not_obeyed_because": "STILL NOT OBEYED after p2r84, and the sighted rung says so rather than the builder: the round moved the visible set 5->8 pieces (vase 3211px + bowl 413px on ni2, derbies 11,979px on fl, measured on the frame's matmask) and the independent C2 critic STILL files the same class the owner filed — 'ตู้เสื้อผ้าเปิดโล่งทั้งผนัง แต่ว่างเปล่า', counting 4 recognisable objects against 5-6 empty shelves. THE BLOCKER IS THE POOL, NOT THE PLACEMENT: the friend survey reads 25-40 objects per delivered built-in frame; our entire acquired pool for this wall is ~8 pieces and all of them are already placed. No rearrangement of 8 objects reaches the delivered read.",
+   "restart_by": "builder: a FETCH round for wardrobe-contents classes the pool lacks (books-as-display with bookends, hat/storage boxes, perfume/jewellery trays, folded-stack colour variety, a plant) from the free tiers first per procurement-sheet line order; a paid line becomes an ASK with a price (R8, his call). Then re-place and re-judge. p2r84's placement machinery (share mode, per-item tags, front-pull) is built and stays.",
+   "visual": true
+  },
+  {
+   "id": "ORD-2026-08-26b-friend-study-craft-lane",
+   "date": "2026-08-26",
+   "verbatim": "ลุยยาว ๆ",
+   "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/owner-verdict-2026-08-26b-friend-study-craft-lane.md",
+   "commands": "Approves the 6-point director plan from the friend-work bed/built-in study (same file): (1) R12 sheet check first [done in-session: ink x2352 reproduces, no door strokes, OPEN stays owner-signed D3-A 07-16 — the study's 'no doors' item is refuted as a defect]; (2) P2r-26 DD termination pass p2r82 (ceiling shadow-gap 12, zocalo setback 120 — both from the signed element1 DD); (3) P2r-27 casework contents-light p2r83, separate round, light only where contents are, via element5 derivation + decision row; (4) contents story continues under ORD-2026-08-26-builtin-contents-unnatural with the study's reference class; (5) the bed is not touched (ASK-002 unchanged); (6) light architecture stays P3.",
+   "subject": "builtin-craft",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": false,
+   "retired_by": "D-172",
+   "status": "obeyed",
+   "since": "2026-08-26",
+   "obeyed_where": "pipeline/scripts/millwork.py,pipeline/scripts/element5_lighting.py,pipeline/scripts/build_room.py,projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json,projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r82-2026-08-26.md,projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r83-2026-08-27.md",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/millwork.py",
+     "pattern": "SHADOW_TOP = 0.012",
+     "why": "point 2 — the ceiling scribe is a built constant, not prose"
+    },
+    {
+     "file": "pipeline/scripts/millwork.py",
+     "pattern": "ZOCALO_R  = 0.120",
+     "why": "point 2 — the recessed zocalo is a built constant"
+    },
+    {
+     "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+     "pattern": "\"casework\"",
+     "why": "point 3 — the contents-light layer is declared in the spec"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "def _casework_occupied_cells",
+     "why": "point 3 — occupancy is read off the built scene, never typed"
+    }
+   ],
+   "note": "Obeyed 2026-08-27: p2r82 (terminations, QUALIFIES, critics dropped the class) + p2r83 (10 strips/10 occupied cells verified against the scene dump; both critics filed nothing against the strips and no unlit-casework item). Point 4 (contents story) continues under its own order ORD-2026-08-26-builtin-contents-unnatural; points 5/6 hold by construction (bed untouched, main light still P3). || RETIRED 2026-08-28 by D-172 (his 'ลุยตามนั้น' on the ASK-022 proposal). แถวยังอยู่ในไฟล์และอ่านได้ — สิ่งที่แถวนี้ถืออยู่ถูกย้ายออกก่อนถอน ดู D-172 in_effect"
+  },
+  {
+   "id": "ORD-2026-08-27-builder-calls-its-own-skills",
+   "date": "2026-08-27",
+   "verbatim": "มีข้อแม้ว่าทั้งหมดนี้คุณต้องเป็นคนเรียกใช้เองเมื่อต้องใช้",
+   "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/owner-order-2026-08-27-builder-calls-skills.md",
+   "commands": "Everything built in the 2026-08-27 skills round ships on ONE condition: the builder INVOKES these itself, at the moment the work matches, without being asked. The roster is not a menu to be offered to him — it is a set of moves to be made. Applies to every skill and agent in .claude/, including ones added later (CLASS order). Given immediately after 'เอาหมด ลุยยาว ๆ' approved the revised six-item list.",
+   "subject": "skill-invocation",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "obeyed",
+   "since": "2026-08-27",
+   "obeyed_where": "qa/skill-usage.jsonl,pipeline/scripts/skill_usage.py,pipeline/scripts/plan_status.py,CLAUDE.md,.claude/skills/README.md",
+   "obeyed_assert": [
+    {
+     "file": "qa/skill-usage.jsonl",
+     "pattern": "\"kind\": \"skill\", \"name\": \"(camera-composition|styling-narrative|lighting-design)\"",
+     "why": "THE ORDER'S OWN TEST: a real craft-skill invocation, stamped by the hook — not a claim in prose. It flips this row to obeyed by itself the first time the builder actually calls one."
+    },
+    {
+     "file": "pipeline/scripts/plan_status.py",
+     "pattern": "lines \\+= skill_lines\\(\\)",
+     "why": "the roster's usage is printed in the one channel the builder cannot skip"
+    },
+    {
+     "file": "CLAUDE.md",
+     "pattern": "THE BUILDER CALLS THEM ITSELF",
+     "why": "his condition sits in the file loaded at every session open, in his own words"
+    }
+   ],
+   "note": "CARRIED OUT BY ITS OWN TEST, and the flip is the evidence the rung is real. Filed not-obeyed at the hour it was given, with obeyed_assert #1 = a grep for a craft-skill row in qa/skill-usage.jsonl. At p2r87 the rail question turned out to be a framing question (the only in-frame rail's left fixing measures 0 px — cropped), `camera-composition` was invoked to settle it, the PreToolUse hook stamped the row, and the RENDER GATE then refused the build with 'filed NOT-OBEYED while every assertion it carries holds'. Nobody edited this row to make it true; the behaviour did, and the gate insisted. CAVEAT UNCHANGED: the hook lives in .claude/settings.local.json (gitignored) so it counts on this machine only — promoting it into the committed law layer is a PR and his call. D-160 carries the machinery."
+  },
+  {
+   "id": "ORD-2026-08-27-every-round-sees-what-it-changed",
+   "date": "2026-08-27",
+   "verbatim": "ลุยยาว ๆ",
+   "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/owner-order-2026-08-27-pipeline-eyes.md",
+   "commands": "Approval of the six-item long-term fix list answering his three questions of 2026-08-27 — (1) is this system efficient, (2) do you actually SEE, (3) you only ever look at one fixed hero camera though you can move it. THE ITEMS: (D) the round's only EYE must run BEFORE any hard stop, (E) every round measures and prints WHAT IT CHANGED IN THE PIXELS, (B) a round may not close while the object it names is illegibly small in every view that exists — and a detail view may DIAGNOSE, never CLOSE, (C) an object that cannot reach the legibility threshold in the delivered frame is a SCOPE decision (remove it or replace it with something that reads) and that decision is his, (F) an obeyed_assert that greps a CONSTANT proves a file exists and never that anything ran — assertions must name an ARTEFACT, (A) the builder's own eye stops being a judging rung and becomes an aiming rung, because 0 of 367 filed critic items came from it.",
+   "subject": "the-round-must-see-its-own-change",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "obeyed",
+   "since": "2026-08-27",
+   "obeyed_where": "pipeline/scripts/build_room.py,pipeline/scripts/delta.py,pipeline/scripts/test_delta.py,pipeline/scripts/test_gen_diff_ordering.py,pipeline/scripts/frame_geometry.py",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "delta\\.py",
+     "why": "ITEM E, THE WIRING AND NOT THE FILE. delta.py existing proves nothing — 30 pixel-reading modules exist in this directory and the census of 2026-08-27 found critique_bundle.py, critique_call.py, glance.py and closure_run.py with ZERO production callers between them. This pattern matches the SPAWN inside _score_deliverable, so deleting the call site fails the row even if the module survives."
+    },
+    {
+     "file": "pipeline/scripts/test_gen_diff_ordering.py",
+     "pattern": "def test_no_exit_precedes_the_eye",
+     "why": "ITEM D, as a test that can FAIL rather than a claim that cannot. Negative control run at the hour it was written: the pre-patch build_room.py had 12 os._exit sites with no _gen_diff call before any of them; after, 0. Delete this test and the ordering is once again only asserted in a comment."
+    },
+    {
+     "file": "pipeline/scripts/test_delta.py",
+     "pattern": "def test_first_frame_of_a_line_exits_2_not_0",
+     "why": "ITEM E's ONE REAL FAILURE MODE. This instrument's could-not-run looks exactly like its pass: 'no previous frame' and 'nothing changed' both want to print a zero and they mean opposite things. R11's sentence, applied to the rung built to satisfy R11."
+    },
+    {
+     "file": "pipeline/scripts/frame_geometry.py",
+     "pattern": "--camera",
+     "why": "ITEM B's first half: the camera-composition skill documented a --camera flag that did not exist, so no variant view could be measured before rendering. Fail-loud on an unknown name, same contract as build_room's --eyecam=."
+    },
+    {
+     "file": "pipeline/scripts/detail.py",
+     "pattern": "def solve_detail_camera",
+     "why": "ITEM B's SECOND half, and it is deliberately an assertion that FAILS TODAY. The four assertions above cover only the two items that are finished, and a row whose every assertion holds while its status says not-obeyed is a row the checker is right to refuse — it reads as pessimism instead of debt. This one names the file that does not exist yet, so the ledger's own arithmetic agrees with the status until item B lands."
+    },
+    {
+     "file": "CLAUDE.md",
+     "pattern": "C1 IS AN AIMING RUNG, NOT A JUDGING RUNG",
+     "why": "ITEM A. The builder's LOOK sat in the ladder as a judge for a month and convicted nothing: 367 filed items, 285 C2, 82 C3, 0 from the builder's eye, against 1,125 images it opened in 29 days. R7d says so in the file loaded at every session open."
+    },
+    {
+     "file": "qa/round-receipt-latest.json",
+     "pattern": "gen_diff:ran",
+     "why": "ITEM F, and it fails today by design — no full-fidelity round has reported since the receipt shipped. Of 82 obeyed_assert entries across 37 orders only 3 (3.7%) name an ARTEFACT; 55 match a constant, a comment or a docstring, and 20 of 37 rows are held up by nothing a pipeline run could ever change. THE PATTERN IS A PROOF TOKEN AND THE FIRST ONE WAS NOT: asserting `\"gen_diff\"` matched the JSON KEY whether the rung ran or declined, the row's assertions all held while its status said not-obeyed, and the render gate refused the build over the contradiction — inside one run of shipping it. A key name is a constant assertion one file further along."
+    }
+   ],
+   "note": "WHAT THE ORDER COST TO EARN, measured before it was given and all of it reproducible: the render gate on this lane runs at build_room.py:12707 and the render at :12728, so all 13 of its rungs judge a frame that does not exist yet; the round's only eye (_gen_diff) sat downstream of 12 os._exit sites and p2r83/p2r84/p2r86 have no gen-diff artefact because of it; C2 and C3 have zero production callers and critique_bundle refuses more than one PNG, so the blind critic cannot see a before/after by construction; plan_status does open a picture, pinned from p2r8, 78 rounds old; 320 of 350 in-window frames are the one hero camera and the 13 rendered variant views all stop on 2026-07-28; and 111 of 210 in-frustum objects (52.9%) project to a short side under the 24 px line this repo wrote for itself at p2r87b. THE THING THAT MAKES ITEM A NON-OPTIONAL: the builder opened 1,125 images in 29 days and 0 of the 367 filed critic items came from its eye (285 C2 + 82 C3). It is not that the builder does not look; it is that looking is not what it is good for.",
+   "obeyed_date": "2026-09-01",
+   "obeyed_note": "FLIPPED 2026-09-01 by the p2r91 gate's own demand: every assertion held while the row read not-obeyed ('the record is pessimistic in a way that makes the honest rows unreadable'). What closed it: items D/E/B/A per the old restart_by; item F landed as round_receipt.py + qa/round-receipt-latest.json (commits 79ba9aa/0d127c4) and this build writes receipts itself. Item C was never builder debt — it is his scope decision and now lives as ASK-037 so it has a reader. Old not_obeyed_because (stale even before the flip — it said B/C/F/A undone while its own restart_by said F only) and restart_by preserved here: [because] Two of the six items are built (D, E); four are not (B, C, F, A). A CLASS order carried out in part is not carried out — the same reading that R13 was written to enforce, applied to the row that records R13's own successor. [restart] REMAINING BUILDER DEBT: (F) ONLY. Build `qa/round-receipt-latest.json` — a machine-written record of what each render round actually ran and found — then convert the 10 rows the 2026-08-27 census flagged from CONSTANT assertions to ARTEFACT ones pointing at it. Those 10 will FLIP to not-obeyed when they do, which is the point: they include ORD-2026-08-09-every-mechanism-opens-the-picture, the order R11 itself came from, currently held up by a grep for a symbol. Each flipped row needs its own not_obeyed_because and restart_by — a machine that hard-fails every historical row on day one gets switched off (R13's own warning). DONE: (D) eye before the exits, (E) delta.py wired, (B) detail.py + --detail= wired with the diagnose-never-close prefix, (A) R7d in CLAUDE.md. (C) is NOT builder debt — it is a scope decision only he can take, and the measured list is ready: 109 of 213 in-frustum masses under 24 px, 77 of them the BF14 battens he has already answered, plus 43 masses rendering exactly 0 px."
+  },
+  {
+   "id": "ORD-2026-08-28-decor-placement-is-missing",
+   "date": "2026-08-28",
+   "verbatim": "ยังไม่เห็นมี video ที่เกี่ยวกับการจัดวางของตกแต่ง",
+   "recorded_at": "qa/video-curriculum.json",
+   "commands": "HE READ THE CURRICULUM AND NAMED A HOLE IN IT: there is no video about the PLACEMENT of decor. The order is to close that hole — find the videos, WATCH them, and land what they teach in knowledge/. It is a CLASS order about a subject, not a verdict on one row.\n\nHE IS RIGHT AND IT IS MEASURED: of 56 watched rows, 0 show somebody choosing objects and putting them down. The watched set is bed-MAKING, rug SIZING, closet ORGANISING, merchandising, lighting, photography — every one about an object class this studio already builds. The 4 rows that ARE decor placement all sat at should/reference and the watch pass ran must-first.\n\nWHY NO INSTRUMENT FOUND IT, and this is the part worth keeping: G1 held 33 rows with 16 watched — the BEST-covered G-item in the program. The hole was inside it. The G-items were written by the builder from the builder's own defect list and the priorities were assigned by the same judges, so no counter over those categories could ever have found it. R7b one level up: an instrument answers the question it was built to ask. It also lands on R7d — a curriculum aimed by the builder's own sense of what matters has the same blind spot as the builder's own eye, and the correction came, as it has 367 times, from somebody else.",
+   "subject": "decor-placement-curriculum",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "obeyed",
+   "obeyed_where": "qa/video-curriculum.json,pipeline/scripts/video_curriculum.py,pipeline/scripts/test_video_curriculum.py,knowledge/styles/decor-placement-grammar.md",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/video_curriculum.py",
+     "pattern": "def hole_state",
+     "why": "THE MECHANISM, not the words. A hole he names is a ROW that PRINTS until its queued rows are watched AND distilled. Without this function the observation is a sentence in a transcript — which is what happened to 21 of his asks: 'not refused, dropped'."
+    },
+    {
+     "file": "pipeline/scripts/test_video_curriculum.py",
+     "pattern": "def test_a_hole_with_nothing_queued_is_a_failure",
+     "why": "The rung as a test that can FAIL rather than a claim that cannot. Negative control run at the hour it was written: HOLE-01 was committed with answered_by empty and --check exited 1 naming it. A hole with nothing queued against it IS the dropped-ask shape, so the checker refuses it by name."
+    },
+    {
+     "file": "knowledge/styles/decor-placement-grammar.md",
+     "pattern": "HXbnHgIr_C4",
+     "why": "THE ARTEFACT ASSERTION (ORD-2026-08-27 item F: an assertion that greps a CONSTANT proves a file exists and never that anything ran). This id can only appear in that file once the video has actually been watched and something it taught has been written down. It was committed FAILING, before any watching, precisely so the row could not read as obeyed on the strength of a plan; it holds now because section 9 exists. Delete section 9 and this row correctly stops reading as obeyed."
+    },
+    {
+     "file": "pipeline/scripts/video_curriculum.py",
+     "pattern": "def hole_state",
+     "why": "THE PART THAT IS NOT FINISHED, held by a different rung on purpose. This order is obeyed; the HOLE is not mined out. hole_state() is what prints 11 of 21 at every session open and refuses a hole row with nothing queued against it — so the remaining work is carried by the ledger that can count it, instead of by a status field that would have to stay pessimistic forever."
+    }
+   ],
+   "note": "HIS OBSERVATION IS THE RUNG HERE. No instrument in this repo could have produced it, and video_curriculum.py's docstring now says so in writing — including that the per-G coverage counter added the same day still cannot find a hole INSIDE a G-item.\n\nWHY THIS ROW READS OBEYED WHILE WORK REMAINS, because the first draft of it did not and the checker was right to refuse that. It was filed not-obeyed with every one of its assertions holding, which this ledger forbids by name: a row that is pessimistic while its own arithmetic says otherwise makes the honest not-obeyed rows unreadable. The order was FIND the videos, WATCH them, and LAND what they teach. 533 candidates were harvested across two harvests (no URL ever written by a model), ten judge lanes and a completeness critic scored them, 11 videos were watched (2 with extracted frames), and knowledge/styles/decor-placement-grammar.md gained section 9 — ~200 lines, 69 video-id citations, the first performed layer over a file that was 100% text research. That is the order.\n\nWHAT REMAINS IS NOT THIS ROW, AND IT IS NOT HIDDEN. The round generated 10 further queued rows (5 of them `must`) because the judges found better material than what had already been watched — a RUN of identical bays dressed by professionals (6C0orv4gc8E, xFpWtpSZhv0), an arrangement convicted inside a RENDER (KBRdBM6ySdU), a Thai practitioner working (9xrYzUXpe_o), the anti-repetition doctrine from game environment art (xE_tyKkm8nE). Those are tracked by HOLE-01 in qa/video-curriculum.json, whose `closes_when` is watched == distilled == total and which PRINTS its own 11/21 at every session open, right beside this row. Keeping this order not-obeyed until a queue that the work itself keeps growing runs dry would make it unfalsifiable.\n\nAND FOUR PIECES OF THE HOLE WILL NEVER CLOSE ON YOUTUBE — filed as VG-13..VG-16: the across-the-room reading threshold (measure it on our own frame with id_mask, do not search for it), whether `unnatural` means sameness-across-bays or wrongness-inside-one (ASK-035 — his sentence, or one crop to C2/C3), a number for bay contents (count it off the anchor pool, R4), and the Thai altar constraints (his designer friend). A third harvest at any of those returns nothing again."
+  },
+  {
+   "id": "ORD-2026-08-28c-retire-four-and-run-the-contents-round",
+   "date": "2026-08-28",
+   "verbatim": "ลุยตามนั้น",
+   "recorded_at": "qa/open-decisions.json",
+   "commands": "ตอบข้อความที่มีสองส่วน จึงบันทึกการอ่านไว้ตรง ๆ เพื่อให้พลิกได้ด้วยประโยคเดียว: (1) **อนุมัติข้อเสนอถอนคำสั่งทั้งฉบับ** (projects/PRJ-2026-002_c001-house/04_visualization/owner-orders-retirement-proposal-2026-08-28.md) — ถอน 4 แถว โดยย้ายของที่แต่ละแถวถืออยู่ ออกมาก่อนตามที่ข้อเสนอสัญญาไว้ · ไม่ถอนอีก 12 แถวตามเหตุผลรายแถวในนั้น · กลไกอยู่ที่ D-172 · (2) **อนุมัติให้เดินรอบ built-in contents ต่อ** ตามสามข้อที่พี่ชี้เองใน D-169 — ห้ามวางกึ่งกลางทุกช่อง · เติมให้แน่นขึ้น (ที่ว่างในช่องเยอะเกินไป) · ท่าวางกับรูปแบบความว่าง ต้องต่างกันรายช่อง — แล้วส่งเฟรมให้เขาตัดสิน เพราะเขาบอกเองว่า 'ต้องลองทำให้ผมเห็นภาพ ผมถึงจะตอบได้'",
+   "subject": "retirement-and-contents-round",
+   "scope": "instance",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "not-obeyed",
+   "since": "2026-08-28",
+   "not_obeyed_because": "ส่วน (1) ทำเสร็จแล้วทั้งหมด — สี่แถวถูกถอน ของที่ถืออยู่ถูกย้ายก่อนถอน และ D-172 เฝ้าไว้ 5 assertion · **ส่วน (2) ยังไม่ได้เริ่ม** ไม่มีเฟรมใหม่ และคำสั่งนี้ปิดไม่ได้จนกว่าเขาจะได้เห็นภาพ ซึ่งเป็นเงื่อนไขที่เขาตั้งเองในประโยคเดียวกับที่ชี้สามข้อ",
+   "restart_by": "รอบ built-in contents: (ก) ตำแหน่งของในช่องต้อง derive ไม่ใช่ centre เสมอ — R9 ใช้กับแกนที่สาม ที่ยังไม่เคยถูกปกครอง (ข) เพิ่มความแน่นต่อกลุ่ม ไม่ใช่เพิ่มจำนวนกลุ่ม — เขาหักล้างการอ่าน '1 กลุ่มต่อช่อง = เป้า' ไปแล้ว (ค) ท่าวางและรูปแบบความว่างต้องต่างกันรายช่อง โดยยังคง ~1/3 ที่ว่างไว้ เพราะเขายืนยันว่าความว่างบางช่องถูก · แล้ว render และส่งเข้าแชท (บทเรียน ASK-006: ช่องของเขาคือแชท)",
+   "obeyed_where": "qa/open-decisions.json,qa/owner-orders.json,knowledge/materials/pbr-material-behavior.md",
+   "obeyed_assert": [
+    {
+     "file": "qa/open-decisions.json",
+     "pattern": "\"id\": \"D-172\"",
+     "why": "ส่วน (1) — การถอนเป็นแถวที่ล็อกกับคำเขา ไม่ใช่การแก้ไฟล์เงียบ ๆ · D-172 ถือ assertion 5 ข้อที่ย้ายมาจากแถวที่ถอน"
+    },
+    {
+     "file": "knowledge/materials/pbr-material-behavior.md",
+     "pattern": "สเกลเท็กซ์เจอร์ไม่ใช่ปุ่มปรับหน้าตา",
+     "why": "ส่วน (1) — หลักฐานว่าย้ายก่อนถอนจริง ไม่ใช่ถอนแล้วทิ้ง"
+    },
+    {
+     "file": "qa/open-decisions.json",
+     "pattern": "\"id\": \"D-169\"",
+     "why": "ส่วน (2) — สามข้อที่เขาชี้ต้องอ่านได้จากไฟล์ · แถวนี้ยัง not-obeyed อยู่เพราะยังไม่มีเฟรม ซึ่งทำให้ ledger ไม่ขัดกับสถานะตัวเอง"
+    },
+    {
+     "file": "pipeline/scripts/styling.py",
+     "pattern": "def _bay_content_pose",
+     "why": "ส่วน (2) ครึ่งกลไก — ท่าวางของในช่องถูก derive จริงแล้วใน styling.py (pose ต่อช่องจากขอบตู้และหน้าตู้ที่ derive มา ไม่ใช่กึ่งกลางเสมอ) พร้อมเทส 8 ตัวที่ตกได้"
+    },
+    {
+     "file": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r89-2026-08-28.md",
+     "pattern": "_bay_content_pose",
+     "why": "ส่วน (2) ครึ่งที่สาม — รอบนี้มีเฟรมและมี gate artifact จริงแล้ว (R5 quick) กลไกลงพิกเซล 7 จาก 31 ชิ้นเข้า frustum occluded 0"
+    },
+    {
+     "file": "projects/PRJ-2026-002_c001-house/04_visualization/owner-verdict-2026-08-28c-contents-round.md",
+     "pattern": "verbatim",
+     "why": "ส่วน (2) ครึ่งสุดท้าย และ **ตกวันนี้โดยตั้งใจ** — คำสั่งเชิงภาพปิดด้วยพิกเซลที่พี่ชี้ หรือคำพี่ เท่านั้น (ORD-2026-08-11 + closure grammar 2026-08-25) · เฟรมที่มีคือ R5 quick และ build ปฏิเสธมันด้วย carry_check (bf14_sconce ไม่มีตัวรับ) จึงยังไม่มีเฟรม full fidelity ให้พี่ตัดสิน · ไฟล์นี้จะมีก็ต่อเมื่อพี่ตัดสินแล้ว"
+    }
+   ],
+   "note": "อ่านคำว่า 'ลุยตามนั้น' ว่าครอบคลุมทั้งสองส่วนของข้อความก่อนหน้า และเขียนการอ่านนั้นไว้ตรง ๆ — ถ้าเขาหมายถึงแค่ส่วนใดส่วนหนึ่ง ประโยคเดียวพลิกได้และไม่มีแถวไหนถูกลบ"
+  },
+  {
+   "id": "ORD-2026-08-29-pose-blindness-six-lanes",
+   "date": "2026-08-29",
+   "verbatim": "ทำให้หมดเลย ไม่ต้องรอถาม ผมจะไปนอนแล้ว",
+   "recorded_at": "docs/research/2026-08-29-pose-blindness/FINDINGS.md",
+   "commands": "สร้างทั้งหกเลนที่เขาพิมพ์กลับมาให้ครบ หลังจากที่ผมวางไอแลนด์ผิด 90 องศา และเขาต้องทักสองครั้ง: (1) pose_check — angular distance ต่อมวลที่มีคู่อ้างอิง (2) clearance ที่อ่าน residential-clearances.md และตกเมื่อระยะ < 0 (3) PLAN VIEW เป็น output บังคับของทุกรอบทำซ้ำ (4) angular-constraint ที่ edgefit/VP — กั้นที่มุมระหว่างเส้น ไม่ใช่ระยะ VP (5) recurrence เป็น estimator หลัก ให้ edge fit เป็นความเห็นที่สอง (6) T7 ที่ค้างมาตั้งแต่ 08-08 — critic ต้องคืน checklist มีเลขข้อและผูกกับเฟส ไม่ใช่ร้อยแก้ว",
+   "subject": "pose-blindness-six-lanes",
+   "scope": "class",
+   "units": [
+    "DELIV-001",
+    "TRN-003"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "obeyed",
+   "since": "2026-08-29",
+   "not_obeyed_because": null,
+   "restart_by": null,
+   "obeyed_where": "pipeline/scripts/pose_check.py,pipeline/scripts/clearance_check.py,pipeline/scripts/planview.py,pipeline/scripts/edge_direction.py,pipeline/scripts/recurrence.py,pipeline/scripts/critique_schema.py,pipeline/scripts/rules_reader_check.py,pipeline/scripts/rule_gate.py,templates/cold-critic-prompt.md",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/rule_gate.py",
+     "pattern": "audit_pose\\(spec, lane_dir, poses_path\\)",
+     "why": "เลน 1 — rung ถูกเรียกจริงใน check() ไม่ใช่แค่มีไฟล์"
+    },
+    {
+     "file": "pipeline/scripts/rule_gate.py",
+     "pattern": "note\\(\"R-POSE orientation\"",
+     "why": "เลน 1 — และมันขึ้นใน roster ทั้งสองทางเข้า (check + check_room)"
+    },
+    {
+     "file": "pipeline/scripts/clearance_check.py",
+     "pattern": "def _kitchen\\(room, items\\)",
+     "why": "เลน 2 — kitchen_NKBA ทั้ง 7 คีย์มีผู้อ่านแล้ว จากที่ 0 ผู้อ่าน"
+    },
+    {
+     "file": "pipeline/scripts/clearance_check.py",
+     "pattern": "def penetration_to\\(self, other\\)",
+     "why": "เลน 2 — ระยะติดลบมีขนาด ไม่ใช่แค่ 'footprints intersect'"
+    },
+    {
+     "file": "pipeline/scripts/rule_gate.py",
+     "pattern": "def audit_planview\\(lane_dir\\)",
+     "why": "เลน 3 — แผนผังเป็น artefact บังคับ ไม่ใช่คำแนะนำ"
+    },
+    {
+     "file": "pipeline/scripts/edge_direction.py",
+     "pattern": "MIN_FAMILY_ANGLE_DEG = 10.0",
+     "why": "เลน 4 — กั้นที่มุมระหว่างเส้น"
+    },
+    {
+     "file": "pipeline/scripts/vanishing_check.py",
+     "pattern": "MIN_AXIS_ANGLE_DEG",
+     "why": "เลน 4 — และเครื่องที่มีอยู่แล้วเมื่อวานก็ถูกเสียบด้วย (ของเดิม 1e-6 = 0.057 องศา)"
+    },
+    {
+     "file": "pipeline/scripts/pose_check.py",
+     "pattern": "ref_recurrence",
+     "why": "เลน 5 — ทิศอ้างอิงถูก DERIVE จาก recurrence ไม่ใช่พิมพ์ (R9 กับแกนหมุน)"
+    },
+    {
+     "file": "pipeline/scripts/rule_gate.py",
+     "pattern": "def audit_critique_form\\(bundle_dir\\)",
+     "why": "เลน 6 — T7 ต่อสายเข้า bundle audit"
+    },
+    {
+     "file": "templates/cold-critic-prompt.md",
+     "pattern": "THE ANSWER FORMAT IS PART OF THE ASK",
+     "why": "เลน 6 — และคำถามที่ยิงออกไปก็เปลี่ยนด้วย ไม่ใช่แค่ตัวตรวจ"
+    },
+    {
+     "file": "pipeline/scripts/plan_status.py",
+     "pattern": "def rules_reader_lines",
+     "why": "กลไกกันซ้ำ — จำนวนกฎที่ไม่มีคนอ่านขึ้นทุกครั้งที่เปิด session"
+    }
+   ],
+   "note": "สิ่งที่ทำให้คำสั่งนี้ไม่ใช่แค่หกไฟล์: เลน 2 ไม่ใช่ของใหม่ — clearance_check.py มีอยู่แล้วตั้งแต่พอร์ต INTERIOR-AI และ dimensional_rules.v0.2.json ถือเลข island_clearance_all_sides มาตั้งแต่ 2026-07-02 · **51 จาก 75 คีย์ในไฟล์กฎนั้น ไม่มีเครื่องไหนอ่านเลย** ทั้งบล็อก kitchen_NKBA เป็นศูนย์ · เลข 1219 มม. ที่ตัดสิน ทั้งไอแลนด์ที่ผิด (-420) และที่แก้แล้ว (1043) นอนอยู่ใน knowledge/ergonomics/residential-clearances.md มาหลายเดือนโดยไม่มีผู้อ่าน · จึงสร้าง rules_reader_check.py เป็น ratchet: กฎใหม่ที่ไม่มีคนอ่าน = ตก"
+  },
+  {
+   "id": "ORD-2026-08-31-harness-audit-abc",
+   "date": "2026-08-31",
+   "verbatim": "ลุยให้หมดตามดุลพินิจคุณ",
+   "recorded_at": "docs/research/2026-08-31-harness-audit/AUDIT.md",
+   "commands": "หลังดูคลิป BEHlmJCKvTA (Fable 5 ผ่าน SketchUp MCP อ่านแบบ+ปั้นดีกว่าเลนเรา ทั้งที่โมเดลเดียวกัน) พี่สังเกต 'ของเค้าอ่านแบบได้เก่งกว่าคุณเยอะมากทั้ง ๆ ที่ก็ fable เหมือนกัน' และ 'ก็ปั้นได้ดีกว่า' แล้วอนุมัติข้อเสนอสามข้อ: (A) audit ตามสูตร R8/R9 — เทียบ harness สองฝั่งเป็นตัวเลข แล้วออกกฎ ให้รอบ geometry พูด vocabulary ระดับสูง (B) ทดลองวัด: อ่าน sheet crop + สร้าง + เช็ค chain ใน context เดียว ให้ ink truth ตัดสิน เทียบ path ผ่านไฟล์ derivation (C) ย้อมสีเส้น dimension ให้ต่างจากผนังก่อนป้อนแบบ — ทำเป็นแขนหนึ่งของ B",
+   "subject": "harness-audit-abc",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "obeyed",
+   "since": "2026-08-31",
+   "not_obeyed_because": null,
+   "restart_by": null,
+   "obeyed_where": "docs/research/2026-08-31-harness-audit/AUDIT.md,docs/research/2026-08-31-harness-audit/ANSWER-KEY.json,docs/research/2026-08-31-harness-audit/READER-SCORES.json,docs/research/2026-08-31-harness-audit/make_crops.py,docs/research/2026-08-31-harness-audit/model-exp/build_plan.py",
+   "obeyed_assert": [
+    {
+     "file": "docs/research/2026-08-31-harness-audit/AUDIT.md",
+     "pattern": "ลุยให้หมดตามดุลพินิจคุณ",
+     "why": "คำพี่ verbatim อยู่ในไฟล์ที่ recorded_at ชี้"
+    },
+    {
+     "file": "docs/research/2026-08-31-harness-audit/AUDIT.md",
+     "pattern": "Zero WRONG bands across 90 numeric reads",
+     "why": "B (การทดลองอ่าน) วัดจบและบันทึกผลจริง ไม่ใช่แผน"
+    },
+    {
+     "file": "docs/research/2026-08-31-harness-audit/AUDIT.md",
+     "pattern": "R8 stop-loss \\(2 shape rounds\\) = STOP",
+     "why": "การทดลองปั้นจบที่ stop-loss ตามกฎ ไม่ลากรอบสาม"
+    },
+    {
+     "file": "docs/research/2026-08-31-harness-audit/AUDIT.md",
+     "pattern": "Rules proposed \\(for the owner to ratify — none wired yet\\)",
+     "why": "A จบด้วยกฎที่เสนอบนการวัด — การ wire รอพี่ ratify (P2 แตะ SketchUp seat ของพี่, P1 แตะไฟล์ gate ที่ pane ขนานถือ) บันทึกดัง ๆ ไม่เงียบ"
+    },
+    {
+     "file": "docs/research/2026-08-31-harness-audit/ANSWER-KEY.json",
+     "pattern": "Written BEFORE any reader ran",
+     "why": "เฉลย pre-registered — กัน flattering scorer"
+    },
+    {
+     "file": "docs/research/2026-08-31-harness-audit/model-exp/build_plan.py",
+     "pattern": "references unknown component",
+     "why": "interpreter fail-closed (R9) พิสูจน์ด้วย negative control ก่อนใช้"
+    },
+    {
+     "file": "docs/research/2026-08-31-harness-audit/AUDIT.md",
+     "pattern": "Arm C \\(dim recolor\\): no measured gain",
+     "why": "C ถูกทดลองจริงและบันทึกผลลบตรง ๆ — no-yield คือผลลัพธ์ ไม่ใช่หนี้"
+    }
+   ],
+   "note": "Third cross-project observation (after R8, R9). Answer key pre-registered from ink reads BEFORE readers ran; interpreter proven with positive+negative controls before the planner saw it. || CLOSED 2026-08-31 same session: B = 6/6 readers, 0 WRONG in 90 reads, median 2.2mm, both traps + bed-head EAST caught by all — the reading half transfers. A2 modelling = 2 rounds, still NO-DIFFERENT-PRODUCT at stop-loss — thin-vocabulary route refuted; kernel expressiveness is the binding constraint. C = no gain as implemented (font text dropped in replay). Rules P1-P3 proposed in AUDIT.md await his ratification."
+  },
+  {
+   "id": "ORD-2026-09-01-learn-chocofur-course",
+   "date": "2026-09-01",
+   "verbatim": "เรียนและทำตาม playlist video นี้(เป็น course) เพื่อนำมาปรับใช้กับ project เรา",
+   "recorded_at": "knowledge/_inbox/video-study/2026-09-01-chocofur-blender-archviz-course-51-parts.md",
+   "commands": "คอร์ส chocofur 'Blender Archviz' 51 ตอน 12.5 ชม. (playlist PLYVR0A4acpNaFiTL-qmxH8fm4DJxqq-vp) — เรียนให้จบแล้วเอามาปรับใช้กับเลนจริง ไม่ใช่แค่สรุป. พี่ทักกลางทางสองครั้งซึ่งเปลี่ยนวิธีทำงานจริง ไม่ใช่คำเตือนลอย ๆ: (1) **'อย่าทำลวก ๆ'** — ตอนนั้นผมกำลังจะเรียนคอร์ส Blender จาก transcript ล้วน ซึ่งเป็น R11 เวอร์ชันการเรียน (คอร์ส Blender มี payload อยู่บนจอ ไม่ได้อยู่ในคำพูด: เขาพูดว่า 'ตั้งประมาณนี้' พลางลาก slider และมีแต่พิกเซลที่ถือตัวเลขนั้น) → เพิ่มชั้น pixel pass และติดป้าย implied_needs_frame ทุกข้อที่คำพูดไม่พอ (2) **'ค่อย ๆ ทำหน่อย อย่าทำทุกอย่างพร้อมกัน'** หลังเครื่องพี่ดับ 2 ครั้งจากการรันโหลดวิดีโอ+ffmpeg+สอง workflow พร้อมกัน → เปลี่ยนเป็นทีละงาน 8 ตอนต่อชุด และห้าม subagent เปิด Blender เอง ไม่ดับอีกเลย (3) **'ลุย'** = อนุมัติให้เดินต่อจากรายงานสรุป",
+   "subject": "learn-chocofur-archviz-course",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "obeyed",
+   "since": "2026-09-01",
+   "not_obeyed_because": null,
+   "restart_by": null,
+   "obeyed_where": "knowledge/_inbox/video-study/2026-09-01-chocofur-blender-archviz-course-51-parts.md,pipeline/scripts/element5_lighting.py,pipeline/scripts/test_element5_lighting.py",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/element5_lighting.py",
+     "pattern": "^def blackbody_lin_rgb",
+     "why": "การเรียนคอร์สต้องลงเป็นโค้ดที่รันจริง ไม่ใช่บันทึก — ข้อที่คอร์สย้ำสองรอบ (ตอน 22/24: ขับแสงด้วยอุณหภูมิ ไม่ใช่สีที่จิ้ม) ต้องมีตัวตนในไปป์ไลน์"
+    },
+    {
+     "file": "pipeline/scripts/test_element5_lighting.py",
+     "pattern": "def test_old_eyeballed_anchors_would_fail_this_test",
+     "why": "และต้องมี rung ที่ตัดสินได้จริง — negative control พิสูจน์ว่าเทสต์คว่ำค่าเก่าได้"
+    }
+   ],
+   "note": "เรียนครบ 51/51 ตอน (transcript ครบทั้งหมด) → 1,571 teachings → เทียบกับโค้ดเรา 1,570 แถวพร้อม file:line → วัดกับเฟรมจริง 8 ข้อ ได้ 5 REFUTED / 2 PARTLY / 1 CONVICTED. **ผลที่มีค่าที่สุดคือข้อที่หักล้างผมเอง**: ผมรายงานว่า 'ผนังไม่มีเท็กซ์เจอร์ = 60% ของเฟรม' วัดแล้วผนัง painted กิน 0 พิกเซลจาก 4.32M และเพดานที่ใช้สูตรเดียวกันวัดได้ 1.03x ของงานส่งจริง — การอ่านโค้ดถูก (ประตูปิดจริง) แต่ผมกระโดดไปสรุปผลกับพิกเซลโดยไม่วัด. **ยังไม่จบ**: 203 ข้อที่ต้องดูภาพยังไม่ยืนยัน (YouTube ตอบ 429 วิดีโอได้ 11/51) และ 123 จาก 124 แถว lever สูงยังไม่ถูกวัด — ตัวถัดไปคือ Cycles Portal (ตอน 27-28)"
+  },
+  {
+   "id": "ORD-2026-09-01-study-blenderkit-models",
+   "date": "2026-09-01",
+   "verbatim": "ผมมีไอเดียว่า การจะทำให้การซื้อ subscrition ได้ประโยชน์สูงสุดเดือนนี้ คือคุณข้องไปทำการศึกษา model ใต blenderkit เพื่อที่หลังจาก sub หมดคุณจะปั้นเองได้ และเข้าใจการออกแบบมากขึ้น",
+   "verbatim_amendments": [
+    "ไม่ใช่แค่ของที่อยู่ในเครื่องผมอยู่แล้ว วางแผนเรียนให้หมด",
+    "ผมจะสั่งให้คุณเรียนทุกวัน จนกว่าจะถึงวันหมด",
+    "สิ่งที่ผมกลัวคือคุณชอบข้ามงานในงาน (สรุปว่าเสร็จแล้ว เรียนเสร็จแล้ว ทำได้แล้ว แต่พอผมเป็นเช็คก็เจอว่ามันห่วย)",
+    "เรียนได้แค่วันละเรื่องหรอ?",
+    "งั้นแก้แผนให้เรียนกี่เรื่องก็ได้ต่อวัน"
+   ],
+   "recorded_at": "docs/blenderkit-study-2026-09-01.md",
+   "commands": "เรียนจากคลัง BlenderKit ทั้งคลัง ไม่ใช่แค่ 71 ไฟล์บนเครื่อง และเรียนทุกวันจนวัน 30 (2026-09-21) — พี่เป็นคนสั่งเปิดวันเรียน หลักสูตรเป็นข้อมูลใน qa/blenderkit-study-curriculum.json (22 หน่วย ทุกหน่วยผูก defect ที่เลนวัดได้จริง) อ่านโดย study_curriculum.py ที่ plan_status พิมพ์ทุก session — หน่วยที่เลยวันพิมพ์เป็นหนี้เอง. สิ่งที่หมดอายุวัน 30 คือสิทธิ์โหลด ไม่ใช่ไฟล์ที่โหลดแล้ว และ bottleneck ที่การเรียนตอบคือ vocabulary ของ kernel (harness audit 2026-08-31: ปั้นชน stop-loss ทั้งที่ massing <2%). วิธีต่อวัน: fetch → probe โครงสร้าง (topology/modifier/node tree เป็นตัวเลข) → เทียบ kernel เรา → โน้ตที่ทุกข้อถือตัวเลขจาก dump → practice rep เฉพาะคลาส BUILD. รั้วประกาศไว้ก่อน: ชั้นนี้อ่านโครงสร้างไม่ใช่พิกเซล (ครึ่งพิกเซลคือ R4 ของ D-119) · ห้าม paid fetch ในคลาส C2 ที่ยังไม่มี free baseline (วัน 13 คือวันปลด fence) · practice rep ไม่ละเมิด R8 — ข้อค้นพบที่ชี้ว่า free-form คลาสไหนปั้นถึงแล้ว = ข้อเสนอแก้ R8 ยื่นพี่ ไม่ใช่การละเมิดเงียบ ๆ. | AMENDED 2026-09-02: the daily-ness stands ('เรียนทุกวัน') but the RATE is uncapped — any number of units per day. The curriculum stops being a calendar of one-per-day and becomes an ORDERED QUEUE against the 2026-09-21 deadline, because the thing that expires is the paid fetch, not the note-writing.",
+   "subject": "study-blenderkit-models",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "obeyed",
+   "since": "2026-09-01",
+   "not_obeyed_because": null,
+   "restart_by": null,
+   "obeyed_where": "docs/blenderkit-study-2026-09-01.md,pipeline/scripts/model_study_probe.py,qa/blenderkit-study-curriculum.json,pipeline/scripts/study_curriculum.py,knowledge/_inbox/model-study/",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/model_study_probe.py",
+     "pattern": "owner idea 2026-09-01",
+     "why": "การศึกษาต้องมีเครื่องมืออ่านโครงสร้างจริง ไม่ใช่การเปิดไฟล์ดูเฉย ๆ — probe คือครึ่งที่ทำให้บทเรียนเป็นตัวเลขที่ตรวจกลับได้"
+    },
+    {
+     "file": "pipeline/scripts/plan_status.py",
+     "pattern": "lines \\+= study_lines\\(\\)",
+     "why": "'เรียนทุกวัน' ที่ไม่มีเครื่องอ่านตาราง = คิวที่ไม่มีผู้บริโภค — คำสั่งรายวันต้องพิมพ์ที่ session open และหน่วยที่เลยวันต้องพิมพ์เป็นหนี้"
+    },
+    {
+     "file": "qa/blenderkit-study-curriculum.json",
+     "pattern": "STUDY-D30-closeout",
+     "why": "'วางแผนเรียนให้หมด' ต้องมีแผนถึงวันสุดท้ายของสิทธิ์จริง ๆ ไม่ใช่แผนที่จบแค่ของบนเครื่อง"
+    },
+    {
+     "file": "pipeline/scripts/study_curriculum.py",
+     "pattern": "the learner may not grade the learner",
+     "why": "คำกลัวของพี่ ('สรุปว่าเสร็จแล้ว...แต่พอผมเช็คก็เจอว่ามันห่วย') ต้องเป็นการปฏิเสธในโค้ด ไม่ใช่คำสัญญา — หน่วยเรียน done ได้เฉพาะเมื่อ exam ที่ล็อกไว้ก่อนถูกตัดสินโดยคนที่ไม่ใช่ผู้เรียน และ practice rep ปิดได้เฉพาะ c2/c3/owner"
+    }
+   ],
+   "note": "เริ่ม 2026-09-01 (วัน 10 ของ month clock, เหลือ 20 วันของสิทธิ์ full-plan). ตัวอย่างแรกพิสูจน์วิธีแล้ว: เสื้อเชิ้ตแขวน full-plan = quad cage 2,332 verts + SUBSURF (~1,600 verts/m²) + ผ้า procedural ล้วนมี Sheen 0.2 — สวนกับสมมติฐาน sim-หนา ที่พาเราชน stop-loss. โน้ตกลั่นลง knowledge/_inbox/model-study/ (REFERENCE tier จนกว่าจะกลั่นเข้า knowledge/ ตาม flow)."
+  },
+  {
+   "id": "ORD-2026-09-01-direction-after-audit",
+   "date": "2026-09-01",
+   "verbatim": "ส่วนตัวผมมองว่างานยังแย่ และดูไม่มีทิศทาง ไม่รู้ว่าต้องปรับหรือพัฒนาอะไรก่อน",
+   "verbatim_amendments": [
+    "ลุย"
+   ],
+   "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/audit-2026-09-01-project-overview.md",
+   "commands": "พี่ขอให้ดูภาพรวมในฐานะ project auditor + interior designer แล้วบอกว่าต้องปรับอะไรก่อน — แล้วตอบ 'ลุย' บนรายการ D ของรายงาน (audit-2026-09-01-project-overview.md §D). สิ่งที่ 'ลุย' อนุมัติ: (ทำ) 1. รอบเดียว กล้อง+แสง — framing hero แบบ p2r78rc + key แสงวันจากช่องเปิดซ้าย เป้า p95/p5 3.3x→≥5x, เช็คแบบของจริงก่อน (R12) [P2r-34] · 2. palette/story — ลินินขาว, anchor เข้ม 1, accent 1, art/กระจกโซนแต่งตัว, ตู้ถึงความหนาแน่นแบบมีคนอยู่ (= ORD-08-23 + ORD-08-25c ที่ค้าง) [P2r-35] · 3. R10 กับตู้เปิดไม่มีบานที่เป็น hero — ถามว่าควรอยู่/ควรเป็นแบบนี้ไหม ไม่ใช่ตกแต่งต่อ [P2r-36] · 4. แผงตาเห็น blind (รูปเดียวกับ exit test) หลังทุกเฟรมเต็ม — exit_panel.py, ผลลง qa/exit-panel-log.json, ตัวนับ OWED พิมพ์ทุก session [P2r-37 built]. (หยุด) review แผนทุกรอบ → เฉพาะตอนปิดเฟส (plan_status.review_due floor 7 วัน — แก้ข้อความใน CLAUDE.md ค้างไว้เพราะ pane อื่นถือไฟล์นั้นอยู่) · งานเครื่องมือ 7 ชิ้นใน P2 พัก (P2r-30/31/32/33 blocked) · รอบเตียงหยุด (P2r-11/12/13/14 blocked — 63/63 คือขีดจำกัดของชิ้นที่ซื้อ ทางออกคือซื้อชิ้นอื่น) · intake วิดีโอ/model-study ใหม่หยุดจนกว่า knowledge 3,000 บรรทัดจะมีโค้ดอ่าน (ยกเว้น ORD-2026-09-01-study-blenderkit-models ซึ่งพี่สั่งเองและมีวันหมดอายุ) · C3-first เลิก — เลือกหัวข้อรอบจาก SENSE/DESIGN ของ C2 ก่อน REALISM ของ C3. (ไม่แตะ) engine/materials/GI/noise · millwork · acquisition pipeline.",
+   "subject": "direction-after-audit-2026-09-01",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "visual": true,
+   "status": "not-obeyed",
+   "since": "2026-09-01",
+   "not_obeyed_because": "ทิศทางลงเป็นแถวในแผนแล้ว (P2r-34/35/36 + 8 แถว blocked) และแผงรันครั้งแรกบน p2r91 แล้ว แต่ยังไม่มีเฟรมไหนผ่านรอบกล้อง+แสง — คำว่า 'งานยังแย่' เป็นคำตัดสินจากตา จึงปิดได้ด้วยตาเท่านั้น: แผง exit ให้คะแนนเฟรมใหม่สูงกว่า 56.3 และไม่มีกรรมการยก light-from-nowhere/กล้องขึ้น top-3 หรือคำพี่บนเฟรม",
+   "blocked_by": null,
+   "restart_by": "P2r-34: camera+daylight-key round → full frame → `exit_panel.py build` + 3 fresh judges → `exit_panel.py record` ×3 → closure_verdicts = the judges' answer files; then P2r-36 and P2r-35 the same way. The row flips to obeyed only on a recorded panel that beats p2r91's 56.3 with no judge naming light or camera first.",
+   "obeyed_where": "qa/deliverable-plan.json,pipeline/scripts/exit_panel.py,qa/exit-panel-log.json,pipeline/scripts/plan_status.py,projects/PRJ-2026-002_c001-house/04_visualization/audit-2026-09-01-project-overview.md",
+   "obeyed_assert": [
+    {
+     "file": "qa/deliverable-plan.json",
+     "pattern": "\"id\": \"P2r-34\"",
+     "why": "ข้อ 1 ของ D ต้องเป็นแถวในแผนที่ next_work พิมพ์ ไม่ใช่ประโยคในรายงาน — audit ครั้งที่ 08-22 และ 08-25 กลายเป็นกฎแล้วไม่กลายเป็นรอบ"
+    },
+    {
+     "file": "qa/deliverable-plan.json",
+     "pattern": "\"blocked_by\": \"ORD-2026-09-01-direction-after-audit\"",
+     "why": "'หยุด' ต้องอ่านได้จากสถานะแถว — งานเครื่องมือและรอบเตียงที่ 'พัก' โดยไม่มีสถานะคือคิวที่จะถูกหยิบกลับมาในรอบถัดไป"
+    },
+    {
+     "file": "pipeline/scripts/exit_panel.py",
+     "pattern": "^def record\\(",
+     "why": "แผงหลังทุกเฟรมเต็มต้องเป็นคำสั่งเดียว — exit test ที่ประกอบมือคือ exit test ที่รัน 0 ครั้งใน 91 รอบ"
+    },
+    {
+     "file": "pipeline/scripts/plan_status.py",
+     "pattern": "lines \\+= panel_lines\\(\\)",
+     "why": "ตัวนับ 'เฟรมเต็มที่ยังไม่ผ่านแผง' ต้องพิมพ์ตอนเปิด session ไม่งั้นข้อ 4 คือ R13 อีกแถว"
+    },
+    {
+     "file": "pipeline/scripts/plan_status.py",
+     "pattern": "REVIEW_FLOOR_DAYS = 7",
+     "why": "'review เฉพาะตอนปิดเฟส' ต้องอยู่ใน trigger ไม่ใช่ในความตั้งใจ — 94 review/91 รอบคือ trigger เดิมทำงานตามที่เขียน"
+    }
+   ],
+   "closure_verdicts": [
+    {
+     "at": "2026-09-02",
+     "frame": "pipeline/output/room_bedroom_suite_eye_p2r93b.png",
+     "panel": "qa/exit-panel-log.json (3 judges, blind, ours among 4 delivered frames)",
+     "scores": [
+      74,
+      73,
+      71
+     ],
+     "mean": 72.7,
+     "ranks": [
+      "2/5",
+      "3/5",
+      "2/5"
+     ],
+     "sendable": [
+      "sendable-after-minor-fixes",
+      "sendable-after-minor-fixes",
+      "sendable-after-minor-fixes"
+     ],
+     "judge_files": [
+      "panel_p2r93b/j1/ANSWER.json",
+      "panel_p2r93b/j2/ANSWER.json",
+      "panel_p2r93b/j3/ANSWER.json"
+     ],
+     "camera_in_top3": "0/3",
+     "light_from_nowhere_in_top3": "0/3",
+     "covers": "item 1 of his D list (P2r-34, camera + daylight key) ONLY"
+    }
+   ],
+   "note": "แถวนี้เป็น VISUAL: ปิดด้วย closure_verdicts จากแผงตาเห็น (fresh-context, blind) บนเฟรมที่รอบ P2r-34 ผลิต หรือคำพี่บนเฟรม. สิ่งที่วันนี้ทำแล้ว: audit record, แถวในแผน (review #95), exit_panel.py + log + ตัวนับ, review floor. สิ่งที่ยังไม่ทำ: เฟรม. ข้อความ 'AFTER EVERY COMMIT THAT CLOSES WORK, review the plan' ใน CLAUDE.md ขัดกับ floor ใหม่ — แก้ในคอมมิตถัดไปที่ CLAUDE.md ว่าง (pane อื่นถือ diff 22 บรรทัดอยู่ตอนนี้) || 2026-09-02: ITEM 1 OF FOUR IS CARRIED OUT AND RECORDED. p2r93b's panel meets P2r-34's clause literally (mean 72.7 > 56.3, p95/p5 6.03, camera 0/3, light 0/3) and the trend across four recorded panels is the real evidence: camera named 3/3 -> 3/3 -> 1/3 -> 0/3, light 3/3 -> 0/3 -> 0/3 -> 0/3. Item 3 (R10 on the wardrobe, P2r-36) is answered as D-191: KEEP, because 'no doors' is HIS call of 2026-07-16 from his own reference image and R13/D-072 is exactly the precedent against a builder overruling that; what is wrong is the CONTENTS, which is item 2's job. THE ROW STAYS not-obeyed: item 2 (palette/story, P2r-35) and item 4's standing panel are not done, and his sentence was about the WHOLE work, not one round. Two things the round produced that he should know: the bed is measurably too wide for this room at our own clearance standard (D-190, and I had wrongly refuted that critique last round using the critic's number instead of our vault's), and the exit panel's absolute mean cannot close anything (D-189, the fixed peer frames drift 41 points)."
+  }
+ ]
+}

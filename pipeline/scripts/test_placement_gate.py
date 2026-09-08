@@ -398,6 +398,664 @@ def test_confirmed_facing_rejects_non_cardinal_typo():
     assert G.confirmed_facing(bed, [{"name": "bed", "facing": "N"}]) == "N"   # a real cardinal matches
 
 
+# ---- rot-aware ledger (non-cardinal facings, e.g. angled terrace chairs) --------------
+def test_confirmed_rot_cardinal_facing_letter():
+    for letter, rot in (("S", 0), ("E", 90), ("N", 180), ("W", 270)):
+        assert G.confirmed_rot({"name": "x"}, [{"name": "x", "facing": letter}]) == rot, letter
+
+
+def test_confirmed_rot_numeric_non_cardinal():
+    # the tub chairs the cardinal ledger could NOT express (rot 12 / 335)
+    assert G.confirmed_rot({"name": "c", "w": 680, "d": 640}, [{"name": "c", "rot": 12}]) == 12
+    assert G.confirmed_rot({"name": "c", "w": 680, "d": 640}, [{"name": "c", "rot": 335}]) == 335
+
+
+def test_confirmed_rot_rounds_and_wraps():
+    assert G.confirmed_rot({"name": "c"}, [{"name": "c", "rot": 359.6}]) == 0      # rounds -> 360 -> 0
+    assert G.confirmed_rot({"name": "c"}, [{"name": "c", "rot": -25}]) == 335      # wraps
+    assert G.confirmed_rot({"name": "c"}, [{"name": "c", "rot": 11.7}]) == 12      # rounds to nearest deg
+
+
+def test_confirmed_rot_numeric_beats_facing_letter():
+    assert G.confirmed_rot({"name": "c"}, [{"name": "c", "facing": "S", "rot": 12}]) == 12
+
+
+def test_confirmed_rot_malformed_rot_falls_back_to_facing():
+    assert G.confirmed_rot({"name": "c"}, [{"name": "c", "facing": "E", "rot": "oops"}]) == 90
+    # ...and with no usable facing either -> None (nothing applied)
+    assert G.confirmed_rot({"name": "c"}, [{"name": "c", "rot": "oops"}]) is None
+
+
+def test_confirmed_rot_typo_facing_no_rot_is_none():
+    for bad in ("south", "n", "N ", 180, "", None):
+        assert G.confirmed_rot({"name": "c"}, [{"name": "c", "facing": bad}]) is None, bad
+
+
+def test_confirmed_rot_size_guard():
+    # a stale entry sized for a stool must NOT re-orient a big chair that reused the name
+    assert G.confirmed_rot({"name": "c", "w": 680, "d": 640},
+                           [{"name": "c", "rot": 12, "w": 300, "d": 300}]) is None
+
+
+def test_confirmed_rot_typo_then_correction_not_shadowed():
+    # the owner signs a TYPO, then APPENDS the valid correction with the same name+size. confirmed_rot
+    # must scan PAST the unusable first entry to the correction (mirrors confirmed_facing), else the
+    # signature is silently dropped in BOTH the gate and the generator — the regression the ledger exists
+    # to catch. Covers both a bad facing letter and a malformed numeric rot as the shadowing entry.
+    piece = {"name": "bed", "w": 2000, "d": 1800}
+    assert G.confirmed_rot(piece, [{"name": "bed", "facing": "bogus", "w": 2000, "d": 1800},
+                                   {"name": "bed", "facing": "N", "w": 2000, "d": 1800}]) == 180
+    assert G.confirmed_rot(piece, [{"name": "bed", "rot": "junk", "w": 2000, "d": 1800},
+                                   {"name": "bed", "rot": 335, "w": 2000, "d": 1800}]) == 335
+    # generator + gate both honour the correction (single source): resolve_rot applies it, and a build
+    # that contradicts the correction is raised rather than silently dropped.
+    conf = [{"name": "bed", "facing": "bogus", "w": 2000, "d": 1800},
+            {"name": "bed", "facing": "N", "w": 2000, "d": 1800}]
+    assert G.resolve_rot("bed", 0, 2000, 1800, conf) == (180, "owner-signed")
+    built_S = {"x": 0, "y": 0, "w": 2000, "d": 1800, "kind": "bed", "rot": 0, "name": "bed"}
+    flags = G.facing_flags([built_S], [], confirmed=conf)
+    assert len(flags) == 1 and flags[0]["verdict"] == "contradicts_signed", flags
+    # ...and no matching entry yields a usable rot -> None (unchanged)
+    assert G.confirmed_rot(piece, [{"name": "bed", "facing": "bogus", "w": 2000, "d": 1800},
+                                   {"name": "bed", "rot": "junk", "w": 2000, "d": 1800}]) is None
+
+
+def test_facing_flags_signed_backstop_survives_missing_facing_reader():
+    # the owner-signed contradiction backstop is pure rot arithmetic (confirmed_rot/_norm_rot) and MUST
+    # NOT be disabled when facing_reader is unimportable — only the geometric strip-read + cardinal-letter
+    # labels depend on it. Simulate the missing module (sys.modules[name]=None -> import raises).
+    import sys
+    signed = [{"name": "bed", "facing": "N", "w": 2000, "d": 2100}]   # N(180) vs built 0(S)
+    bed = {"x": 0, "y": 0, "w": 2000, "d": 2100, "kind": "bed", "rot": 0, "name": "bed"}
+    saved = sys.modules.get("facing_reader")
+    sys.modules["facing_reader"] = None
+    try:
+        flags = G.facing_flags([bed], [], confirmed=signed)
+        assert len(flags) == 1 and flags[0]["verdict"] == "contradicts_signed", flags
+        assert flags[0]["read"] == "rot180" and flags[0]["claimed"] == "rot0", flags  # labels degrade to deg
+        # a MATCHING sign still suppresses without FR
+        ok = dict(bed, rot=180)
+        assert G.facing_flags([ok], [], confirmed=signed) == []
+    finally:
+        if saved is not None:
+            sys.modules["facing_reader"] = saved
+        else:
+            del sys.modules["facing_reader"]
+
+
+def test_resolve_rot_no_ledger_is_handrot():
+    assert G.resolve_rot("c", 90, 680, 640, []) == (90, None)
+    assert G.resolve_rot("c", 90, 680, 640, None) == (90, None)
+
+
+def test_resolve_rot_signed_overrides_incl_non_cardinal():
+    assert G.resolve_rot("c", 90, 680, 640, [{"name": "c", "facing": "W"}]) == (270, "owner-signed")
+    assert G.resolve_rot("c", 12, 680, 640, [{"name": "c", "rot": 335}]) == (335, "owner-signed")
+
+
+def test_resolve_rot_agreeing_sign_still_tagged():
+    assert G.resolve_rot("c", 12, 680, 640, [{"name": "c", "rot": 12}]) == (12, "owner-signed")
+
+
+def test_facing_flags_non_cardinal_sign_suppressed_when_built_matches():
+    # an angled armchair built at rot 12 with an owner sign of rot 12 -> no flag (adjudicated)
+    chair = {"x": 0, "y": 0, "w": 680, "d": 640, "kind": "armchair", "rot": 12, "name": "tub L"}
+    signed = [{"name": "tub L", "rot": 12, "w": 680, "d": 640}]
+    assert G.facing_flags([chair], [], confirmed=signed) == []
+    # DISCRIMINATOR: prove the suppression is because the SIGNED branch ran, not because empty fsegs
+    # mask everything for a facing kind. The SAME piece with a CONTRADICTING sign must raise; if a
+    # regression made the sign silently stop matching (confirmed_rot -> None), this would fall through
+    # to the empty-fsegs geometric read and wrongly return [] -> this assertion catches that.
+    contra = [{"name": "tub L", "rot": 90, "w": 680, "d": 640}]
+    f = G.facing_flags([chair], [], confirmed=contra)
+    assert len(f) == 1 and f[0]["verdict"] == "contradicts_signed", f
+
+
+def test_facing_flags_non_cardinal_contradiction_raised():
+    # built at rot 12 but the owner signed rot 335 -> contradicts_signed (rot-space), read shows the deg
+    chair = {"x": 0, "y": 0, "w": 680, "d": 640, "kind": "armchair", "rot": 12, "name": "tub L"}
+    signed = [{"name": "tub L", "rot": 335, "w": 680, "d": 640}]
+    flags = G.facing_flags([chair], [], confirmed=signed)
+    assert len(flags) == 1 and flags[0]["verdict"] == "contradicts_signed", flags
+    assert flags[0]["claimed"] == "rot12" and flags[0]["read"] == "rot335", flags
+
+
+def test_facing_flags_malformed_built_rot_never_suppresses_a_sign():
+    # a MALFORMED built rot (null/garbage) must NOT be coerced to 0(=S) and silently 'match' an S sign.
+    # A garbage orientation cannot be shown to agree with the owner's sign -> contradicts_signed.
+    signed_S = [{"name": "bed", "facing": "S", "w": 2000, "d": 2100}]
+    for bad in (None, "oops"):
+        bed = {"x": 0, "y": 0, "w": 2000, "d": 2100, "kind": "bed", "rot": bad, "name": "bed"}
+        flags = G.facing_flags([bed], [], confirmed=signed_S)
+        assert len(flags) == 1 and flags[0]["verdict"] == "contradicts_signed", (bad, flags)
+        assert flags[0]["claimed"] is None, (bad, flags)   # honest: the built rot is unreadable
+    # a genuine rot 0 STILL suppresses on an S sign (the legit case is unaffected)
+    ok = {"x": 0, "y": 0, "w": 2000, "d": 2100, "kind": "bed", "rot": 0, "name": "bed"}
+    assert G.facing_flags([ok], [], confirmed=signed_S) == []
+
+
+def test_facing_flags_signed_NON_facing_kind_is_verified():
+    # the generator applies a sign to ANY kind, so the gate must verify ANY kind. A signed side_table
+    # (NOT a _FACING_KIND) whose built rot contradicts the sign must be flagged, not silently skipped.
+    tbl = {"x": 0, "y": 0, "w": 400, "d": 600, "kind": "side_table", "rot": 0, "name": "console"}
+    signed = [{"name": "console", "facing": "E", "w": 400, "d": 600}]   # E(90) vs built 0(S)
+    flags = G.facing_flags([tbl], [], confirmed=signed)
+    assert len(flags) == 1 and flags[0]["verdict"] == "contradicts_signed", flags
+    # ...and when the sign matches the build, it is adjudicated (suppressed)
+    tbl_ok = dict(tbl, rot=90)
+    assert G.facing_flags([tbl_ok], [], confirmed=signed) == []
+    # an UNSIGNED non-facing kind is still ignored (no geometric strip read for it)
+    assert G.facing_flags([dict(tbl, name="unsigned")], []) == []
+
+
+# ---- reconcile_confirmed (orphan detection: the silent-detachment backstop) -----------
+def test_reconcile_all_matched():
+    pieces = [{"name": "chair L", "kind": "armchair", "w": 680, "d": 640, "rot": 8},
+              {"name": "chair R", "kind": "armchair", "w": 660, "d": 640, "rot": 332}]
+    confirmed = [{"name": "chair L", "rot": 8, "w": 680, "d": 640},
+                 {"name": "chair R", "rot": 332, "w": 660, "d": 640}]
+    matched, orphaned = G.reconcile_confirmed(pieces, confirmed)
+    assert len(matched) == 2 and orphaned == [], (matched, orphaned)
+
+
+def test_reconcile_rename_orphans_the_sign():
+    # the owner signed 'chair L' but the generator renamed the piece -> the sign binds to nothing
+    pieces = [{"name": "lounge chair (renamed)", "kind": "armchair", "w": 680, "d": 640, "rot": 8}]
+    confirmed = [{"name": "chair L", "rot": 8, "w": 680, "d": 640}]
+    matched, orphaned = G.reconcile_confirmed(pieces, confirmed)
+    assert matched == [] and len(orphaned) == 1 and orphaned[0]["name"] == "chair L", (matched, orphaned)
+
+
+def test_reconcile_size_edit_orphans_the_sign():
+    # same name, but the piece was resized beyond tol -> the size guard detaches the stale sign
+    pieces = [{"name": "chair L", "kind": "armchair", "w": 300, "d": 300, "rot": 8}]
+    confirmed = [{"name": "chair L", "rot": 8, "w": 680, "d": 640}]
+    _matched, orphaned = G.reconcile_confirmed(pieces, confirmed)
+    assert len(orphaned) == 1, orphaned
+
+
+def test_reconcile_sizeless_sign_matches_on_name():
+    # a cardinal sign carrying no w/d must NOT false-orphan (the size guard is a no-op) -> name match
+    pieces = [{"name": "sofa", "kind": "sofa", "w": 1000, "d": 2200, "rot": 90}]
+    confirmed = [{"name": "sofa", "facing": "W"}]
+    matched, orphaned = G.reconcile_confirmed(pieces, confirmed)
+    assert len(matched) == 1 and orphaned == [], (matched, orphaned)
+
+
+def test_reconcile_empty_and_garbage_safe():
+    assert G.reconcile_confirmed([], []) == ([], [])
+    assert G.reconcile_confirmed([{"name": "x", "w": 1, "d": 1}], None) == ([], [])
+    m, o = G.reconcile_confirmed([{"name": "x", "w": 1, "d": 1}], ["oops", {"name": "x"}])  # non-dict skipped
+    assert len(m) == 1 and o == [], (m, o)
+
+
+# ---- confirmed_kind: the identity ledger (mirrors confirmed_rot; shared-matcher law) ----
+def test_confirmed_kind_matches_by_name():
+    assert G.confirmed_kind({"name": "หีบ", "w": 800, "d": 800},
+                            [{"name": "หีบ", "kind": "bench"}]) == "bench"
+    assert G.confirmed_kind({"name": "other", "w": 800, "d": 800},
+                            [{"name": "หีบ", "kind": "bench"}]) is None
+
+
+def test_confirmed_kind_size_guard_rejects_reused_name():
+    # a stale sign sized for a stool must NOT re-identify a big cabinet that reused the name
+    assert G.confirmed_kind({"name": "c", "w": 2000, "d": 600},
+                            [{"name": "c", "kind": "stool", "w": 300, "d": 300}]) is None
+    # a sizeless entry still matches (cheap paste — stub pre-fills w/d but hand entries may not)
+    assert G.confirmed_kind({"name": "c", "w": 2000, "d": 600},
+                            [{"name": "c", "kind": "cabinet"}]) == "cabinet"
+
+
+def test_confirmed_kind_last_valid_entry_wins():
+    # APPEND-a-correction workflow: the owner pastes a corrected stub without deleting the old
+    # one; the LATER valid entry must win (the shadowing hole this slice closes).
+    conf = [{"name": "x", "kind": "cabinet", "w": 800, "d": 800},
+            {"name": "x", "kind": "tv_console", "w": 800, "d": 800}]
+    assert G.confirmed_kind({"name": "x", "w": 800, "d": 800}, conf) == "tv_console"
+
+
+def test_confirmed_kind_malformed_entries_skipped_not_shadowing():
+    piece = {"name": "x", "w": 800, "d": 800}
+    # malformed FIRST: the correction is still honoured
+    assert G.confirmed_kind(piece, [{"name": "x", "kind": ""},
+                                    {"name": "x", "kind": "sofa"}]) == "sofa"
+    # malformed LAST: must NOT erase the earlier valid sign (last-USABLE-wins, not last-entry)
+    assert G.confirmed_kind(piece, [{"name": "x", "kind": "sofa"},
+                                    {"name": "x", "kind": None}]) == "sofa"
+    assert G.confirmed_kind(piece, [{"name": "x", "kind": 42}]) is None
+
+
+def test_confirmed_rot_last_valid_entry_wins():
+    # the SAME ordering semantic pinned on the rot matchers in the SAME change: gate, generator
+    # and the legacy cardinal accessor must all agree on 'what did the owner sign LAST'.
+    piece = {"name": "bed", "w": 2000, "d": 1800}
+    assert G.confirmed_rot(piece, [{"name": "bed", "rot": 90, "w": 2000, "d": 1800},
+                                   {"name": "bed", "rot": 270, "w": 2000, "d": 1800}]) == 270
+    assert G.confirmed_facing(piece, [{"name": "bed", "facing": "E"},
+                                      {"name": "bed", "facing": "W"}]) == "W"
+    # a trailing MALFORMED entry does not erase the earlier valid sign
+    assert G.confirmed_rot(piece, [{"name": "bed", "rot": 90, "w": 2000, "d": 1800},
+                                   {"name": "bed", "rot": "junk", "w": 2000, "d": 1800}]) == 90
+
+
+def test_rot_and_kind_payloads_are_independent():
+    piece = {"name": "x", "w": 800, "d": 800}
+    both = [{"name": "x", "rot": 90, "kind": "sofa"}]
+    assert G.confirmed_rot(piece, both) == 90
+    assert G.confirmed_kind(piece, both) == "sofa"
+    # a kind-only sign is NOT a rot sign, and vice versa
+    assert G.confirmed_rot(piece, [{"name": "x", "kind": "sofa"}]) is None
+    assert G.confirmed_kind(piece, [{"name": "x", "rot": 90}]) is None
+
+
+def test_resolve_kind_no_ledger_and_override():
+    assert G.resolve_kind("x", "cabinet", 800, 800, []) == ("cabinet", None)
+    assert G.resolve_kind("x", "cabinet", 800, 800, None) == ("cabinet", None)
+    assert G.resolve_kind("x", "cabinet", 800, 800,
+                          [{"name": "x", "kind": "tv_console"}]) == ("tv_console", "owner-signed")
+
+
+def test_resolve_kind_agreeing_sign_still_tagged():
+    # provenance even when the sign equals the hand read (mirrors resolve_rot :383-386)
+    assert G.resolve_kind("x", "sofa", 800, 800,
+                          [{"name": "x", "kind": "sofa"}]) == ("sofa", "owner-signed")
+
+
+def test_kind_flags_suppress_and_contradict():
+    it = {"name": "x", "kind": "tv_console", "x": 0, "y": 0, "w": 800, "d": 800}
+    assert G.kind_flags([it], [{"name": "x", "kind": "tv_console"}]) == []   # adjudicated
+    f = G.kind_flags([it], [{"name": "x", "kind": "wardrobe"}])
+    assert len(f) == 1 and f[0]["verdict"] == "contradicts_signed_kind", f
+    assert f[0]["claimed"] == "tv_console" and f[0]["read"] == "wardrobe", f
+    assert G.kind_flags([it], []) == [] and G.kind_flags([it], None) == []
+
+
+def test_kind_flags_missing_built_kind_never_suppresses():
+    # a piece that LOST its kind (hand edit) can never be shown to match -> flagged, not silenced
+    it = {"name": "x", "x": 0, "y": 0, "w": 800, "d": 800}
+    f = G.kind_flags([it], [{"name": "x", "kind": "sofa"}])
+    assert len(f) == 1 and f[0]["verdict"] == "contradicts_signed_kind", f
+
+
+def test_entry_is_inert_classification():
+    assert G.entry_is_inert({"name": "x", "w": 1, "d": 1})                       # no payload
+    assert G.entry_is_inert({"name": "x", "rot": "junk", "facing": "bogus", "kind": ""})
+    assert not G.entry_is_inert({"name": "x", "rot": 8})
+    assert not G.entry_is_inert({"name": "x", "facing": "W"})
+    assert not G.entry_is_inert({"name": "x", "kind": "bench"})
+    assert not G.entry_is_inert({"name": "x", "zone": "below_grade"})            # a zone sign is LIVE
+    assert G.entry_is_inert({"name": "x", "zone": "outdoor"})                    # ...but a typo isn't
+    assert G.entry_is_inert("not-a-dict") and G.entry_is_inert(None)
+
+
+# ---- owner-signed ZONE (indoor / outdoor_same_floor / below_grade) --------------------
+def test_norm_zone_accepts_only_known_classes():
+    for z in ("indoor", "outdoor_same_floor", "below_grade"):
+        assert G._norm_zone(z) == z
+    for bad in ("outdoor", "south", "terrace", "", "  ", 180, None, ["below_grade"]):
+        assert G._norm_zone(bad) is None
+
+
+def test_zone_to_flags_mapping_and_silence():
+    assert G.zone_to_flags("indoor") == (True, True)
+    assert G.zone_to_flags("outdoor_same_floor") == (False, True)
+    assert G.zone_to_flags("below_grade") == (False, False)
+    assert G.zone_to_flags("junk") == (True, True)        # silence/unknown = ordinary this-floor-indoor
+    assert G.zone_to_flags(None) == (True, True)
+
+
+def test_confirmed_zone_name_join_last_usable_wins():
+    piece = {"name": "chairL", "w": 680, "d": 640}
+    conf = [{"name": "chairL", "w": 680, "d": 640, "zone": "indoor"},
+            {"name": "chairL", "w": 680, "d": 640, "zone": "below_grade"}]   # appended correction
+    assert G.confirmed_zone(piece, conf) == "below_grade"
+    # a trailing TYPO must not erase the earlier valid sign
+    conf2 = conf[:1] + [{"name": "chairL", "w": 680, "d": 640, "zone": "outdoor"}]
+    assert G.confirmed_zone(piece, conf2) == "indoor"
+
+
+def test_confirmed_zone_size_guard_and_name_lane_isolation():
+    piece = {"name": "chairL", "w": 680, "d": 640}
+    # size mismatch (>20%) rejects a reused name
+    assert G.confirmed_zone(piece, [{"name": "chairL", "w": 2000, "d": 1800, "zone": "below_grade"}]) is None
+    # a GEO entry (no name) is invisible to the name lane
+    assert G.confirmed_zone({"name": None}, [{"x": 1, "y": 1, "w": 1, "d": 1, "zone": "below_grade"}]) is None
+
+
+def test_confirmed_zone_cluster_geo_join_nearest_wins_and_ignores_named():
+    tree = {"x": 6344, "y": -830, "w": 924, "d": 846, "curve": True}
+    conf = [{"x": 6350, "y": -820, "w": 920, "d": 840, "curve": True, "zone": "below_grade"},
+            {"name": "chairL", "w": 680, "d": 640, "zone": "indoor"}]         # named -> geo lane ignores
+    assert G.confirmed_zone_cluster(tree, conf) == "below_grade"
+    # a far cluster does not bind
+    assert G.confirmed_zone_cluster({"x": 0, "y": 5000, "w": 924, "d": 846, "curve": True}, conf) is None
+
+
+def test_confirmed_facade_signed_true_false_and_line():
+    # signed True + a line -> the owner's facade line
+    conf = [{"room": "sitting_room", "facade": True, "c": 200.0, "span": [5750, 10650],
+             "by": "peat 2026-07-07"}]
+    assert G.confirmed_facade("sitting_room", conf) == {"facade": True, "c": 200.0, "span": [5750, 10650]}
+    # signed False -> the kill-switch (this room has NO glazed facade)
+    assert G.confirmed_facade("sitting_room", [{"room": "sitting_room", "facade": False,
+                                                "by": "peat 2026-07-07"}]) == {"facade": False, "c": None, "span": None}
+    # a wildcard room matches; last usable wins (append-a-correction)
+    conf2 = conf + [{"room": "*", "facade": False, "by": "peat 2026-07-07"}]
+    assert G.confirmed_facade("sitting_room", conf2)["facade"] is False
+
+
+def test_confirmed_facade_inert_until_signed():
+    # a pasted-but-unsigned stub (by still OWNER-CONFIRM-PENDING) is machine-INERT -> None, so it
+    # can never flip corroboration; mirrors merge_carried's unsigned-stub refusal.
+    stub = [{"room": "sitting_room", "facade": True, "c": 99, "span": [5750, 10650],
+             "by": "OWNER-CONFIRM-PENDING (unsigned template; confirmed_facade refuses ...)"}]
+    assert G.confirmed_facade("sitting_room", stub) is None
+    # a non-bool facade value is not a decision; a different room does not match
+    assert G.confirmed_facade("sitting_room", [{"room": "sitting_room", "facade": "yes", "by": "p"}]) is None
+    assert G.confirmed_facade("sitting_room", [{"room": "kitchen", "facade": True, "by": "p"}]) is None
+
+
+def test_reconcile_rooms_ignores_nameless_facade_and_geo_signs():
+    # the facing/kind piece-signature backstop must NOT orphan a room-scoped facade sign or a geo-
+    # scoped zone sign (they carry no name -> not piece signatures). Orphaning them = a spurious hard
+    # FAIL that would block the build on a LEGITIMATE owner facade sign (the whole durable happy path).
+    loose = [{"name": "chairL", "w": 680, "d": 640, "kind": "armchair"}]
+    room_loose = [("sitting_room", loose)]
+    facade_sign = {"room": "sitting_room", "facade": False, "by": "peat 2026-07-07"}
+    geo_zone_sign = {"x": 6344, "y": -830, "w": 924, "d": 846, "zone": "below_grade", "by": "peat"}
+    unsigned_stub = {"room": "", "facade": None, "by": "OWNER-CONFIRM-PENDING (...)"}
+    named_sign = {"name": "chairL", "room": "sitting_room", "w": 680, "d": 640, "rot": 90}
+    matched, orphaned = G.reconcile_rooms(room_loose,
+                                          [facade_sign, geo_zone_sign, unsigned_stub, named_sign])
+    assert orphaned == []                              # no nameless sign is orphaned -> no spurious FAIL
+    assert named_sign in matched                       # the real piece signature still reconciles
+    # and a GENUINELY detached NAMED sign still orphans (backstop intact)
+    _m, orphaned2 = G.reconcile_rooms(room_loose, [{"name": "ghost", "room": "sitting_room", "rot": 90}])
+    assert len(orphaned2) == 1
+
+
+def test_resolve_zone_override_and_byte_identical():
+    conf = [{"name": "c", "w": 680, "d": 640, "zone": "below_grade"}]
+    assert G.resolve_zone("c", "indoor", 680, 640, conf) == ("below_grade", "owner-signed")
+    assert G.resolve_zone("c", "indoor", 680, 640, conf) != ("indoor", None)
+    assert G.resolve_zone("c", "indoor", 680, 640, []) == ("indoor", None)      # no ledger: unchanged
+    assert G.resolve_zone("c", "indoor", 680, 640, None) == ("indoor", None)
+
+
+def test_zone_flags_contradiction_and_suppression():
+    conf = [{"name": "c", "w": 680, "d": 640, "zone": "below_grade"}]
+    # machine/proposal says indoor but owner signed below_grade -> contradiction (silence can't silence)
+    flags = G.zone_flags([{"name": "c", "kind": "armchair", "w": 680, "d": 640}], {"c": "indoor"}, conf)
+    assert [f["verdict"] for f in flags] == ["contradicts_signed_zone"]
+    # proposal agrees with the sign -> suppressed (adjudicated)
+    assert G.zone_flags([{"name": "c", "kind": "armchair", "w": 680, "d": 640}],
+                        {"c": "below_grade"}, conf) == []
+    # a built zone on the piece itself is honoured over the proposal
+    assert G.zone_flags([{"name": "c", "kind": "armchair", "w": 680, "d": 640, "zone": "below_grade"}],
+                        {}, conf) == []
+
+
+def test_reconcile_zone_two_lane_orphans():
+    conf = [{"name": "namedPiece", "w": 100, "d": 100, "zone": "indoor"},     # NAME lane
+            {"x": 6344, "y": -830, "w": 924, "d": 846, "curve": True, "zone": "below_grade"},  # GEO lane
+            {"name": "z", "rot": 8}]                                          # not a zone entry -> ignored
+    tree = {"x": 6344, "y": -830, "w": 924, "d": 846, "curve": True}
+    # both bind
+    m, no, go = G.reconcile_zone([{"name": "namedPiece", "w": 100, "d": 100}], [tree], conf)
+    assert (len(m), len(no), len(go)) == (2, 0, 0)
+    # name orphan (no matching piece) -> hard-error lane; geo still binds
+    m, no, go = G.reconcile_zone([{"name": "other", "w": 100, "d": 100}], [tree], conf)
+    assert (len(m), len(no), len(go)) == (1, 1, 0) and no[0]["name"] == "namedPiece"
+    # geo orphan (tree no longer surfaces) -> REVIEW lane; name still binds
+    m, no, go = G.reconcile_zone([{"name": "namedPiece", "w": 100, "d": 100}], [], conf)
+    assert (len(m), len(no), len(go)) == (1, 0, 1)
+
+
+def test_reconcile_zone_builtin_present_matches_not_orphan():
+    # a NAME-scoped zone sign on a PRESENT builtin/fixture must MATCH (the zone pass classifies
+    # built-ins too) — reconcile is fed loose+fixed, so a real builtin sign never hard-FAILs as detached.
+    conf = [{"name": "BF13 shelf", "w": 300, "d": 4100, "zone": "indoor"}]
+    m, no, go = G.reconcile_zone([{"name": "BF13 shelf", "w": 300, "d": 4100}], [], conf)
+    assert (len(m), len(no), len(go)) == (1, 0, 0)
+
+
+def test_reconcile_zone_empty_name_routes_to_geo_lane_not_fail():
+    # an empty-string 'name' on a GEO annotation must NOT route to the NAME lane (where a stray ''
+    # would hard-FAIL as a detached signature); it enters the geo lane and binds by geometry.
+    tree = {"x": 6344, "y": -830, "w": 924, "d": 846, "curve": True}
+    conf = [{"name": "", "x": 6344, "y": -830, "w": 924, "d": 846, "curve": True, "zone": "below_grade"}]
+    m, no, go = G.reconcile_zone([{"name": "chairL", "w": 680, "d": 640}], [tree], conf)
+    assert (len(m), len(no), len(go)) == (1, 0, 0)         # geo-matched, NOT a name-orphan FAIL
+    # and the geo accessor reads it (whitespace name also normalises away)
+    assert G.confirmed_zone_cluster(tree, [{"name": "  ", "x": 6344, "y": -830, "w": 924, "d": 846,
+                                            "curve": True, "zone": "below_grade"}]) == "below_grade"
+
+
+# ---- overlay freshness + gate-side signature reconcile (marker hardening) -------------
+import json as _json
+import os as _os
+import shutil as _shutil
+import sys as _sys
+import tempfile as _tempfile
+import types as _types
+
+
+def _tmpd():
+    return _tempfile.mkdtemp(prefix="gate-hardening-")
+
+
+def test_overlay_inputs_matches_only_the_convention_prefix():
+    d = _tmpd()
+    try:
+        for n in ("review-read-vs-sheet.md", "review-read-vs-sheet_full.png",
+                  "review-read-vs-sheet_master_bedroom.png",
+                  "review-terrace-aim.png", "scene-graph.master_bedroom.json"):
+            open(_os.path.join(d, n), "w").write("x")
+        got = [_os.path.basename(p) for p in G.overlay_inputs(d)]
+        # '.' sorts before '_', so the .md leads; ad-hoc review-*.png must NOT appear
+        assert got == ["review-read-vs-sheet.md", "review-read-vs-sheet_full.png",
+                       "review-read-vs-sheet_master_bedroom.png"], got
+    finally:
+        _shutil.rmtree(d, ignore_errors=True)
+
+
+def test_overlay_inputs_empty_when_absent():
+    d = _tmpd()
+    try:
+        assert G.overlay_inputs(d) == []
+    finally:
+        _shutil.rmtree(d, ignore_errors=True)
+
+
+def test_overlay_required_union_semantics():
+    # present-and-matching or absent-in-both is the only pass; union catches BOTH directions
+    d = _tmpd()
+    try:
+        p_now = _os.path.join(d, "review-read-vs-sheet_full.png")
+        open(p_now, "w").write("png")
+        marker_inputs = {"review-read-vs-sheet.md": "deadbeef",      # recorded, since DELETED
+                         "scene-graph.sitting_room.json": "cafe"}    # non-overlay: ignored
+        req = G.overlay_required(d, marker_inputs)
+        assert set(req) == {"review-read-vs-sheet.md", "review-read-vs-sheet_full.png"}, req
+        # the deleted-but-recorded name resolves to a MISSING path in man_dir -> build hash=None
+        # -> refuse (mutant pin: returning only currently-present files silently passes deletion)
+        assert req["review-read-vs-sheet.md"] == _os.path.join(d, "review-read-vs-sheet.md")
+        assert not _os.path.exists(req["review-read-vs-sheet.md"])
+        assert _os.path.exists(req["review-read-vs-sheet_full.png"])
+        # absent-in-both stays quiet
+        assert set(G.overlay_required(d, {})) == {"review-read-vs-sheet_full.png"}
+        assert G.overlay_required(d, None)  # None marker_inputs tolerated
+    finally:
+        _shutil.rmtree(d, ignore_errors=True)
+
+
+_TUB = {"name": "tub-left", "w": 680, "d": 640}
+
+
+def test_reconcile_rooms_room_scoped_sign_binds_in_its_room():
+    sign = {"room": "sitting_room", "name": "tub-left", "rot": 8, "w": 680, "d": 640}
+    m, o = G.reconcile_rooms([("sitting_room", [dict(_TUB)]), ("master_bedroom", [])], [sign])
+    assert m == [sign] and o == [], (m, o)
+
+
+def test_reconcile_rooms_cross_room_name_match_orphans():
+    # a room-scoped sign sees ONLY its room's pool: a same-name piece in ANOTHER room must NOT
+    # satisfy it (mutant pin: pooling the union for room-scoped entries)
+    sign = {"room": "master_bedroom", "name": "tub-left", "rot": 8, "w": 680, "d": 640}
+    m, o = G.reconcile_rooms([("sitting_room", [dict(_TUB)]), ("master_bedroom", [])], [sign])
+    assert m == [] and o == [sign], (m, o)
+
+
+def test_reconcile_rooms_star_sign_is_not_false_orphaned():
+    # '*' sees the UNION: a piece present in only ONE room still satisfies it
+    sign = {"room": "*", "name": "tub-left", "rot": 8, "w": 680, "d": 640}
+    m, o = G.reconcile_rooms([("sitting_room", [dict(_TUB)]), ("master_bedroom", [])], [sign])
+    assert m == [sign] and o == [], (m, o)
+
+
+def test_reconcile_rooms_unknown_room_always_orphans():
+    # a typo'd/missing room checks an EMPTY pool even when a name+size piece exists somewhere
+    # (mutant pin: falling back to the union for unknown rooms silently passes the typo)
+    sign = {"room": "siting_room", "name": "tub-left", "rot": 8, "w": 680, "d": 640}
+    m, o = G.reconcile_rooms([("sitting_room", [dict(_TUB)])], [sign])
+    assert m == [] and o == [sign], (m, o)
+    m2, o2 = G.reconcile_rooms([("sitting_room", [dict(_TUB)])],
+                               [{"name": "tub-left", "rot": 8, "w": 680, "d": 640}])  # no room key
+    assert m2 == [] and len(o2) == 1, (m2, o2)
+
+
+def test_reconcile_rooms_garbage_and_empty_safe():
+    assert G.reconcile_rooms([], []) == ([], [])
+    m, o = G.reconcile_rooms([("a", [dict(_TUB)])], ["oops", None, 3])
+    assert m == [] and o == [], (m, o)
+    assert G.reconcile_rooms([("a", [dict(_TUB)])], None) == ([], [])
+
+
+def test_write_marker_binds_overlay_hashes():
+    d = _tmpd()
+    try:
+        tgt = _os.path.join(d, "floor2_v4-manifest.json")
+        open(tgt, "w").write("{}")
+        ov = _os.path.join(d, "review-read-vs-sheet_full.png")
+        open(ov, "wb").write(b"pngbytes")
+        G._write_marker(tgt, "PASS", [], [tgt, ov])
+        mk = _json.load(open(_os.path.join(d, "placement-gate.json"), encoding="utf-8"))
+        assert mk["inputs"]["review-read-vs-sheet_full.png"] == G._sha1(ov)
+        assert mk["inputs"]["floor2_v4-manifest.json"] == G._sha1(tgt)
+    finally:
+        _shutil.rmtree(d, ignore_errors=True)
+
+
+def test_write_marker_signature_reconcile_honest_default():
+    # omitted -> {'checked': False} = UNREPORTED. Mutant pin: defaulting to a zero-orphan claim
+    # ({'checked': True, 'orphaned_names': []}) would let the single-scene lane silently claim a
+    # reconcile that never ran.
+    d = _tmpd()
+    try:
+        tgt = _os.path.join(d, "t.json")
+        open(tgt, "w").write("{}")
+        G._write_marker(tgt, "PASS", [], [tgt])
+        mk = _json.load(open(_os.path.join(d, "placement-gate.json"), encoding="utf-8"))
+        assert mk["signature_reconcile"] == {"checked": False}, mk["signature_reconcile"]
+    finally:
+        _shutil.rmtree(d, ignore_errors=True)
+
+
+def test_write_marker_signature_reconcile_recorded():
+    d = _tmpd()
+    try:
+        tgt = _os.path.join(d, "t.json")
+        open(tgt, "w").write("{}")
+        sig = {"checked": True, "matched": 2, "orphaned_names": ["x"]}
+        G._write_marker(tgt, "FAIL", [], [tgt], None, sig)
+        mk = _json.load(open(_os.path.join(d, "placement-gate.json"), encoding="utf-8"))
+        assert mk["signature_reconcile"] == sig
+        assert mk["verdict"] == "FAIL"
+    finally:
+        _shutil.rmtree(d, ignore_errors=True)
+
+
+def test_run_malformed_ledger_reports_unchecked_never_zero_orphans():
+    # HONESTY PIN: a manifest gated with an UNREADABLE placement-review.json must record
+    # signature_reconcile = {'checked': False, note}, never the defaulted zero-orphan claim
+    # that reconciling the except-branch confirmed_all=[] would produce. plan_cluster is
+    # stubbed in sys.modules BEFORE run() (its import is lazy, placement_gate.py:613), so no
+    # PDF/fitz/scipy is touched.
+    d = _tmpd()
+    old_pc = _sys.modules.get("plan_cluster")
+    try:
+        spec = {"room": {"type": "r1", "outline_mm": [[0, 0], [3000, 0], [3000, 3000], [0, 3000]]},
+                "items": []}
+        sp = _os.path.join(d, "scene-graph.r1.json")
+        _json.dump(spec, open(sp, "w", encoding="utf-8"))
+        tgt = _os.path.join(d, "man.json")
+        _json.dump({"furnish": [{"id": "r1", "spec": sp}]}, open(tgt, "w", encoding="utf-8"))
+        open(_os.path.join(d, "placement-review.json"), "w").write("{not json")   # MALFORMED
+        fake = _types.ModuleType("plan_cluster")
+        fake.extract_clusters = lambda *a, **k: {"items": [], "fsegs": [], "dropped": [],
+                                                 "ink": None, "zone": (0, 0, 1, 1),
+                                                 "res": 1.0, "W": 1, "H": 1}
+        fake.SCALE, fake.OX, fake.OY = 26.45, 171.2, 596.5
+        _sys.modules["plan_cluster"] = fake
+        G.run("dummy.pdf", tgt)
+        mk = _json.load(open(_os.path.join(d, "placement-gate.json"), encoding="utf-8"))
+        sig = mk["signature_reconcile"]
+        assert sig["checked"] is False and "malformed" in sig.get("note", ""), sig
+        assert "orphaned_names" not in sig, sig    # never a defaulted zero-orphan claim
+    finally:
+        if old_pc is None:
+            _sys.modules.pop("plan_cluster", None)
+        else:
+            _sys.modules["plan_cluster"] = old_pc
+        _shutil.rmtree(d, ignore_errors=True)
+
+
+# ---- scene_zone_decision: PURE bpy-free scene-layer directive (owner-signed zone -> place/skip) ----
+# The build_room / build_floor loops import this to exclude an owner-signed below_grade piece from the
+# floor-2 scene. It reads the STAMPED zone_source, NOT the ledger (the scene layer stays ledger-free,
+# exactly as it consumes resolved it['rot']/it['kind']). TWO-LAYER LAW lives here: only 'owner-signed' acts.
+def test_scene_zone_decision_below_grade_signed_skips():
+    d = G.scene_zone_decision({"name": "x", "zone": "below_grade", "zone_source": "owner-signed"})
+    assert d["action"] == "skip", d
+    assert G.zone_to_flags("below_grade") == (False, False)     # the skip depends on this FROZEN mapping
+
+
+def test_scene_zone_decision_indoor_places_outdoor_places():
+    # indoor AND outdoor_same_floor both have floor flag True -> both PLACE. outdoor is a real same-
+    # elevation floor-2 piece (just outside the glass); only below_grade (floor False) is non-placement.
+    assert G.scene_zone_decision({"zone": "indoor", "zone_source": "owner-signed"})["action"] == "place"
+    assert G.scene_zone_decision({"zone": "outdoor_same_floor", "zone_source": "owner-signed"})["action"] == "place"
+    # a caller may OPT IN to relocate a below_grade piece to a ground z (future terrain-aware build)
+    d = G.scene_zone_decision({"zone": "below_grade", "zone_source": "owner-signed"}, below_grade_z_mm=-3000)
+    assert d["action"] == "relocate_z" and d["z_mm"] == -3000, d
+
+
+def test_scene_zone_decision_unsigned_always_places_two_layer_law():
+    # TWO-LAYER LAW: only an OWNER signature may remove a piece. An advisory zone with no zone_source
+    # (or a machine-advisory source) must NEVER skip — else a machine proposal silently deletes a piece.
+    assert G.scene_zone_decision({"name": "x"})["action"] == "place"
+    assert G.scene_zone_decision({"name": "x", "zone": "below_grade"})["action"] == "place"
+    assert G.scene_zone_decision({"name": "x", "zone": "below_grade",
+                                  "zone_source": "machine-advisory"})["action"] == "place"
+    assert G.scene_zone_decision("not-a-dict")["action"] == "place"       # a malformed item never crashes/skips
+
+
+def test_reconcile_zone_name_orphan_hardfail_geo_orphan_review():
+    pieces = [{"name": "sofa", "w": 1000, "d": 800}]
+    clusters = [{"id": 1, "x": 6000, "y": -800, "w": 600, "d": 600, "curve": True, "area_m2": 0.36}]
+    confirmed = [
+        {"name": "sofa", "zone": "below_grade", "w": 1000, "d": 800},                       # name lane -> matched
+        {"name": "ghost", "zone": "below_grade", "w": 1000, "d": 800},                      # name lane -> orphan (hard-fail)
+        {"zone": "below_grade", "x": 6000, "y": -800, "w": 600, "d": 600, "curve": True},   # geo lane  -> matched
+        {"zone": "below_grade", "x": 99999, "y": 99999, "w": 600, "d": 600, "curve": True}, # geo lane  -> review orphan
+        {"name": "sofa", "rot": 90, "w": 1000, "d": 800},                                   # no zone   -> ignored
+    ]
+    matched, name_orph, geo_orph = G.reconcile_zone(pieces, clusters, confirmed)
+    assert [e["name"] for e in name_orph] == ["ghost"], name_orph          # detached NAME sign -> hard-fail lane
+    assert len(geo_orph) == 1 and geo_orph[0]["x"] == 99999, geo_orph      # unmatched GEO blob -> REVIEW lane
+    assert len(matched) == 2, matched                                      # bound name + bound geo; rot-only ignored
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     passed = 0

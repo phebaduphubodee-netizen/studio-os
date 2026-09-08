@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """upscale.py — deliverable upscaler (closes the 'final = native-res, upscaler
+
+CLI-ONLY: run by hand on a candidate deliverable frame (Stage-07 native-res gap disclosure) — triage 2026-08-25.
 unwired' disclosure from PRJ-2026-002 Stage 07).
 
 Hybrid renders come back from the image model at native ~1-2 MP; client

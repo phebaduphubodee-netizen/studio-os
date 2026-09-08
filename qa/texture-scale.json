@@ -1,0 +1,161 @@
+{
+ "_what": "TEXTURE SCALE AS ROWS. One row per place a cached texture is mapped onto geometry: which photograph, which surface wears it, the world size of one repeat, and whether that size is the one the publisher declares or a signed departure from it. Consumed by pipeline/scripts/texture_scale.py, which is called from rule_gate.check_room() and BLOCKS the render.",
+ "_law": [
+  "R8: scale is ASSERTED on every ingest, never assumed. The mesh side has had asset_scale.py since 2026-08-01; this is the same law on the texture side.",
+  "The DECLARED size comes from the publisher and is stored beside the maps as <slug>.scale.json. Nothing here may retype it — the sidecar is re-derivable from the API and self-checks against its own dimensions_mm.",
+  "A departure from the declared size is LEGAL and must be SIGNED: an axis, a ratio, and a why. What is refused is a bare literal that reads like an assertion.",
+  "A tile has TWO axes. `tile_m` asserts U and `tile_v_m` asserts V; one number may not stand for both, because four of the sixteen cached sets are not square.",
+  "`assert` greps the actual code (borrowed from orders_check.obeyed_assert via decisions_check.in_effect_assert). A row that names a file which EXISTS still proves nothing about what the file DOES.",
+  "The unregistered backlog is a RATCHET and may only fall. No allowlist: sweep() walks the whole tree, and it is anchored on the SLUG as well as on keywords because anchoring on keywords alone missed an entire lane (see _sweep_note)."
+ ],
+ "_why_it_exists": "Measured 2026-08-24. One slug — wood_floor — was mapped at NINE distinct live tile values across this repo, every one a bare literal: 2.4 (room floor), 2.2 (walls), 3.2 (TRN-002), 1.192, 1.71 (TRN-001), plus four per-axis aspect variants. Poly Haven declares it 1699.9997 mm. The two presets that reproduce their metadata EXACTLY (oak_veneer_01 at 1.83, plastered_wall_03 at 4.0) are the two where somebody wrote the number down from the API and said so in a comment. The rows that were typed are the rows that are wrong. In the live DELIV-001 frame exactly one surface had an unasserted scale — the floor. The texture was measured (9 joints across the tile by three independent methods; pitch 188.889 mm, a stocked 189 mm engineered-oak width; 9 x 189 = 1701 mm against the declared 1699.99969, the metadata confirming itself to 0.06%), and at 2.4 m it rendered 266.67 mm boards — above the 150-250 mm that build_room's own PLANK_PITCH_MM comment calls the real range, and a width no supplier was found selling.",
+ "_sweep_note": "The first version of sweep() looked only for tile_m= / uv_scale= / grain_run_m= and reported 12 hits, which read like a clean census. It was missing the TRN lanes entirely: they carry the tile as the fifth element of a positional tuple (\"veneer_oak\": ((r,g,b), 0.60, 0.0, \"wood_floor\", 3.2)). Anchoring on the keyword IS an allowlist one level down — it names the syntax it applies to and exempts the next syntax. Adding a slug-anchored pattern took the census from 12 to 30. A handful of those are false positives (a default argument in a function signature, and one .get(slug, 0.8) in a test); the baseline counts them, because a ratchet that errs toward counting is honest and one that errs toward excusing is not.",
+ "sweep_baseline": 28,
+ "_baseline_note": "30 at birth, 29 after the floor's literal became a derivation (STY-7), 28 after the rug's did (D-132, 2026-08-24). It may only fall. A NEW mapping arrives through `sites` with its slug asserted, never as another literal.",
+ "sites": [
+  {
+   "id": "TS-001",
+   "slug": "laminate_floor_02",
+   "surface": "DELIV-001 room floor (the `floor` object, material m_floor_oak_engineered_floor_photo since the STY-3 signing 2026-08-25; was floor_pbr/wood_floor)",
+   "tile_m": 1.7,
+   "departure": null,
+   "why": "The publisher's own number, read through _tile_m_for at build time. Nothing here is typed: the code calls the door, the door reads the sidecar, and the sidecar is re-derivable from the API. SINCE 2026-08-25 (same day, review M1) the floor's UV TILE derives from _FLOOR_RENDER_SLUG — the slug of the preset that actually RENDERS — stashed at the material pick so the UV site cannot re-guess it. The earlier same-day wording had the texture from the preset slug while the tile still derived from FLOOR_SLUG: two sidecars agreeing at 1.700 m by coincidence, with the registry watching the wrong slug.",
+   "assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_ftile = _tile_m_for\\(globals\\(\\)\\.get\\(\"_FLOOR_RENDER_SLUG\", FLOOR_SLUG\\)\\)[\\s\\S]{0,900}?_planar_uv\\(obj, tile_m=_ftile\\)",
+     "why": "Proves the floor UV scale is DERIVED from the asserted size OF THE SLUG THAT RENDERS and then USED — both halves in one pattern, because either alone can be true while the floor renders at something else. Predecessor pattern read tile_m=2.4 for seven weeks; the rung has gone red on its own author twice (the --floor-tile-legacy leg, and this M1 rewrite)."
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "globals\\(\\)\\[\"_FLOOR_RENDER_SLUG\"\\] = \\(",
+     "why": "Proves the render slug is stashed where the material CHOICE is made. Deleting the stash makes the UV site fall back to FLOOR_SLUG silently — the exact coincidence-dependence this row exists to refuse."
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "def _tile_m_for\\(slug\\)",
+     "why": "Proves the door still exists. If the helper is deleted the assertion above could be satisfied by a local variable of the same name."
+    },
+    {
+     "file": "pipeline/scripts/material_presets.py",
+     "pattern": "\"oak_engineered_floor_photo\": dict\\([\\s\\S]{0,900}?slug=\"laminate_floor_02\"",
+     "why": "Proves the floor preset still wears the set whose 1.700 m the UV derivation above assumes. FLOOR_SLUG is still 'wood_floor' at build_room.py and _planar_uv derives the floor tile from IT, not from the selected preset — the two agree only because both sidecars declare 1.700 m. If either slug's declared size ever changes, the floor renders at the other one's scale and nothing else in this file would notice."
+    }
+   ],
+   "since": "2026-08-24"
+  },
+  {
+   "id": "TS-002",
+   "slug": "oak_veneer_01",
+   "surface": "millwork oak veneer (m_millwork_oak_veneer_photo) — 26.86% of the p2r64 frame, the single largest material in it; 37.57% with the whole m_mill_* family. Measured with value_probe.decode_ids (nearest palette level), which is the repo's own decoder — an earlier count that DISCARDED antialias pixels read 22.4% and was an undercount.",
+   "tile_m": 1.83,
+   "tile_v_m": 2.8,
+   "departure": {
+    "axis": "v",
+    "ratio": 1.5301,
+    "why": "ALONG grain the mapping stretches so one tile covers grain_run_m = 2.8 m, the full panel height. Real veneer leaves run continuous to the top of a panel; a fold inside one is a horizontal book-match joint no lay-up can carry, which is the p2r14 defect this stretch was introduced to remove. ACROSS grain (U) the mapping is exact."
+   },
+   "assert": [
+    {
+     "file": "pipeline/scripts/material_presets.py",
+     "pattern": "\"oak_veneer_photo\"[\\s\\S]{0,900}?slug=\"oak_veneer_01\", tile_m=1\\.83",
+     "why": "Proves the preset the millwork actually renders with still carries the metadata-asserted 1.83, not a retuned number."
+    },
+    {
+     "file": "pipeline/scripts/material_presets.py",
+     "pattern": "\"oak_veneer_photo\"[\\s\\S]{0,2900}?grain_run_m=2\\.8",
+     "why": "Proves the signed V departure is the one the code performs; if the stretch changes, the ratio recorded here goes stale silently. The 2900-char window is measured, not guessed: grain_run_m sits 2547 chars after the key and the NEXT preset starts at 3015, so the bound cannot leak into a neighbour and match the wrong preset."
+    }
+   ],
+   "since": "2026-08-24"
+  },
+  {
+   "id": "TS-003",
+   "slug": "plastered_wall_03",
+   "surface": "cool microcement millwork — drawer fronts and dressing-tower back (m_mill_cement). NOT the walls: the spec's surfaces.walls = 'cool_plaster' resolves to factory 'painted', a flat colour that wears no image.",
+   "tile_m": 4.0,
+   "departure": null,
+   "why": "Already asserted at its own ingest on 2026-08-12, in a comment that says so in words: 'dimensions [4000,4000] from the API (scale asserted, never assumed)'. Registered so the assertion has a reader.",
+   "assert": [
+    {
+     "file": "pipeline/scripts/material_presets.py",
+     "pattern": "slug=\"plastered_wall_03\", tile_m=4\\.0",
+     "why": "Proves the wall preset still maps at the declared 4.0 m tile."
+    }
+   ],
+   "since": "2026-08-24"
+  },
+  {
+   "id": "TS-004",
+   "slug": "oak_veneer_01",
+   "surface": "near-black stained backer behind the slat battens (m_mill_backing)",
+   "tile_m": 1.83,
+   "tile_v_m": 2.8,
+   "departure": {
+    "axis": "v",
+    "ratio": 1.5301,
+    "why": "Same photograph and the same along-grain stretch as TS-002; this preset reuses oak_veneer_01's measured constants verbatim because the physical backer IS the same substrate, dark-stained."
+   },
+   "assert": [
+    {
+     "file": "pipeline/scripts/material_presets.py",
+     "pattern": "\"matte_black_ply_photo\"[\\s\\S]{0,900}?slug=\"oak_veneer_01\", tile_m=1\\.83",
+     "why": "Proves the backer preset still carries the asserted 1.83 tile."
+    }
+   ],
+   "since": "2026-08-24"
+  },
+  {
+   "id": "TS-005",
+   "slug": "rough_linen",
+   "surface": "every soft good in the room — duvet, pillows, curtains, upholstery (the global _FABRIC_TILE_M, seven consumers in build_room)",
+   "tile_m": 0.85,
+   "departure": {
+    "axis": "both",
+    "ratio": [
+     3.1399,
+     3.1331
+    ],
+    "why": "DELIBERATE, and the reason was already in the code before this register existed. At the artefact's true 270.7 mm tile a 2k map is 0.132 mm per texel; build_room's own note at the _weave docstring measures this camera at about 1.4 mm per pixel, so the real weave renders an order of magnitude below one pixel and contributes nothing but sampling noise. 0.85 m puts the map in the cm-scale MESO band instead, which is what the constant's own comment says it is for ('cm-scale features, NOT thread pitch') and what the 2026-07-22 probe concluded when it killed thread-pitch maps. Two ratios rather than one because the artefact is 270.71 x 271.30 mm and the mapping is uniform."
+   },
+   "assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_FABRIC_TILE_M = 0\\.85",
+     "why": "Proves the departure recorded here is the one the build performs; if the constant is retuned the stated ratios go stale silently."
+    }
+   ],
+   "since": "2026-08-24"
+  },
+  {
+   "id": "TS-006",
+   "slug": "poly_wool_herringbone",
+   "surface": "the rug under the bed (rug_* material, RUG_SLUG) — 4.23% of the p2r64 frame, 4.41% with its binding",
+   "tile_m": 0.270079,
+   "tile_v_m": 0.2757,
+   "departure": null,
+   "why": "CARRIED OUT 2026-08-24, and the debt row's own restart condition was discharged first: the on-screen pitch was MEASURED before any number was retyped. Four independent reads of the rendered rug agree the tile was 1300.0 +/- 2.0 mm = u 4.813 / v 4.715 x life size — phase-locked forward-model NCC (1.29987/1.29948/1.30042), screen-space zero-shift Pearson (+0.5553 @ 1.29980), phase-blind ACF lattice (1.3000), and a named-feature ratio with no fitting at all (16.50 mm / 26.5 texels = 1.3019). MUST-CATCH control: the same code on the FLOOR of the same frame returns 2.40000 +/- 0.002 and correctly rejects 1.700, recovering a 188.90-188.97 mm plank against the sidecar's own 188.889. MUST-NOT-ACCUSE: shuffled +0.011, rug x wood +0.058, floor x herringbone +0.038, and the declared 0.270079 scores -0.002 on the OLD frame as it must. WHY LIFE SIZE RATHER THAN A COMPROMISE VALUE: the texture has two fundamentals, a 9.627 mm chevron (U) and a 3.4945 mm weft (V). At the declared tile and this rug's own measured depths (1.608/1.716/2.251 m, CoC 5.79/5.16/2.91 px) the chevron lands at 7.29/6.40/3.72 px with MTF ~+0.40 at every visible depth -- it survives the defocus disc -- while the weft falls to 2.69-3.77 px and is suppressed. A 3.5 mm wool weft at 1.7 m through this aperture IS below resolution in life: that is the correct outcome, not an artefact. No measurement supports an intermediate tile, and an intermediate tile would be a number changed to look productive. BOTH AXES, because the set is NOT square (270.0789 x 275.7000) and this law's own words forbid one number standing for two: declared_tile_v_m() and the _tile_v_m_for() door were built this round, since the registry has carried tile_v_m since birth while the READER side stopped at U. NOT YET JUDGED IN A RENDER: the A/B above is a forward model, not a rendered pair. The rendered A/B is owed and the owner overrules from it.",
+   "assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_rtile = _tile_m_for\\(RUG_SLUG\\)[\\s\\S]{0,400}?_planar_uv\\(obj, tile_m=_rtile, tile_v_m=_rtile_v\\)",
+     "why": "Proves the rug's UV scale is DERIVED from the asserted size on BOTH axes and then USED — both halves in one pattern, because either alone can be true while the rug renders at something else. This is the exact line that read a bare 1.3 for the whole lane."
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "def _tile_v_m_for\\(slug\\)",
+     "why": "Proves the V door still exists. Without it the assertion above could be satisfied by a local variable of the same name, which is how the U door was nearly bypassed at STY-7."
+    },
+    {
+     "file": "pipeline/scripts/texture_scale.py",
+     "pattern": "def declared_tile_v_m\\(slug, root=None\\)",
+     "why": "Proves the reader half of the two-axis law exists. The registry declared tile_v_m from birth and nothing could read it — a rule with no reader is a document."
+    }
+   ],
+   "since": "2026-08-24"
+  }
+ ],
+ "debt_baseline": 1,
+ "_debt_note": "R13's third state. One row today: the rug. It is not a loophole — a debt row prints its measured ratio into the render path on every gate run, carries a date so its age shows, names the builder action that clears it, and the class may only shrink. What it may never do is print as asserted.",
+ "_dead_sites": "NOT REGISTERED, AND THE REASON IS THE POINT. build_room.py carries two `_wall_uv(obj, tile_m=2.2)` calls that look like unasserted mappings of wood_floor at 1.2941x, and the first draft of this register listed them as a live defect. THEY ARE UNREACHABLE. Both sit under `if n.startswith(\"wall_0\")`, and the built scene of record holds 33 wall objects of which ZERO are named wall_0* (they are wall_1z, wall_2, wall_3*, wall_4, wall_5*, wall_s0_*, wall_s1_*). The second is additionally gated on `_wall_pbr`, which is False because surfaces.walls resolves to factory 'painted'. And the material the branch would append is built from surfaces.feature_wall = 'oak_veneer' = factory 'proc_wood', which drives itself from OBJECT coordinates and samples no UV at all. Three independent reasons no pixel wears that 2.2. They are left ALONE on purpose: correcting dead code and reporting it as a picture change is precisely the declarations-not-the-picture defect R11 exists to catch, and this register would have committed it in its own first draft. The sweep still counts them, which is correct — they are literals, and if the branch is ever revived they must come through `sites` first."
+}

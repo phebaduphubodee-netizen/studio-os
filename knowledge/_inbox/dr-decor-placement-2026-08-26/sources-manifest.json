@@ -1,0 +1,1407 @@
+{
+  "notebook_id": "adee1655-35f6-47c8-8c62-44d2577ac261",
+  "notebook_title": "DR: decor placement + styling composition grammar 2026-08-26",
+  "sources": [
+    {
+      "index": 1,
+      "id": "42645332-137b-43ea-9d1b-cd7c2691f576",
+      "title": "'It makes your living room feel more connected and comfortable' – the 4-inch seating rule is the trick interior designers have been using for years - Ideal House",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://ideal.house/ko/community/news/it-makes-your-living-room-feel-more-connected-and-comfortable-the-4-inch-seating-rule-is-the-trick-interior-designers-have-been-using-for-years",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 2,
+      "id": "4b4e9eb9-94f6-42f4-bff2-a25c5ced60ea",
+      "title": "10 Bookshelf Styling Ideas to Elevate Your Capital Region Home - Tip Top Furniture",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://tiptopfurniture.com/bookshelf-styling-ideas/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 3,
+      "id": "d8e9fc86-0196-4994-bc8c-df12ae868f3c",
+      "title": "10 Tips for Making Beautiful Vignettes - Westwood Gardens",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.westwoodgardens.com/blog/10-tips-for-making-beautiful-vignettes",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 4,
+      "id": "f6f19624-85a3-4cf8-8f34-93d406840d66",
+      "title": "14 Must-Have Elements for a Scandinavian Luxury Interior Design in Singapore",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.theinteriorlab.com.sg/14-must-have-elements-scandinavian-luxury-interior-design-singapore/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 5,
+      "id": "1b30f933-45a9-4e44-a92c-39741e04b02f",
+      "title": "14 Steps to a Perfectly Polished Bedroom - Houzz",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.houzz.com/magazine/14-steps-to-a-perfectly-polished-bedroom-stsetivw-vs~17855428",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 6,
+      "id": "0c28c4b4-8736-430f-9941-cd2060ff0ce1",
+      "title": "5 Interior Design Rules For Composition in 2026 (With Examples) - Scandic Living",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://scandicliving.com.au/interiors/5-interior-design-rules-for-composition-in-2026-with-examples/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 7,
+      "id": "a591a4f6-392d-49ae-b8f4-714344467c72",
+      "title": "A Neutral Mid Century Living Room Vignette - Emily Henderson",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://stylebyemilyhenderson.com/neutral-mid-century-living-room-vignette",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 8,
+      "id": "fbca3205-91a8-4445-99c0-aa48ab764fb9",
+      "title": "About Sophie Goineau | Luxury Interior Designer | Los Angeles",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.sophiegoineau.com/services",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 9,
+      "id": "b2e93128-2b67-4852-a4b2-280b322d39bc",
+      "title": "Airbnb Staging and Interior Design That Gets Bookings - MeltFlex",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.meltflexai.com/blog/airbnb-interior-design-rental-staging",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 10,
+      "id": "b62940e3-1934-4028-b09e-6df4b5ab8e57",
+      "title": "Architectural Compatibility | Quiet Luxury vs Tropical Modernism - Natalia Neverko Design",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.natalianeverko.com/architectural-compatibility-deciding-between-quiet-luxury-tropical-modernism-and-contemporary-coast/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 11,
+      "id": "ad9fe228-d2f9-4c7c-ad32-74047e43a146",
+      "title": "Area Rug Size Guide: How To Choose The Perfect Rug - DIY Playbook",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://thediyplaybook.com/tips-buying-right-size-rug/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 12,
+      "id": "8552fbb6-3846-444e-b540-cc13ddc0c3bc",
+      "title": "Area Rug Size and Placement Guide: Easy Rules for Every Room (+Printable)",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://southernhomeandhospitality.com/best-size-and-placement-for-area-rugs/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 13,
+      "id": "594160e5-1a1f-4c95-b13b-8add37e75206",
+      "title": "Asian Home Decor Ideas for Tranquil Interiors - About Wall Art",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://aboutwallart.com/blogs/news-articles-home-decor-inspiration/asian-home-decor-ideas-for-tranquil-nature-led-interiors",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 14,
+      "id": "0d5ab6dd-bf4f-4ef5-bdb1-b2aa590fcc05",
+      "title": "Asian-House-Design-Ideas - Create a modern, minimalist design with a lot of character - Homestyler",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.homestyler.com/design-ideas/Asian-House-Design-Ideas",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 15,
+      "id": "ed88cff6-c9f7-4da3-ace6-3e002583d831",
+      "title": "Baba Nyonya Design Inspiration & Ideas For Your Home | Signature Malaysia",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://signature.my/blog/2026/03/28/baba-nyonya-design-inspiration-ideas-for-your-home/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 16,
+      "id": "bd5ba87e-97b6-4da9-9eb8-882d0e7a9d7b",
+      "title": "Balinese Interior Design Style 2026: What Makes It Unique? - Bali Best Design",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://balibestdesign.com/balinese-interior-design-style-unique/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 17,
+      "id": "eadb74ce-78d4-4740-89d9-d46d155d4c04",
+      "title": "Bedroom Design Guide - Asian Paints Beautiful Homes",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.beautifulhomes.asianpaints.com/design-guide/bedroom.html",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 18,
+      "id": "ca45dfbb-1268-4689-9208-3a37d89c5b3d",
+      "title": "Bedroom Organization Ideas That'll Help You Sleep Easy - Ideal House",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://ideal.house/zh-CN/community/news/bedroom-organization-ideas-thatll-help-you-sleep-easy",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 19,
+      "id": "046c127d-30a1-42a9-ac9e-81cc9001f47a",
+      "title": "Bedroom Rug Ideas: Sizes, Placement & Styling Guide | Ruggable US",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://ruggable.com/blogs/bedroom-and-bedside-rug-ideas-for-cozy-comfort",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 20,
+      "id": "c64d5716-0e97-4df3-a30c-53b8b1b9851f",
+      "title": "Bedroom Rug Placement Guide: Sizes & Layouts - Atlanta Designer Rugs",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.atlantadesignerrugs.com/blogs/news-from-atlanta-designer-rugs/bedroom-rug-placement-guide",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 21,
+      "id": "de86d6af-50a0-4fc3-87b5-1f7d294f37ce",
+      "title": "Bedroom Rug Size Guide for Queen, King & Full Beds",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.rugncarpet.com/blogs/news/bedroom-rug-size-guide",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 22,
+      "id": "b4e7ddf4-9888-4fd1-995d-71cd2eb0fb7b",
+      "title": "Bedroom Staging Checklist: How to Stage a Bedroom to Sell - create design home",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://createdesignhome.com/professional-stagers-bedroom-checklist/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 23,
+      "id": "d8c079ea-04f0-4aca-9393-43a36ce4f7b0",
+      "title": "Bedroom Staging Ideas | thestylecast",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://thestylecast.com.au/bedroom-staging-ideas/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 24,
+      "id": "ed53ed98-4fe3-428a-8ed1-a032499e78da",
+      "title": "Bedroom Wall Art Placement: The Height, Size & Spacing Rules Designers Use",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://rossettiart.com/blogs/news/bedroom-wall-art-placement",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 25,
+      "id": "0283d7eb-b2d4-4378-8657-364b2bd9af02",
+      "title": "Bedroom rug placement rules: the principles interiors experts use - Homes and Gardens",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.homesandgardens.com/interior-design/bedroom-rug-placement-rules",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 26,
+      "id": "a1848558-197f-434a-9774-2702f9658dd3",
+      "title": "Book Club: Styled by Emily Henderson | The Indigo Lattice - WordPress.com",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://theindigolattice.wordpress.com/2017/04/30/book-club-styled-by-emily-henderson/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 27,
+      "id": "a6244716-b3cf-4ce5-bb5f-2f5f63550a83",
+      "title": "Canvas to Market: Exploring Art Trends and Effective Art Handling for Stagers in 2024 - Events - RESA - Real Estate Staging Association",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.realestatestagingassociation.com/content.aspx?page_id=4002&club_id=304550&item_id=2092965",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 28,
+      "id": "e279a9b2-37f0-4865-8a6a-c90abcf50755",
+      "title": "Coastal Interior Design Guide – Simple Tips for a Fresh Look",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://myd.com.sg/blog/transform-your-home-into-a-seaside-sanctuary-with-coastal-interior-design-2/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 29,
+      "id": "71c93de4-c954-4b36-bde2-7ef361e4f935",
+      "title": "Contemporary Modern Interior Design Singapore | 6AM Spaces",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.6amspaces.sg/contemporary-modern-interior-design/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 30,
+      "id": "eca43b16-be2c-4742-9b72-00486762637e",
+      "title": "Creating proportional spaces using the best Interior design rules - Interior105",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://interior105.co.uk/creating-proportional-spaces-using-the-best-interior-design-rules/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 31,
+      "id": "4cd855f5-646b-4b59-ac31-51cdf0fc5a44",
+      "title": "Custom Southeast Asia Furniture-China Quality Bespoke Wooden Furniture Maker & Supplier - INTERI FURNITURE",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.huihefurniture.com/southeast-asia-furniture.html",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 32,
+      "id": "f6787b68-7339-47f7-b01d-4420e870597b",
+      "title": "Decorative Books for Home Design - Target",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.target.com/s/decor+books",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 33,
+      "id": "9fbd98c7-314f-4574-b3bc-5c99c15a5d39",
+      "title": "Design in Odd Numbers: Mastering the 3-5-7 Rule - Sarah Jacquelyn Interiors",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.sarahjacquelyninteriors.com/blog/design-in-odd-numbers",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 34,
+      "id": "40614c89-1324-4e75-9b31-b8d5eb08a392",
+      "title": "Dining Chair Styles: A Guide for 2026",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.biltritefurniture.com/dining-chair-styles-3/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 35,
+      "id": "b042a16d-a761-4904-af9d-9bed3ba9ae0c",
+      "title": "East Meets West: A Modern Singaporean Interior Design Fusion with Oriental Flair",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.lemon8-app.com/@februarynest/7265937589830500865?region=sg",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 36,
+      "id": "21be4f3b-1433-4075-a51a-87090e139f85",
+      "title": "Elegant Home Fashion Portrait - Banana Prompts - BeBee",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://bebee.com/us/jobs/elegant-home-fashion-portrait-banana-prompts-home-ks--t7xk-793891841",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 37,
+      "id": "c7771dba-7f9f-4ea5-b4cc-ebe4442fb714",
+      "title": "Emily Henderson \"Style\" - March 2026 : r/diysnark - Reddit",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.reddit.com/r/diysnark/comments/1rhrggg/emily_henderson_style_march_2026/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 38,
+      "id": "2e962a3b-7092-4fae-ac27-d446e593e45c",
+      "title": "Farmhouse Guest Bedroom Update - New Bed And Dresser Alert - Emily Henderson",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://stylebyemilyhenderson.com/farmhouse-guest-bedroom-update",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 39,
+      "id": "916cd2a6-fe38-4338-bfbe-b1559989f1dc",
+      "title": "Home Staging Collaboration Membership Benefits - RESA - Real Estate Staging Association",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.realestatestagingassociation.com/handlers/celinks.ashx?id=58927",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 40,
+      "id": "452236f4-2416-456c-bb3f-9afc5c2d584b",
+      "title": "Home Staging Education | Home Staging Certifications - RESA - Real Estate Staging Association",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.realestatestagingassociation.com/handlers/celinks.ashx?id=105911",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 41,
+      "id": "46ad31da-d775-42f1-be6e-90114f149bb9",
+      "title": "Home Staging Miami | Luxury Design That Sells | All About the Wow",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://allaboutthewow.com/pages/home-staging-miami",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 42,
+      "id": "4bde1503-aae5-4cf4-b1c7-3be0f0715b7d",
+      "title": "Home Staging Portfolio Charlotte NC | Before & After - OnStyleLiving",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.onstyleliving.com/portfolio",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 43,
+      "id": "060172c3-8f29-41ee-82d2-5e148688d0ac",
+      "title": "How High to Hang Wall Art: The Ultimate Guide - Frametolia.",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://frametolia.com/blogs/news/how-high-to-hang-wall-art-the-ultimate-guide",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 44,
+      "id": "88fe5f86-084b-4cde-9431-8e52573cd92e",
+      "title": "How Stylists and Decorators Transform Spaces with Style and Substance",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://dig-interiordesign.com/style-and-substance-how-stylists-decorators-shape-our-spaces/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 45,
+      "id": "20b1dbde-0ca7-4bbc-ad45-86f1c07f496d",
+      "title": "How To Arrange Cushions Like A Pro",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.simplycushions.com.au/how-to-arrange-cushions-like-a-pro/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 46,
+      "id": "89d3c117-0dbf-439f-9bb2-ab11e5c6c7de",
+      "title": "How To Create A User Persona (with Free Template and Examples) - Xtensio",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://xtensio.com/how-to-create-a-persona/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 47,
+      "id": "ea66fc5e-760f-45d6-80cf-3d689333d50e",
+      "title": "How To Style Floating Shelves: Modern Wall Shelf Ideas for Every Room | CB2",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.cb2.com/modern-home-ideas/floating-shelf-ideas-modern-ways-to-decorate/1",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 48,
+      "id": "af4e1b01-df8a-40f6-86fe-df9b81ae6683",
+      "title": "How Virtual Home Staging Can Elevate Your Listings",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.ahs.com/home-matters/real-estate/how-virtual-home-staging-can-elevate-your-listings/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 49,
+      "id": "de5f468c-add4-4985-8ab1-e8cd66d5fa4e",
+      "title": "How to Position an Area Rug in a Bedroom Like a Pro - Aosom Canada",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.aosom.ca/blog-how-to-position-an-area-rug-in-a-bedroom-like-a-pro.html",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 50,
+      "id": "af4cdac1-fda8-4d1c-813c-9adc54ca29a8",
+      "title": "How to Properly Group Items Together to Decorate a Shelf - The Creek Line House -",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.creeklinehouse.com/how-to-properly-group-items-together-to-decorate-a-shelf/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 51,
+      "id": "90e72406-6b2a-42f2-ab7f-b5d797ac5de7",
+      "title": "How to create a persona: step-by-step guide with real examples - UXPressia",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://uxpressia.com/blog/how-to-create-persona-guide-examples",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 52,
+      "id": "08c3674d-2f83-4c00-b560-2779e5f5013d",
+      "title": "How to decorate your bedroom: A handy checklist | UK - Original Bed Company",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.obc-uk.net/blog/how-to-decorate-your-bedroom-checklist",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 53,
+      "id": "79e05ea9-f639-4717-bd27-58c790a8051a",
+      "title": "How to layer cushions and throws like an interior stylist - Swyft",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://swyfthome.com/blogs/lifestyle/how-to-layer-cushions-and-throws-like-an-interior-stylist",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 54,
+      "id": "4b123f73-69d3-4d5c-8c61-633cfe3c9b28",
+      "title": "Inspired Read: Styled the Book - Kristina Lynne",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.kristinalynne.ca/inspired-reads-styled-the-book/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 55,
+      "id": "91b7a4d9-0c2c-42ff-8ab5-6f263bfd8c3e",
+      "title": "Instagrammable styling how to - Sue Moore | Virtual Gold Dust",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.virtualgolddust.com/9-tips-for-instagrammable-style-spots/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 56,
+      "id": "1b2d8095-d219-47b2-a715-ecf75444e72c",
+      "title": "Interior Design vs. Interior Styling: What's the Difference—and Why It Matters for Visual Artists - D5 Render",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.d5render.com/posts/interior-design-vs-interior-styling",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 57,
+      "id": "58f1ec95-2830-4c7b-be7c-488016d0e416",
+      "title": "Interior Designer or Interior Stylist? That is the question. - EHG Home",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.ehghome.co.uk/ehglife/2020/10/15/designer-or-stylist-that-is-the-question",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 58,
+      "id": "a4fa4e7c-3bb6-4d10-9ebd-f873a1d3e2c1",
+      "title": "Interior Styling & Staging Services - Novaco Design",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.novacodesign.com/offering/styling",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 59,
+      "id": "25bd1b87-0f61-4059-b347-7f0d438e3b1d",
+      "title": "Interior Styling | DKT Interiors",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.dktinteriorsco.com/services/interior-styling",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 60,
+      "id": "4dcb5f08-3290-439d-9b51-aafc6609e3d2",
+      "title": "Interior Styling: The Art of Enhancing Spaces Beyond Design - architectureherald",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://architectureherald.com/post/interior-styling-the-art-of-enhancing-spaces-beyond-design",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 61,
+      "id": "78ffc3a7-e3fb-4f95-9b01-57ede8a15437",
+      "title": "Iron Man Inspired Home Staging Design Tips for a Narrative Driven Modern Look",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.sumptuoza.com/post/iron-man-inspired-home-staging-design-tips-for-a-narrative-driven-modern-look",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 62,
+      "id": "3db6fb72-2caf-40c2-bbfe-af05fa80ff5f",
+      "title": "Island Style Home Decor Tips for a Relaxed Tropical Look | Lili Alessandra",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://lilialessandra.com/blogs/sandras-blog/island-style-home-decor",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 63,
+      "id": "7d2c7b23-3c35-402a-908f-c8307d3276ce",
+      "title": "Luxury Home Staging in Las Vegas: What Actually Works - Nevada Real Estate Group",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.nevadarealestategroup.com/blog/luxury-home-staging-las-vegas-what-actually-works/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 64,
+      "id": "848e8780-5def-4780-8316-e4dfdd1ce702",
+      "title": "Luxury Rattan Furniture: Handcrafted in Bali | BaliSouk",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://balisouk.com/pages/luxury-rattan-furniture",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 65,
+      "id": "8f989da6-1881-4bcc-a335-de2ca6a07f8d",
+      "title": "Master Area Rug Placement in Your Bedroom: Your Ultimate Guide",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.millerwaldrop.com/area-rug-placement-in-bedroom/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 66,
+      "id": "f79c7914-785c-42e1-884c-acc26d51ae13",
+      "title": "Modern Peranakan Interior Design: A Singapore Style Guide",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.elumihome.com/blog/modern-peranakan-interior-design",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 67,
+      "id": "746ad86d-b9e0-4c43-9cc7-103381329819",
+      "title": "Narrative Driven Interior Design - DyeLot Interiors",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://dyelot.com/glossary/narrative-driven-interior-design/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 68,
+      "id": "f1ff3fd7-8352-4874-9f19-2c2757f76253",
+      "title": "Negative Space Interior Design: Create a Balanced, Functional Room - POVISON Furniture",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.povison.com/blog/decoration-ideas/negative-space-design.html",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 69,
+      "id": "f2b55dcd-838b-4d8c-ba31-ed6090bc5fdc",
+      "title": "One-of-a-Kind Interior Statements for Story-Driven Homes - Kevin Francis Design",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://kevinfrancisdesign.com/blogs/design-ideas/examples-of-one-of-a-kind-interior-statements",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 70,
+      "id": "2ecd84ac-88b2-48cb-8cb7-35379b3743c5",
+      "title": "Our story - SPACES AND STORIES",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://spacesandstories.com/our-story/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 71,
+      "id": "6f7cc33b-212f-4579-bb92-20657a3d028b",
+      "title": "Peranakan | Home & Decor Singapore",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.homeanddecor.com.sg/tag/peranakan",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 72,
+      "id": "b991130c-ae7a-4795-84ec-950ba0c438d3",
+      "title": "Personas for Design, Development, & Growth - Alexander Cowan",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.alexandercowan.com/tutorial-personas-problem-scenarios-user-stories/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 73,
+      "id": "759b0e6c-2efb-49a9-a35c-92f0d1c2bf4a",
+      "title": "Primary Bedroom Staging Guide: Create Your Luxury Retreat for Buyers",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://kimberleerealestate.com/blog/primary-bedroom-staging-guide-create-your-luxury-retreat-for-buyers",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 74,
+      "id": "8097a1e5-20ba-45dd-9dae-39fabb74620f",
+      "title": "Prop and Set styling - Style Department",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.styledepartment.co.uk/2014/09/03/prop-and-set-styling/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 75,
+      "id": "8ad4466f-dcd7-47a1-b487-d3be919194a5",
+      "title": "Props Designer - Musical Theater Guild - MIT Wiki Service",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://wikis.mit.edu/confluence/display/MTG/Props+Designer",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 76,
+      "id": "1519e4f7-2f48-43a2-9228-74c8269a7323",
+      "title": "Room Sets For Ecommerce Product Photography - The Complete Guide - Prodoto",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.prodoto.com/behind-prodoto/how-to-guides/room-set-interior-photography",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 77,
+      "id": "f358eb9a-e360-4d7d-8fd8-3bbf1ba22fe6",
+      "title": "Rug Placement: A Designer's Guide to Layout and Size | King Living",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.kingliving.com/blog/rug-placement-guide",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 78,
+      "id": "5aa3a769-232d-4503-bf3e-6c64399c484f",
+      "title": "Rug Size and Style Guide - The Citizenry",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.the-citizenry.com/pages/rug-size-and-style-guide",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 79,
+      "id": "0a91d84e-0a25-4fe5-8e3b-55a15491f1f4",
+      "title": "Rule of Odds Interior Design: Why Threes, Fives & Sevens Work - Tidbits & Twine",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.tidbitsandtwine.com/rule-of-odds-interior-design/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 80,
+      "id": "223a15f3-7b42-4f2c-ac06-e4d9a196d9bd",
+      "title": "Set Decor & Props | 1,800 Lots | 2-Days - ThreeSixty Asset Advisors",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://360assetadvisors.com/psw/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 81,
+      "id": "94bec35a-4ac5-4816-b399-78bf24f8e474",
+      "title": "Set Dressing 101: Why It's Important & How to Do It - Peerspace",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.peerspace.com/resources/set-dressing-101/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 82,
+      "id": "bc2ac3a9-e0ea-472c-b15f-36e9cc78f867",
+      "title": "Single-Frame Vignetting Correction for Post-Stitched-Tile Imaging Using VISTAmap - MDPI",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.mdpi.com/2079-4991/15/7/563",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 83,
+      "id": "a26c0a7d-5344-4924-9ae7-1c1acab71e12",
+      "title": "Sourced Furnishing and Accessory Composition Grammar for Photorealistic Residential Bedroom Renders in the Southeast Asian Context",
+      "type": "SourceType.MARKDOWN",
+      "url": null,
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:20:09"
+    },
+    {
+      "index": 84,
+      "id": "ad33699a-7925-412d-9722-0d68629e2545",
+      "title": "Sourced Furnishing and Accessory Composition Grammar for Photorealistic Residential Bedroom Renders in the Southeast Asian Context",
+      "type": "SourceType.MARKDOWN",
+      "url": null,
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 85,
+      "id": "d7fdda18-7e82-43ed-8e3f-51dc001e27b7",
+      "title": "Spring Home Refresh: Throw Pillows for Sofa - Z Gallerie",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://zgallerie.com/blogs/room-by-room/spring-home-refresh-throw-pillows-for-sofa-throws-that-instantly-transform-your-space",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 86,
+      "id": "d0f306c0-aa80-4afb-a401-d0e22220df7b",
+      "title": "Staging Studio - RESA",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.realestatestagingassociation.com/handlers/celinks.ashx?id=105909",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 87,
+      "id": "30d7fa03-1f5a-4ff3-96da-5db40e342bd4",
+      "title": "Straits Nanyang Peranakan Interior: Where Heritage Meets Modern Elegance",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://arkeedesignstudio.com/portfolio-item/transported-to-the-straits-nanyang-peranakan-interior-where-heritage-meets-modern-elegance/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 88,
+      "id": "4f0e0b9c-c2bb-49aa-b5c4-3c18ebe21468",
+      "title": "Styled: Secrets for Arranging Rooms, from Tabletops to Bookshelves - Goodreads",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.goodreads.com/en/book/show/25301238-styled",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 89,
+      "id": "4e120968-6af4-49e3-958c-26dc1cd74354",
+      "title": "Styling Like a Professional: The Details That Elevate a Room - Nordic Design Institute",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.nordicdesigninstitute.com/post/styling-like-a-professional-the-details-that-elevate-a-room",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 90,
+      "id": "89781107-a8e6-49be-a204-cb5cab1b41b4",
+      "title": "Tatler Homes Philippines – Volume 33, 2023 - Edgar B - PubHTML5",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://pubhtml5.com/yylvh/ntyp/Tatler_Homes_Philippines_%E2%80%93_Volume_33%2C_2023/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 91,
+      "id": "dcb86afa-c3f5-4a8d-a755-c4cff1a1b8bf",
+      "title": "The 3 Rules for Home Staging Props - The Decorologist",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://thedecorologist.com/the-3-rules-for-home-staging-props/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 92,
+      "id": "d648295c-3847-48b3-b643-ffb55de810a3",
+      "title": "The 6 Best Interior Design Books That the Experts Always Reference",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.domino.com/content/best-interior-design-books/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 93,
+      "id": "52cbfb56-100f-4d7f-bc1f-fe921d0a25e7",
+      "title": "The 60/40 Rule in Interior Design: Mastering the Art of Visual Harmony - Roomtodo",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://roomtodo.com/en/blog/6040-rule-interior-design-mastering-art-visual-harmony/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 94,
+      "id": "4bfbe36c-3d9d-4eac-9080-975b3f3c9f50",
+      "title": "The Art of Hanging Artwork at the Right Height - Decorating Den Interiors",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://decoratingden.com/blog/the-art-of-hanging-artwork-at-the-right-height/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 95,
+      "id": "9dd3d6e9-5fba-4ad1-b6d3-e8fa3fd9b7da",
+      "title": "The Art of Home Staging - Packimpex Smart Furnishing",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://smart-furnishing.com/the-art-of-home-staging/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 96,
+      "id": "06b1c82d-259c-4e9f-bd8f-728b4d0796b6",
+      "title": "The Art of Tropical Interior Design: Natural Materials, Warmth and Timeless Elegance",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://balisouk.com/blogs/infos/the-art-of-tropical-interior-design-natural-materials-warmth-and-timeless-elegance",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 97,
+      "id": "c9048afa-12db-4cc0-9b21-d26b432857d8",
+      "title": "The Evolution of Tropical Modern Interior Design: Beyond the Beach House",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.azuladesigns.com/post/tropical-modern-interior-design",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 98,
+      "id": "31b19f1f-2425-4dbf-8348-fa2813a0b75e",
+      "title": "The Main Rules of Decorating & Accessorizing - - Kylie M Interiors",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.kylieminteriors.ca/the-main-rules-and-guidelines-of-decorating-and-accessorizing/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 99,
+      "id": "593093c7-ebe9-4c9c-9549-41bf274b061c",
+      "title": "The Most Requested Home Staging Styles in 2026: What Buyers and Homeowners Really Want - ReimagineHome",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.reimaginehome.ai/blogs/most-requested-staging-styles-2026",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 100,
+      "id": "bf20e585-f3ad-46d3-91bf-784660343acb",
+      "title": "The Ultimate Area Rug Size and Placement Guide - Bed Bath & Beyond",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.bedbathandbeyond.com/guides/rugs/the-ultimate-area-rug-size-and-placement-guide",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 101,
+      "id": "bc166493-1f3d-44af-b1ae-7ac37aac64d0",
+      "title": "This Tropical Modernist Miami Home is at One With its Surroundings - Interior Design",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://interiordesign.net/projects/miami-home-strang-design-tropical-modernist/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 102,
+      "id": "00a7f1c7-6af6-4444-83fb-2addd159cac3",
+      "title": "Throw Blanket on Bed (+ Other Styling Ideas) - Living Spaces",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.livingspaces.com/inspiration/ideas-advice/decor-tips/throw-blanket-ideas-to-wrap-up-your-style",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 103,
+      "id": "45ec1dfe-d242-4508-8ecb-78f12742887c",
+      "title": "Top 10 Airbnb Interior Design Ideas That Impress Guests | Ark & Mason",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.arkandmason.com/top-10-airbnb-interior-design-ideas-that-impress-guests/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 104,
+      "id": "2c427fc9-a295-444a-89b5-20022c58116b",
+      "title": "Top Master Bedroom Design SG | Earth Interior Design Singapore",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.earthinterior.sg/resources/bedroom/master-bedroom-design-singapore",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 105,
+      "id": "b28a1eb3-ef1f-4cda-8bdd-f3f22bb5796d",
+      "title": "Top Throw Blanket Ideas to Elevate Your Home in 2026",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://thatblanket.co/blogs/news/throw-blanket-ideas",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 106,
+      "id": "100a197f-41ba-4c35-bd8f-b5622e049fa2",
+      "title": "Transform Your Rental Bedroom: 7 Wabi-Sabi Decorating Ideas | FlexiSpot",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.flexispot.com/spine-care-center/transform-your-rental-bedroom-7-wabi-sabi-decorating-ideas",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 107,
+      "id": "b6b735db-a0f7-48a1-a7f4-c49a5d163f91",
+      "title": "Transform Your Space with Modern Peranakan Interior Design: Heritage Meets Contemporary Style - Lemon8 App",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.lemon8-app.com/@loft.9designstudio/7483102580130808321?region=sg",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 108,
+      "id": "313d4e47-4337-47d9-bcba-42f89b9bef5b",
+      "title": "Tropical Modern Architecture | The Ultimate Curb Appeal",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://mikarchitecture.com/tropical-modern-architecture/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 109,
+      "id": "e8171b4b-f419-4c56-9786-5a892b4b5244",
+      "title": "Tropical Modern Harmony: A Room-by-Room Exploration of Relaxed Luxury Design - Bali Interior Design",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://graceinteriordesignbali.wordpress.com/2025/10/18/tropical-modern-harmony-a-room-by-room-exploration-of-relaxed-luxury-design/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 110,
+      "id": "b75f0111-a9b0-467c-899c-7329964d89e8",
+      "title": "Tropical Modernism Beyond Aesthetics: The Politics of Shade and Air | ArchDaily",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.archdaily.com/1041076/tropical-modernism-beyond-aesthetics-the-politics-of-shade-and-air",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 111,
+      "id": "c82be9c4-61bf-4e3f-ba99-5fd1742e2d46",
+      "title": "Tropical Modernism Interior Style Comeback + 5 Inspirational Houses",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.authenticinterior.com/interior-projects/tropical-modernism-interior-style-inspiration/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 112,
+      "id": "e2e8f88e-2c33-430e-b60a-a283e42f3e30",
+      "title": "Tropical Modernism in Architecture - Brickweavers",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.brickweavers.com/post/the-beauty-of-blending-modernism-with-tropical-styles",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 113,
+      "id": "8841f54b-488d-44f5-946f-984c07ffa315",
+      "title": "Tropical Modernism: Sun-Soaked and Sleek - Wood Mode",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.wood-mode.com/on-trend/tropical-modernism-sun-soaked-and-sleek/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 114,
+      "id": "5fa99ca0-ea3e-43a9-8de4-b386e5c143e2",
+      "title": "Tropical Modernism: Where It All Began - WATG",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.watg.com/tropical-modernism-where-it-all-began/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 115,
+      "id": "072fe173-e52d-48ea-8680-d8936b08f2f5",
+      "title": "Unlocking Home Style: My Experience with The Interior Design Handbook by Frida Ramstedt - Lemon8 App",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.lemon8-app.com/@meghan81898/7456183032475550251?region=us",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 116,
+      "id": "4a8f8669-681d-4596-91b2-578d790e2ce8",
+      "title": "Virtual Home Staging — Empty Homes | Virtual Staging Studio",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.virtualstaging.studio/virtual-home-staging",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 117,
+      "id": "2b5c3e0c-d0a6-4279-a992-12208b416b88",
+      "title": "Wall Art Size Guide: Every Placement, Every Space - Fy!",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.iamfy.co/blogs/inspiration/wall-art-size-guide-every-placement-every-space",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 118,
+      "id": "869ea7da-ec82-446e-a33c-7edb454b8be9",
+      "title": "What Is Indochine Style? Explore the Blend of Indochinese Heritage and Contemporary Interior Design - RED",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://iredyou.com/news/indochine-style/",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 119,
+      "id": "54d77bf1-d39c-4c9d-a710-de79e06e12d5",
+      "title": "What Size Rug Under King Size Bed (2026 Guide) - Atlanta Designer Rugs",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.atlantadesignerrugs.com/blogs/articles/what-size-rug-goes-under-a-king-size-bed",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 120,
+      "id": "56bbaa9d-4ca3-485b-a222-0976aa39c772",
+      "title": "What Size Rug for a King Bed? 8x10 vs 9x12 | Tabrizi Rugs",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://tabrizi.com/us/blog/what-rug-size-fits-under-a-king-bed",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 121,
+      "id": "6b940c51-1b8b-48d5-ac4e-e48b368f375b",
+      "title": "What is it and How To Create a Beautiful, Cohesive Home - Interior Style Host",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.interiorstylehost.com/blog/what-is-interior-styling",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 122,
+      "id": "1e77e86e-6d4f-43a3-a492-2069f674e98f",
+      "title": "What is the 2/3 Rule for Wall Art? Sizing Guide & Tips - MontCarta",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://montcarta.com/blogs/art-guide-inspiration/what-is-2-3-rule-wall-art",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 123,
+      "id": "3e6d69f4-176b-4769-97ce-7b29841a182b",
+      "title": "What is the 3-5-7 Rule in Decorating? - MontCarta",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://montcarta.com/blogs/art-guide-inspiration/3-5-7-rule-interior-decorating-guide",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 124,
+      "id": "4c809659-6c23-4440-8031-4b3722604fe3",
+      "title": "What to Hang Above Bed: Wall Art Size & Spacing Rules - Fab Art",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.fab-art.co/blogs/news/hanging-framed-art-above-bed-size-spacing-guide",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 125,
+      "id": "13fa8850-d64c-444a-b69a-2231d8229b0d",
+      "title": "Where Should a Bedroom Rug Be Placed?",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://therugmarket.ca/blogs/news/where-should-a-bedroom-rug-be-placed",
+      "status": "ready",
+      "status_id": 2,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 126,
+      "id": "d5fa823a-b9ce-41a8-b291-14e58f220162",
+      "title": "https://medium.com/@smallspaceminimalist20/5-minimalist-luxury-living-secrets-interior-designers-keep-to-themselves-5b7718282f35",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://medium.com/@smallspaceminimalist20/5-minimalist-luxury-living-secrets-interior-designers-keep-to-themselves-5b7718282f35",
+      "status": "error",
+      "status_id": 3,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 127,
+      "id": "0ff5ab97-8bf5-4de2-a859-0e3b5cff467d",
+      "title": "https://seoaudit.racknap.com/racknap-news/asian-room-decor-ideas-1764807163",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://seoaudit.racknap.com/racknap-news/asian-room-decor-ideas-1764807163",
+      "status": "error",
+      "status_id": 3,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 128,
+      "id": "270eca31-eb26-428c-9fd3-78cf812722d6",
+      "title": "https://stonegableblog.com/6-creative-ways-to-style-decorative-throws/",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://stonegableblog.com/6-creative-ways-to-style-decorative-throws/",
+      "status": "error",
+      "status_id": 3,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 129,
+      "id": "84d8324b-1c17-4930-9f60-85f91eb9dbd4",
+      "title": "https://stonegableblog.com/the-rule-of-3/",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://stonegableblog.com/the-rule-of-3/",
+      "status": "error",
+      "status_id": 3,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 130,
+      "id": "d9be1431-2195-4674-b830-2b68f1dbb55b",
+      "title": "https://www.arts.ac.uk/subjects/architecture-spatial-and-interior-design/short-courses/interior-styling/interior-styling-and-production-for-photo-shoots-short-course-chelsea",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.arts.ac.uk/subjects/architecture-spatial-and-interior-design/short-courses/interior-styling/interior-styling-and-production-for-photo-shoots-short-course-chelsea",
+      "status": "error",
+      "status_id": 3,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 131,
+      "id": "138221cc-d91d-4c59-8b82-0f9d195ee3a3",
+      "title": "https://www.carpentry.sg/2025/04/16/7-inspiring-modern-living-room-interior-design-idea-singapore/",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.carpentry.sg/2025/04/16/7-inspiring-modern-living-room-interior-design-idea-singapore/",
+      "status": "error",
+      "status_id": 3,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 132,
+      "id": "433c1f10-2724-492d-a188-453718369ce4",
+      "title": "https://www.designhotels.com/directions/destinations/tropical-modernism-around-the-world/",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.designhotels.com/directions/destinations/tropical-modernism-around-the-world/",
+      "status": "error",
+      "status_id": 3,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 133,
+      "id": "7280e576-d246-4612-af18-bc68dbdc3d6f",
+      "title": "https://www.dreamstime.com/photos-images/asian-inspired-bedroom-interior-design.html",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.dreamstime.com/photos-images/asian-inspired-bedroom-interior-design.html",
+      "status": "error",
+      "status_id": 3,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 134,
+      "id": "4eb17c73-21cf-4987-b3e3-98cc6d0e1c7b",
+      "title": "https://www.ernestarugs.com/custom-rug-size-guide",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.ernestarugs.com/custom-rug-size-guide",
+      "status": "error",
+      "status_id": 3,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 135,
+      "id": "a53e816a-40b3-44ae-95ab-5484f0a61f43",
+      "title": "https://www.realestatestagingassociation.com/",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.realestatestagingassociation.com/",
+      "status": "error",
+      "status_id": 3,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 136,
+      "id": "085b2e7e-0804-4781-9ab3-58a0bdb333d2",
+      "title": "https://www.realestatestagingassociation.com/join",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.realestatestagingassociation.com/join",
+      "status": "error",
+      "status_id": 3,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 137,
+      "id": "29948cee-06ed-4654-ad5e-1737ab3fff2e",
+      "title": "https://www.scribd.com/document/976074524/Interior-Styling-and-Photography",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.scribd.com/document/976074524/Interior-Styling-and-Photography",
+      "status": "error",
+      "status_id": 3,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 138,
+      "id": "17def774-043b-43a2-aff2-fc2b2f8e5075",
+      "title": "https://www.scribd.com/document/977210206/Engineering-Design1",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.scribd.com/document/977210206/Engineering-Design1",
+      "status": "error",
+      "status_id": 3,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 139,
+      "id": "141808fb-4323-427f-a641-090c294d930f",
+      "title": "https://www.sicotas.com/blogs/blogs-sicotas-brand-story/rug-bed-placement",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.sicotas.com/blogs/blogs-sicotas-brand-story/rug-bed-placement",
+      "status": "error",
+      "status_id": 3,
+      "created_at": "2026-08-26T09:19:34"
+    },
+    {
+      "index": 140,
+      "id": "d3a5ed25-1b68-41b0-857d-ea8bb03b55ec",
+      "title": "https://www.skillshare.com/en/classes/how-to-design-your-modern-home-a-room-by-room-guide/1674749109",
+      "type": "SourceType.WEB_PAGE",
+      "url": "https://www.skillshare.com/en/classes/how-to-design-your-modern-home-a-room-by-room-guide/1674749109",
+      "status": "error",
+      "status_id": 3,
+      "created_at": "2026-08-26T09:19:34"
+    }
+  ],
+  "count": 140
+}

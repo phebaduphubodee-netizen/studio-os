@@ -73,16 +73,20 @@ Two reading systems, used together. **FACING** comes from each piece's own symbo
    actual north arrow; read furniture facing from the symbol geometry (§A).
 2. **"Built-in vs loose furniture = lighter line/other colour" → FALSE.** The fixed/loose split
    is NOT reliably encoded by line weight or colour. Use **labels / the legend / built-in codes /
-   hatching** instead. (For this project: the **BF** codes ARE the built-in tag — a BF label =
+   hatching** instead. (On sheets that use them, a **BF** code IS the built-in tag — a BF label =
    built-in millwork.)
 3. **Window symbol specifics (sliding=3 lines, casement=arc) → UNCONFIRMED.** Only the DOOR swing
    arc is airtight; don't over-read window type without the sheet legend.
 
 ## E. Open gaps (still unsourced — flag, don't fabricate)
-- The **BF (built-in furniture) code scheme** used by Thai design-build firms (incl. this project's
-  RAAR sheet) — no public source documents it. Treat BF#### as *this firm's built-in millwork tag*
-  (code + the cm size in the label, e.g. `BF10.250x60x280CM` = item BF10, 2500×600×2800 mm) and,
-  where the meaning matters, **ASK the designer** rather than guess.
+- The **BF (built-in furniture) code scheme** used by Thai design-build firms — no public source
+  documents it, and it is not a national standard: each drawing office runs its own. Treat `BF##`
+  as *that firm's built-in millwork tag*, read the size from the label itself (the label carries
+  the cm dimensions inline, in the form `BF<nn>.<W>x<D>x<H>CM`), and where the meaning matters,
+  **ASK the designer** rather than guess.
+  (No worked example is given here on purpose: every real BF label we hold comes off a client's
+  sheet, and a client's furniture dimensions do not belong in the shared knowledge tier — see
+  `.claude/rules/client-privacy.md`. Live examples stay in `projects/<PRJ>/`.)
 - Single-vs-double vanity symbol, window type symbols, and material HATCH patterns (tile/wood/
   concrete/glass fills) were not authoritatively covered — get a graphic-standards hatch key.
 

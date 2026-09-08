@@ -1,0 +1,234 @@
+{
+ "written": "2026-09-01T21:31:20",
+ "blender": "C:\\Program Files\\Blender Foundation\\Blender 5.1\\blender.exe",
+ "controls": {
+  "export_bake": {
+   "control": "export-bake",
+   "pass": true,
+   "objects_checked": 5,
+   "objects_raised": 4,
+   "failed_objects": [],
+   "unmatched_objects": [],
+   "unpredictable": {
+    "clock-foot": "n-gons in base mesh (n not dumped)",
+    "clock-glass": "n-gons in base mesh (n not dumped)",
+    "clock-hand-01": "other face-multiplying modifiers: NODES",
+    "clock-hand-02": "other face-multiplying modifiers: NODES",
+    "clock-hand-03": "other face-multiplying modifiers: NODES",
+    "clock-hand-04": "other face-multiplying modifiers: NODES",
+    "clock-hand-05": "other face-multiplying modifiers: NODES",
+    "clock-inner": "n-gons in base mesh (n not dumped)",
+    "clock-metal-01": "n-gons in base mesh (n not dumped)",
+    "clock-ring-pole": "n-gons in base mesh (n not dumped)"
+   },
+   "total_polys": {
+    "native_base": 6763,
+    "legacy_glb": 49126,
+    "current_glb": 189670,
+    "ratio_current_over_legacy": 3.861
+   },
+   "rows": [
+    {
+     "object": "clock-case",
+     "levels": 1,
+     "render_levels": 2,
+     "base_polys": 368,
+     "viewport_tris": 2944,
+     "render_tris": 11776,
+     "legacy_tris": 2944,
+     "current_tris": 11776,
+     "legacy_ok": true,
+     "current_ok": true
+    },
+    {
+     "object": "clock-metal-top",
+     "levels": 1,
+     "render_levels": 2,
+     "base_polys": 1168,
+     "viewport_tris": 9344,
+     "render_tris": 37376,
+     "legacy_tris": 9344,
+     "current_tris": 37376,
+     "legacy_ok": true,
+     "current_ok": true
+    },
+    {
+     "object": "clock-plastic",
+     "levels": 1,
+     "render_levels": 2,
+     "base_polys": 192,
+     "viewport_tris": 1536,
+     "render_tris": 6144,
+     "legacy_tris": 1536,
+     "current_tris": 6144,
+     "legacy_ok": true,
+     "current_ok": true
+    },
+    {
+     "object": "clock-ring-01",
+     "levels": 1,
+     "render_levels": 2,
+     "base_polys": 1216,
+     "viewport_tris": 9472,
+     "render_tris": 37888,
+     "legacy_tris": 9472,
+     "current_tris": 37888,
+     "legacy_ok": true,
+     "current_ok": true
+    },
+    {
+     "object": "clock-ring-top",
+     "levels": 0,
+     "render_levels": 0,
+     "base_polys": 248,
+     "viewport_tris": 496,
+     "render_tris": 496,
+     "legacy_tris": 496,
+     "current_tris": 496,
+     "legacy_ok": true,
+     "current_ok": true
+    }
+   ],
+   "asset": "04a809ed-65dc-411d-9c56-d8877c040f8a",
+   "blend": "assets/shared/blenderkit/04a809ed-65dc-411d-9c56-d8877c040f8a\\04a809ed-65dc-411d-9c56-d8877c040f8a.orig.blend",
+   "legacy_export": {
+    "glb": "C:/Users/teza_/AppData/Local/Temp/claude/c--Users-teza--OneDrive-Desktop-PlingPeat/1091a883-6ddf-41d7-8597-3cd5262cab31/scratchpad/d11b-controls\\04a809ed-65dc-411d-9c56-d8877c040f8a.legacy.glb",
+    "bytes": 1178052,
+    "seconds": 3.1,
+    "stdout_line": null
+   },
+   "current_export": {
+    "glb": "C:/Users/teza_/AppData/Local/Temp/claude/c--Users-teza--OneDrive-Desktop-PlingPeat/1091a883-6ddf-41d7-8597-3cd5262cab31/scratchpad/d11b-controls\\04a809ed-65dc-411d-9c56-d8877c040f8a.render.glb",
+    "bytes": 4013996,
+    "seconds": 3.1,
+    "stdout_line": "EXPORT_GLB subsurf_raised_to_render_levels=8"
+   },
+   "shelf_glb_bytes": 1178052
+  },
+  "append_route": {
+   "control": "append-route",
+   "pass": true,
+   "modifiers": {
+    "native": 11,
+    "append": 11,
+    "glb_import": 0
+   },
+   "node_types": {
+    "native": [
+     "BRIGHTCONTRAST",
+     "BSDF_PRINCIPLED",
+     "BUMP",
+     "FRAME",
+     "INVERT",
+     "LAYER_WEIGHT",
+     "MAPPING",
+     "MIX",
+     "OUTPUT_MATERIAL",
+     "TEX_COORD",
+     "TEX_IMAGE",
+     "VALTORGB"
+    ],
+    "append": [
+     "BRIGHTCONTRAST",
+     "BSDF_PRINCIPLED",
+     "BUMP",
+     "FRAME",
+     "INVERT",
+     "LAYER_WEIGHT",
+     "MAPPING",
+     "MIX",
+     "OUTPUT_MATERIAL",
+     "TEX_COORD",
+     "TEX_IMAGE",
+     "VALTORGB"
+    ],
+    "glb_import": [
+     "BSDF_PRINCIPLED",
+     "BSDF_TRANSPARENT",
+     "EMISSION",
+     "LIGHT_PATH",
+     "MAPPING",
+     "MATH",
+     "MIX",
+     "MIX_SHADER",
+     "NORMAL_MAP",
+     "OUTPUT_MATERIAL",
+     "SEPARATE_COLOR",
+     "TEX_IMAGE",
+     "UVMAP",
+     "VERTEX_COLOR"
+    ],
+    "lost_by_glb": [
+     "BRIGHTCONTRAST",
+     "BUMP",
+     "FRAME",
+     "INVERT",
+     "LAYER_WEIGHT",
+     "TEX_COORD",
+     "VALTORGB"
+    ],
+    "added_by_glb_importer": [
+     "BSDF_TRANSPARENT",
+     "EMISSION",
+     "LIGHT_PATH",
+     "MATH",
+     "MIX_SHADER",
+     "NORMAL_MAP",
+     "SEPARATE_COLOR",
+     "UVMAP",
+     "VERTEX_COLOR"
+    ]
+   },
+   "materials": {
+    "native": 7,
+    "append": 7,
+    "glb_import": 8
+   },
+   "images": {
+    "native": 13,
+    "append": 13,
+    "glb_import": 14
+   },
+   "append_report": {
+    "appended": [
+     "Upholstered double bed Bolzan Letti",
+     "table.001",
+     "table",
+     "shawl",
+     "pillow 03",
+     "pillow 02",
+     "pillow 01",
+     "mattres",
+     "Cylinder pillow 02",
+     "Cylinder pillow 01",
+     "cover back bed",
+     "body bed",
+     "blanket.001",
+     "blanket",
+     "base bed"
+    ],
+    "skipped": [],
+    "missing": [],
+    "renamed": []
+   },
+   "asset": "17aff0ff-6f12-4293-a7fe-8956a0411867",
+   "blend": "assets/shared/blenderkit/17aff0ff-6f12-4293-a7fe-8956a0411867\\17aff0ff-6f12-4293-a7fe-8956a0411867.2K.blend"
+  },
+  "negative": {
+   "control": "negative-neither-file",
+   "pass": true,
+   "planner_refused": [
+    {
+     "asset": "zzzz-empty",
+     "reason": "no .blend and no .glb"
+    }
+   ],
+   "probe_one_missing_rc": 2,
+   "dump_written": false,
+   "probe_one_wrong_kind_rc": 2,
+   "wrong_kind_dump_written": false,
+   "planner_items": []
+  }
+ },
+ "pass_all": true
+}

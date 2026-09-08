@@ -1,0 +1,1200 @@
+{
+ "_recipe": "STUDY-D18 (2026-09-02) lighting-fixture study — the reproduction recipe for every number in",
+ "_black_eps": 0.002,
+ "_vault": {
+  "pendant_bottom_above_table_mm": [
+   762,
+   914,
+   "knowledge/lighting/lumen-method-and-fixture-placement.md:127-128"
+  ],
+  "sconce_centre_affl_mm": [
+   1397,
+   1524,
+   "docs/research/2026-08-08-upgrade-dr/ANSWER_gemini_q5-hero-light-practice_grounded.md:86-87"
+  ],
+  "sconce_shade_above_mattress_mm": [
+   305,
+   508,
+   "same source"
+  ],
+  "floor_lamp": [
+   null,
+   null,
+   "NO ROW IN knowledge/ (searched 2026-09-02)"
+  ],
+  "cord_grammar": [
+   null,
+   null,
+   "knowledge/_inbox/video-study/2026-08-28-designer-redesigns-four-real-bedrooms-kmCHv3PG2XM.md:55-73 — a cord is either hidden behind its own furniture or deliberately exposed as a line on the wall. There is no third state; a dangling cord is a defect."
+  ]
+ },
+ "assets": {
+  "a2ff3a79": {
+   "file": "a2ff3a79-aa21-43ac-a433-eb173edfae99.probe.json",
+   "label": "APOLLO Pendant Light",
+   "tier": "full_plan",
+   "asserted_class": "pendant_lamp",
+   "why_in_corpus": "the tallest pendant on the shelf (1502 mm) — the longest drop, so the best chance of a modelled cord",
+   "n_mesh": 8,
+   "n_curve": 0,
+   "n_light_objects": 0,
+   "n_materials": 5,
+   "n_images": 0,
+   "curves": [],
+   "emitting_materials": [
+    {
+     "material": "Emmiter",
+     "how": "EMISSION node"
+    }
+   ],
+   "borderline_emitters": [],
+   "most_slender": {
+    "name": "Wire",
+    "dims_mm": [
+     530,
+     530,
+     1085
+    ],
+    "verts": 1024,
+    "faces": 544,
+    "area_m2": 0.061071,
+    "verts_per_m2": 16767,
+    "slenderness": 2.05,
+    "surface_vs_bbox": 0.02134,
+    "edge_proxy_mm": 10.6,
+    "materials": [
+     "Wire"
+    ]
+   },
+   "objects": [
+    {
+     "name": "Wire",
+     "dims_mm": [
+      530,
+      530,
+      1085
+     ],
+     "verts": 1024,
+     "faces": 544,
+     "area_m2": 0.061071,
+     "verts_per_m2": 16767,
+     "slenderness": 2.05,
+     "surface_vs_bbox": 0.02134,
+     "edge_proxy_mm": 10.6,
+     "materials": [
+      "Wire"
+     ]
+    },
+    {
+     "name": "Emmiter",
+     "dims_mm": [
+      456,
+      456,
+      203
+     ],
+     "verts": 31776,
+     "faces": 31696,
+     "area_m2": 0.00012,
+     "verts_per_m2": 264800000,
+     "slenderness": 1.0,
+     "surface_vs_bbox": 0.00015,
+     "edge_proxy_mm": 0.06,
+     "materials": [
+      "Emmiter"
+     ]
+    },
+    {
+     "name": "Emmiter_Inside",
+     "dims_mm": [
+      456,
+      455,
+      214
+     ],
+     "verts": 256,
+     "faces": 192,
+     "area_m2": 0.000987,
+     "verts_per_m2": 259372,
+     "slenderness": 1.0,
+     "surface_vs_bbox": 0.00123,
+     "edge_proxy_mm": 2.27,
+     "materials": [
+      "Copper"
+     ]
+    },
+    {
+     "name": "Fillet",
+     "dims_mm": [
+      464,
+      463,
+      218
+     ],
+     "verts": 15808,
+     "faces": 15792,
+     "area_m2": 0.004029,
+     "verts_per_m2": 3923554,
+     "slenderness": 1.0,
+     "surface_vs_bbox": 0.00483,
+     "edge_proxy_mm": 0.51,
+     "materials": [
+      "Glass"
+     ]
+    },
+    {
+     "name": "Lamp_Parts_1",
+     "dims_mm": [
+      764,
+      764,
+      31
+     ],
+     "verts": 97,
+     "faces": 93,
+     "area_m2": 0.891896,
+     "verts_per_m2": 109,
+     "slenderness": 1.0,
+     "surface_vs_bbox": 0.70578,
+     "edge_proxy_mm": 97.93,
+     "materials": [
+      "Copper"
+     ]
+    },
+    {
+     "name": "Lamp_Parts_2",
+     "dims_mm": [
+      472,
+      472,
+      447
+     ],
+     "verts": 1120,
+     "faces": 1088,
+     "area_m2": 0.057409,
+     "verts_per_m2": 19509,
+     "slenderness": 1.0,
+     "surface_vs_bbox": 0.04447,
+     "edge_proxy_mm": 7.26,
+     "materials": [
+      "Chrome"
+     ]
+    },
+    {
+     "name": "Lamp_Parts_3",
+     "dims_mm": [
+      542,
+      541,
+      18
+     ],
+     "verts": 1568,
+     "faces": 1536,
+     "area_m2": 0.012881,
+     "verts_per_m2": 121730,
+     "slenderness": 1.0,
+     "surface_vs_bbox": 0.02061,
+     "edge_proxy_mm": 2.9,
+     "materials": [
+      "Copper"
+     ]
+    },
+    {
+     "name": "Spheres",
+     "dims_mm": [
+      614,
+      614,
+      517
+     ],
+     "verts": 126984,
+     "faces": 125952,
+     "area_m2": 1.270031,
+     "verts_per_m2": 99985,
+     "slenderness": 1.0,
+     "surface_vs_bbox": 0.62723,
+     "edge_proxy_mm": 3.18,
+     "materials": [
+      "Copper",
+      "Glass"
+     ]
+    }
+   ]
+  },
+  "a6068c83": {
+   "file": "a6068c83-3f5a-4c2e-9dec-83d1e0e56dae.probe.json",
+   "label": "MARKSLOJD-style pendant lamps",
+   "tier": "full_plan",
+   "asserted_class": "pendant_lamp",
+   "why_in_corpus": "five pendants in one asset: five drops, and the only file here with LIGHT datablocks",
+   "n_mesh": 5,
+   "n_curve": 0,
+   "n_light_objects": 5,
+   "n_materials": 10,
+   "n_images": 6,
+   "curves": [],
+   "emitting_materials": [
+    {
+     "material": "light",
+     "how": "EMISSION node"
+    }
+   ],
+   "borderline_emitters": [],
+   "most_slender": {
+    "name": "Cylinder.001",
+    "dims_mm": [
+     163,
+     163,
+     1186
+    ],
+    "verts": 31838,
+    "faces": 31546,
+    "area_m2": 0.434519,
+    "verts_per_m2": 73272,
+    "slenderness": 7.26,
+    "surface_vs_bbox": 0.52497,
+    "edge_proxy_mm": 3.71,
+    "materials": [
+     "glass blue",
+     "concrete",
+     "chrome",
+     "black matte",
+     "glass 2",
+     "light"
+    ]
+   },
+   "objects": [
+    {
+     "name": "Cylinder.001",
+     "dims_mm": [
+      163,
+      163,
+      1186
+     ],
+     "verts": 31838,
+     "faces": 31546,
+     "area_m2": 0.434519,
+     "verts_per_m2": 73272,
+     "slenderness": 7.26,
+     "surface_vs_bbox": 0.52497,
+     "edge_proxy_mm": 3.71,
+     "materials": [
+      "glass blue",
+      "concrete",
+      "chrome",
+      "black matte",
+      "glass 2",
+      "light"
+     ]
+    },
+    {
+     "name": "Cube",
+     "dims_mm": [
+      160,
+      160,
+      1100
+     ],
+     "verts": 30470,
+     "faces": 30036,
+     "area_m2": 0.348107,
+     "verts_per_m2": 87531,
+     "slenderness": 6.87,
+     "surface_vs_bbox": 0.46114,
+     "edge_proxy_mm": 3.4,
+     "materials": [
+      "black matte",
+      "chrome",
+      "glass white",
+      "glass 2",
+      "light"
+     ]
+    },
+    {
+     "name": "Cube.001",
+     "dims_mm": [
+      160,
+      160,
+      1100
+     ],
+     "verts": 30470,
+     "faces": 30036,
+     "area_m2": 0.348107,
+     "verts_per_m2": 87531,
+     "slenderness": 6.87,
+     "surface_vs_bbox": 0.46114,
+     "edge_proxy_mm": 3.4,
+     "materials": [
+      "black matte",
+      "chrome",
+      "glass gray",
+      "glass 2",
+      "light"
+     ]
+    },
+    {
+     "name": "Cube.002",
+     "dims_mm": [
+      160,
+      160,
+      1100
+     ],
+     "verts": 30470,
+     "faces": 30036,
+     "area_m2": 0.348107,
+     "verts_per_m2": 87531,
+     "slenderness": 6.87,
+     "surface_vs_bbox": 0.46114,
+     "edge_proxy_mm": 3.4,
+     "materials": [
+      "black matte",
+      "chrome",
+      "glass deep blue",
+      "glass 2",
+      "light"
+     ]
+    },
+    {
+     "name": "Cylinder.002",
+     "dims_mm": [
+      219,
+      219,
+      1110
+     ],
+     "verts": 29920,
+     "faces": 29578,
+     "area_m2": 0.372541,
+     "verts_per_m2": 80313,
+     "slenderness": 5.08,
+     "surface_vs_bbox": 0.34957,
+     "edge_proxy_mm": 3.55,
+     "materials": [
+      "chrome",
+      "glass orange",
+      "black matte",
+      "glass 2",
+      "light"
+     ]
+    }
+   ]
+  },
+  "dafcda42": {
+   "file": "dafcda42-8866-47f1-b1d5-cfe14bcce47e.probe.json",
+   "label": "Jefferson Pendant large",
+   "tier": "full_plan",
+   "asserted_class": "pendant_lamp",
+   "why_in_corpus": "150 x 150 x 659 — narrow, and it asserted at EXACTLY the band floor of 150.0",
+   "n_mesh": 1,
+   "n_curve": 0,
+   "n_light_objects": 0,
+   "n_materials": 4,
+   "n_images": 0,
+   "curves": [],
+   "emitting_materials": [
+    {
+     "material": "Material.003",
+     "how": "EMISSION node"
+    }
+   ],
+   "borderline_emitters": [],
+   "most_slender": {
+    "name": "Jefferson Pendant large",
+    "dims_mm": [
+     150,
+     150,
+     659
+    ],
+    "verts": 110844,
+    "faces": 110635,
+    "area_m2": 0.288957,
+    "verts_per_m2": 383600,
+    "slenderness": 4.4,
+    "surface_vs_bbox": 0.65586,
+    "edge_proxy_mm": 1.62,
+    "materials": [
+     "Material.001",
+     "Material.002",
+     "Material",
+     "Material.003"
+    ]
+   },
+   "objects": [
+    {
+     "name": "Jefferson Pendant large",
+     "dims_mm": [
+      150,
+      150,
+      659
+     ],
+     "verts": 110844,
+     "faces": 110635,
+     "area_m2": 0.288957,
+     "verts_per_m2": 383600,
+     "slenderness": 4.4,
+     "surface_vs_bbox": 0.65586,
+     "edge_proxy_mm": 1.62,
+     "materials": [
+      "Material.001",
+      "Material.002",
+      "Material",
+      "Material.003"
+     ]
+    }
+   ]
+  },
+  "85f6c3d5": {
+   "file": "85f6c3d5-881f-41b9-8df8-2558fcb6664d.probe.json",
+   "label": "Rattan Floor Lamp",
+   "tier": "full_plan",
+   "asserted_class": "floor_lamp",
+   "why_in_corpus": "a floor lamp's cord run",
+   "n_mesh": 4,
+   "n_curve": 0,
+   "n_light_objects": 0,
+   "n_materials": 6,
+   "n_images": 7,
+   "curves": [],
+   "emitting_materials": [
+    {
+     "material": "Light 01.005",
+     "how": "principled",
+     "emission_color": [
+      1.0,
+      0.328,
+      0.0
+     ],
+     "emission_strength": 1.0
+    }
+   ],
+   "borderline_emitters": [],
+   "most_slender": {
+    "name": "Wood",
+    "dims_mm": [
+     191,
+     35,
+     1216
+    ],
+    "verts": 41882,
+    "faces": 41822,
+    "area_m2": 0.269801,
+    "verts_per_m2": 155233,
+    "slenderness": 6.37,
+    "surface_vs_bbox": 0.48053,
+    "edge_proxy_mm": 2.54,
+    "materials": [
+     "Wood"
+    ]
+   },
+   "objects": [
+    {
+     "name": "Wood",
+     "dims_mm": [
+      191,
+      35,
+      1216
+     ],
+     "verts": 41882,
+     "faces": 41822,
+     "area_m2": 0.269801,
+     "verts_per_m2": 155233,
+     "slenderness": 6.37,
+     "surface_vs_bbox": 0.48053,
+     "edge_proxy_mm": 2.54,
+     "materials": [
+      "Wood"
+     ]
+    },
+    {
+     "name": "Metal",
+     "dims_mm": [
+      283,
+      283,
+      1515
+     ],
+     "verts": 16616,
+     "faces": 16470,
+     "area_m2": 0.277081,
+     "verts_per_m2": 59968,
+     "slenderness": 5.35,
+     "surface_vs_bbox": 0.14786,
+     "edge_proxy_mm": 4.1,
+     "materials": [
+      "Metal",
+      "Metal.005",
+      "Light 01.005"
+     ]
+    },
+    {
+     "name": "Light",
+     "dims_mm": [
+      56,
+      56,
+      202
+     ],
+     "verts": 20532,
+     "faces": 20407,
+     "area_m2": 0.056893,
+     "verts_per_m2": 360888,
+     "slenderness": 3.64,
+     "surface_vs_bbox": 1.11448,
+     "edge_proxy_mm": 1.67,
+     "materials": [
+      "Glass.005",
+      "Metal.005",
+      "Light 01.005",
+      "Metal"
+     ]
+    },
+    {
+     "name": "Shade",
+     "dims_mm": [
+      516,
+      518,
+      321
+     ],
+     "verts": 97552,
+     "faces": 98112,
+     "area_m2": 1.538938,
+     "verts_per_m2": 63389,
+     "slenderness": 1.0,
+     "surface_vs_bbox": 1.28507,
+     "edge_proxy_mm": 3.98,
+     "materials": [
+      "Shade"
+     ]
+    }
+   ]
+  },
+  "a6313486": {
+   "file": "a6313486-c051-44cf-a1da-56ae35af21a5.probe.json",
+   "label": "Wicker Wall Lamp",
+   "tier": "full_plan",
+   "asserted_class": "wall_lamp",
+   "why_in_corpus": "hard-wired by construction — the control for 'no cord is correct here'",
+   "n_mesh": 5,
+   "n_curve": 0,
+   "n_light_objects": 0,
+   "n_materials": 6,
+   "n_images": 7,
+   "curves": [],
+   "emitting_materials": [
+    {
+     "material": "Light 01",
+     "how": "principled",
+     "emission_color": [
+      1.0,
+      0.328,
+      0.0
+     ],
+     "emission_strength": 1.0
+    }
+   ],
+   "borderline_emitters": [],
+   "most_slender": {
+    "name": "Frame",
+    "dims_mm": [
+     321,
+     351,
+     700
+    ],
+    "verts": 10530,
+    "faces": 10466,
+    "area_m2": 0.114938,
+    "verts_per_m2": 91615,
+    "slenderness": 2.0,
+    "surface_vs_bbox": 0.0986,
+    "edge_proxy_mm": 3.33,
+    "materials": [
+     "Metal",
+     "Silver"
+    ]
+   },
+   "objects": [
+    {
+     "name": "Frame",
+     "dims_mm": [
+      321,
+      351,
+      700
+     ],
+     "verts": 10530,
+     "faces": 10466,
+     "area_m2": 0.114938,
+     "verts_per_m2": 91615,
+     "slenderness": 2.0,
+     "surface_vs_bbox": 0.0986,
+     "edge_proxy_mm": 3.33,
+     "materials": [
+      "Metal",
+      "Silver"
+     ]
+    },
+    {
+     "name": "Light Bulb ",
+     "dims_mm": [
+      37,
+      37,
+      66
+     ],
+     "verts": 18999,
+     "faces": 18912,
+     "area_m2": 0.012743,
+     "verts_per_m2": 1490936,
+     "slenderness": 1.79,
+     "surface_vs_bbox": 1.02814,
+     "edge_proxy_mm": 0.82,
+     "materials": [
+      "Glass.001",
+      "Metal.001",
+      "Light 01"
+     ]
+    },
+    {
+     "name": "Rattan",
+     "dims_mm": [
+      329,
+      244,
+      310
+     ],
+     "verts": 107192,
+     "faces": 106710,
+     "area_m2": 0.574604,
+     "verts_per_m2": 186549,
+     "slenderness": 1.06,
+     "surface_vs_bbox": 1.11145,
+     "edge_proxy_mm": 2.32,
+     "materials": [
+      "Rattan"
+     ]
+    },
+    {
+     "name": "wood",
+     "dims_mm": [
+      327,
+      243,
+      308
+     ],
+     "verts": 960,
+     "faces": 960,
+     "area_m2": 0.031063,
+     "verts_per_m2": 30905,
+     "slenderness": 1.06,
+     "surface_vs_bbox": 0.0609,
+     "edge_proxy_mm": 5.69,
+     "materials": [
+      "Rattan"
+     ]
+    },
+    {
+     "name": "Screws",
+     "dims_mm": [
+      6,
+      6,
+      3
+     ],
+     "verts": 259,
+     "faces": 253,
+     "area_m2": 8.5e-05,
+     "verts_per_m2": 3047059,
+     "slenderness": 1.05,
+     "surface_vs_bbox": 0.56441,
+     "edge_proxy_mm": 0.59,
+     "materials": [
+      "Silver"
+     ]
+    }
+   ]
+  },
+  "a8348982": {
+   "file": "a8348982-1590-4606-ac18-eed82475fb5e.probe.json",
+   "label": "IKEA Alang Floor Lamp",
+   "tier": "free",
+   "asserted_class": "floor_lamp",
+   "why_in_corpus": "the free-tier comparison inside the class",
+   "n_mesh": 10,
+   "n_curve": 0,
+   "n_light_objects": 0,
+   "n_materials": 7,
+   "n_images": 8,
+   "curves": [],
+   "emitting_materials": [
+    {
+     "material": "LED Bulb",
+     "how": "EMISSION node"
+    }
+   ],
+   "borderline_emitters": [
+    {
+     "material": "Steel.001",
+     "emission_color": [
+      0.016,
+      0.016,
+      0.016
+     ],
+     "emission_strength": 1.0,
+     "why": "within 10x of black — reported, not counted"
+    }
+   ],
+   "most_slender": {
+    "name": "Circle.003",
+    "dims_mm": [
+     18,
+     18,
+     937
+    ],
+    "verts": 297,
+    "faces": 288,
+    "area_m2": 0.055101,
+    "verts_per_m2": 5390,
+    "slenderness": 51.51,
+    "surface_vs_bbox": 0.79966,
+    "edge_proxy_mm": 13.83,
+    "materials": [
+     "Material.003"
+    ]
+   },
+   "objects": [
+    {
+     "name": "Circle.003",
+     "dims_mm": [
+      18,
+      18,
+      937
+     ],
+     "verts": 297,
+     "faces": 288,
+     "area_m2": 0.055101,
+     "verts_per_m2": 5390,
+     "slenderness": 51.51,
+     "surface_vs_bbox": 0.79966,
+     "edge_proxy_mm": 13.83,
+     "materials": [
+      "Material.003"
+     ]
+    },
+    {
+     "name": "Circle.002",
+     "dims_mm": [
+      44,
+      44,
+      477
+     ],
+     "verts": 1008,
+     "faces": 1008,
+     "area_m2": 0.039689,
+     "verts_per_m2": 25397,
+     "slenderness": 10.78,
+     "surface_vs_bbox": 0.45014,
+     "edge_proxy_mm": 6.27,
+     "materials": [
+      "Material.003"
+     ]
+    },
+    {
+     "name": "Led light bulb 40Watts",
+     "dims_mm": [
+      57,
+      58,
+      101
+     ],
+     "verts": 1762,
+     "faces": 1760,
+     "area_m2": 0.014699,
+     "verts_per_m2": 119872,
+     "slenderness": 1.75,
+     "surface_vs_bbox": 0.48948,
+     "edge_proxy_mm": 2.89,
+     "materials": [
+      "LED Bulb",
+      "Steel.001",
+      "matte plastic ",
+      "Base"
+     ]
+    },
+    {
+     "name": "Circle.001",
+     "dims_mm": [
+      31,
+      31,
+      24
+     ],
+     "verts": 265,
+     "faces": 256,
+     "area_m2": 0.003957,
+     "verts_per_m2": 66970,
+     "slenderness": 1.0,
+     "surface_vs_bbox": 0.81984,
+     "edge_proxy_mm": 3.93,
+     "materials": [
+      "matte plastic "
+     ]
+    },
+    {
+     "name": "Circle.004",
+     "dims_mm": [
+      292,
+      292,
+      5
+     ],
+     "verts": 512,
+     "faces": 512,
+     "area_m2": 0.020347,
+     "verts_per_m2": 25163,
+     "slenderness": 1.0,
+     "surface_vs_bbox": 0.11506,
+     "edge_proxy_mm": 6.3,
+     "materials": [
+      "White plastic"
+     ]
+    },
+    {
+     "name": "Circle.005",
+     "dims_mm": [
+      292,
+      292,
+      5
+     ],
+     "verts": 512,
+     "faces": 512,
+     "area_m2": 0.020347,
+     "verts_per_m2": 25163,
+     "slenderness": 1.0,
+     "surface_vs_bbox": 0.11506,
+     "edge_proxy_mm": 6.3,
+     "materials": [
+      "White plastic"
+     ]
+    },
+    {
+     "name": "Circle.006",
+     "dims_mm": [
+      286,
+      286,
+      234
+     ],
+     "verts": 64,
+     "faces": 64,
+     "area_m2": 0.42876,
+     "verts_per_m2": 149,
+     "slenderness": 1.0,
+     "surface_vs_bbox": 0.99471,
+     "edge_proxy_mm": 81.85,
+     "materials": [
+      "White plastic.001"
+     ]
+    },
+    {
+     "name": "Circle.007",
+     "dims_mm": [
+      241,
+      243,
+      41
+     ],
+     "verts": 564,
+     "faces": 558,
+     "area_m2": 0.005439,
+     "verts_per_m2": 103696,
+     "slenderness": 1.0,
+     "surface_vs_bbox": 0.0346,
+     "edge_proxy_mm": 3.12,
+     "materials": [
+      "Material.003"
+     ]
+    },
+    {
+     "name": "Cube.002",
+     "dims_mm": [
+      220,
+      220,
+      13
+     ],
+     "verts": 620,
+     "faces": 620,
+     "area_m2": 0.107484,
+     "verts_per_m2": 5768,
+     "slenderness": 1.0,
+     "surface_vs_bbox": 0.9898,
+     "edge_proxy_mm": 13.17,
+     "materials": [
+      "Material.003"
+     ]
+    },
+    {
+     "name": "Plane",
+     "dims_mm": [
+      293,
+      293,
+      231
+     ],
+     "verts": 121992,
+     "faces": 119748,
+     "area_m2": 0.514379,
+     "verts_per_m2": 237164,
+     "slenderness": 1.0,
+     "surface_vs_bbox": 1.1641,
+     "edge_proxy_mm": 2.07,
+     "materials": [
+      "White plastic"
+     ]
+    }
+   ]
+  }
+ },
+ "ours": {
+  "table_lamp_objects": [
+   {
+    "name": "nightstand__lampacq-367__acq0",
+    "dims_mm": [
+     239,
+     239,
+     334
+    ],
+    "verts": 2370,
+    "faces": 4736,
+    "area_m2": 0.176808,
+    "verts_per_m2": 13404,
+    "slenderness": 1.4,
+    "surface_vs_bbox": 0.40712,
+    "edge_proxy_mm": 8.64,
+    "materials": [
+     "WoodKendra.001"
+    ]
+   },
+   {
+    "name": "nightstand__lampacq2188__acq0",
+    "dims_mm": [
+     239,
+     239,
+     334
+    ],
+    "verts": 2370,
+    "faces": 4736,
+    "area_m2": 0.176808,
+    "verts_per_m2": 13404,
+    "slenderness": 1.4,
+    "surface_vs_bbox": 0.40712,
+    "edge_proxy_mm": 8.64,
+    "materials": [
+     "WoodKendra"
+    ]
+   },
+   {
+    "name": "nightstand__lampacq-367__acq1",
+    "dims_mm": [
+     298,
+     298,
+     209
+    ],
+    "verts": 1408,
+    "faces": 2816,
+    "area_m2": 0.391744,
+    "verts_per_m2": 3594,
+    "slenderness": 1.0,
+    "surface_vs_bbox": 0.91782,
+    "edge_proxy_mm": 16.68,
+    "materials": [
+     "NaturalLinen.001"
+    ]
+   },
+   {
+    "name": "nightstand__lampacq2188__acq1",
+    "dims_mm": [
+     298,
+     298,
+     209
+    ],
+    "verts": 1408,
+    "faces": 2816,
+    "area_m2": 0.391744,
+    "verts_per_m2": 3594,
+    "slenderness": 1.0,
+    "surface_vs_bbox": 0.91782,
+    "edge_proxy_mm": 16.68,
+    "materials": [
+     "NaturalLinen"
+    ]
+   }
+  ],
+  "table_lamp_is_acquired": "nightstand__lampacq* carries the __acq tag: it is a BOUGHT asset, not something this lane built. Any 'pro vs ours' line drawn against it is pro against pro.",
+  "sconce_objects": [
+   {
+    "name": "bf14_sconce_0",
+    "dims_mm": [
+     60,
+     60,
+     140
+    ],
+    "verts": 33,
+    "faces": 32,
+    "area_m2": 0.028975,
+    "verts_per_m2": 1139,
+    "slenderness": 2.33,
+    "surface_vs_bbox": 0.71017,
+    "edge_proxy_mm": 34.75,
+    "materials": [
+     "e5_sconce_body"
+    ]
+   },
+   {
+    "name": "bf14_sconce_1",
+    "dims_mm": [
+     60,
+     60,
+     140
+    ],
+    "verts": 33,
+    "faces": 32,
+    "area_m2": 0.028975,
+    "verts_per_m2": 1139,
+    "slenderness": 2.33,
+    "surface_vs_bbox": 0.71017,
+    "edge_proxy_mm": 34.75,
+    "materials": [
+     "e5_sconce_body"
+    ]
+   },
+   {
+    "name": "bf14_sconce_0_canopy",
+    "dims_mm": [
+     40,
+     90,
+     90
+    ],
+    "verts": 8,
+    "faces": 6,
+    "area_m2": 0.0306,
+    "verts_per_m2": 261,
+    "slenderness": 1.0,
+    "surface_vs_bbox": 1.0,
+    "edge_proxy_mm": 71.41,
+    "materials": [
+     "e5_sconce_body"
+    ]
+   },
+   {
+    "name": "bf14_sconce_0_lens_dn",
+    "dims_mm": [
+     40,
+     40,
+     3
+    ],
+    "verts": 33,
+    "faces": 32,
+    "area_m2": 0.001599,
+    "verts_per_m2": 20638,
+    "slenderness": 1.0,
+    "surface_vs_bbox": 0.43451,
+    "edge_proxy_mm": 8.16,
+    "materials": [
+     "e5_sconce_lens"
+    ]
+   },
+   {
+    "name": "bf14_sconce_0_lens_up",
+    "dims_mm": [
+     40,
+     40,
+     3
+    ],
+    "verts": 33,
+    "faces": 32,
+    "area_m2": 0.001599,
+    "verts_per_m2": 20638,
+    "slenderness": 1.0,
+    "surface_vs_bbox": 0.43451,
+    "edge_proxy_mm": 8.16,
+    "materials": [
+     "e5_sconce_lens"
+    ]
+   },
+   {
+    "name": "bf14_sconce_1_canopy",
+    "dims_mm": [
+     40,
+     90,
+     90
+    ],
+    "verts": 8,
+    "faces": 6,
+    "area_m2": 0.0306,
+    "verts_per_m2": 261,
+    "slenderness": 1.0,
+    "surface_vs_bbox": 1.0,
+    "edge_proxy_mm": 71.41,
+    "materials": [
+     "e5_sconce_body"
+    ]
+   },
+   {
+    "name": "bf14_sconce_1_lens_dn",
+    "dims_mm": [
+     40,
+     40,
+     3
+    ],
+    "verts": 33,
+    "faces": 32,
+    "area_m2": 0.001599,
+    "verts_per_m2": 20638,
+    "slenderness": 1.0,
+    "surface_vs_bbox": 0.43451,
+    "edge_proxy_mm": 8.16,
+    "materials": [
+     "e5_sconce_lens"
+    ]
+   },
+   {
+    "name": "bf14_sconce_1_lens_up",
+    "dims_mm": [
+     40,
+     40,
+     3
+    ],
+    "verts": 33,
+    "faces": 32,
+    "area_m2": 0.001599,
+    "verts_per_m2": 20638,
+    "slenderness": 1.0,
+    "surface_vs_bbox": 0.43451,
+    "edge_proxy_mm": 8.16,
+    "materials": [
+     "e5_sconce_lens"
+    ]
+   }
+  ],
+  "emitting_materials": [
+   {
+    "material": "bf11_strip_n",
+    "how": "EMISSION node"
+   },
+   {
+    "material": "bf11_strip_s",
+    "how": "EMISSION node"
+   },
+   {
+    "material": "e5_case_strip",
+    "how": "EMISSION node"
+   },
+   {
+    "material": "e5_sconce_lens",
+    "how": "EMISSION node"
+   },
+   {
+    "material": "e5_trim_lens",
+    "how": "EMISSION node"
+   }
+  ],
+  "borderline_emitters": [],
+  "objects_wearing_an_emitting_material": 41,
+  "emitting_object_names_sample": [
+   "bf11_strip_n",
+   "bf11_strip_s",
+   "bf14_sconce_0_lens_dn",
+   "bf14_sconce_0_lens_up",
+   "bf14_sconce_1_lens_dn",
+   "bf14_sconce_1_lens_up",
+   "e5_casestrip_case_ตู้เสื้อผ้าเหนือเตียง_BF09-3__shelf_fh",
+   "e5_casestrip_case_ตู้เสื้อผ้าเหนือเตียง_BF09-3__shelf_fl"
+  ],
+  "n_curve_in_whole_scene": 23,
+  "n_light_objects_in_whole_scene": 54,
+  "hanger_named_objects": {
+   "total": 37,
+   "CURVE": 23,
+   "EMPTY": 14
+  },
+  "note": "the hangers are 37 NAMED objects but only 23 are CURVE — the other 14 are EMPTY parents. The table lamp is base + shade, and it is acquired."
+ }
+}

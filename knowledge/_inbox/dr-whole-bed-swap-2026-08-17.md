@@ -1,0 +1,152 @@
+# DR — swapping a purchased whole-bed model into a scene with a custom headboard
+
+**Tier: REFERENCE.** A NotebookLM Deep Research answer: not domain truth, not statute.
+Nothing here outranks `knowledge/codes-th/`, the client contract, or an owner-signed
+decision. A value becomes live only when a named file consumes it.
+
+| field | value |
+|---|---|
+| notebook | `1036d123-a0e0-4619-90be-a0da25d98792` "whole-bed asset swap with custom headboard" |
+| conversation | `ea85a95f-63a1-4acb-8c84-9eee663c0409`, turn 1 |
+| fired | 2026-08-17, builder-initiated (owner permitted DR this session) |
+| asked because | first whole-bed audition in this repo's history (DR trigger 4: first build of a domain class); vault sweep same hour found FULL coverage on mesh QA / retint / 3DW pitfalls but **NO coverage** on frame-acquired + headboard-built assembly, cased-goods material policy, texel-density audit |
+| consumed by | `pipeline/scripts/wholebed_bench.py` + `wholebed_rules.py` (headboard deletion + contact placement — written the same hour, converging on §1 independently) · integration hook when the winner lands |
+
+## CITATION MARKERS ARE UNRESOLVED — read accordingly
+
+The `[n]` markers below refer to the DR notebook's auto-gathered web sources. The CLI
+exposes no source listing for this notebook, so unlike the 2026-08-10 unit the titles
+are NOT resolved here. Until someone resolves them in the NLM UI, every number below
+is "a DR said so" — one tier weaker than this repo normally stages, and stated here so
+nobody upgrades it by forgetting. (This repo has already caught a DR fabricating
+prices and licences; distrust is the default.)
+
+## What was ALREADY TRUE here before this arrived
+
+* The audition bench already deletes the bought model's own headboard and butts the
+  frame against the sheet-drawn band by contact (R12/R9) — §1's first move, converged
+  on independently an hour earlier.
+* Scale-assertion on ingest (R8, `asset_scale.py`) already covers §2's "verify against
+  a known dimension" — ours is stricter (fail-closed banded classes).
+* The bed-cloth class order (ACQUIRED, D-104) makes §1's cloth-simulation recipe
+  (friction 1.0, collision offset 0.05-0.1) INAPPLICABLE to this lane today; staged
+  for a future lane that simulates.
+
+## What is NEW and immediately usable
+
+* **Mattress-to-headboard clearance 0.5-1.5 in (12.7-38.1 mm)** — a derived-contact
+  number for the integration hook (bed frame butts the band with a real gap, not 0).
+* **Micro-gap 0.5-1.0 mm between touching solids** so occlusion shadows form instead
+  of coplanar intersections — directly applicable to frame-vs-band contact.
+* **Frame 1-3 in shorter than mattress; headboard 6-8 in wider than mattress per
+  side** — sanity bands for judging whether a candidate's proportions read real.
+* **"Pillowstop"/shim solution** when the bought frame leaves a gap at the band — a
+  modelled solution to a real joinery condition, not a fudge.
+
+## Full answer (verbatim, markers unresolved)
+
+### 1. Headboard Isolation and Custom Millwork Alignment
+
+When integrating a purchased complete bed model into a scene that requires a custom-designed headboard, the first step is the clean isolation of the mattress, frame, and bedding elements from the purchased asset [1]. Purchased bed models typically arrive as grouped hierarchies or collapsed meshes containing their own pre-packaged headboards [1]. Immediately upon importing the asset:
+*   **For Grouped Hierarchies:** The group is ungrouped, and the pre-packaged headboard elements are deleted outright [1].
+*   **For Collapsed Meshes:** The visualizer enters the **polygon or element sub-object level** to select and manually delete the faces associated with the pre-packaged headboard, preserving only the frame, mattress, and bedding elements [1].
+
+To ensure visual believability and prevent rendering artifacts (such as light leaks or unrealistic intersections), the remaining bed frame and mattress must be aligned against the custom millwork headboard using strict real-world joinery and spatial tolerances [2]. Custom headboards modeled from millwork drawings typically adhere to strict proportion rules: the top of the headboard should fall at approximately **65 to 70 percent of the ceiling height** (placing the top of the headboard at **78 to 84 inches** in a 10-foot room) [2, 3]. Additionally, to ensure the headboard "contains" the bed rather than just acting as a panel the bed is pushed against, the headboard is typically specified to be **6 to 8 inches wider than the mattress on each side** [2, 4]. This means a standard Eastern King mattress at **76 inches wide** justifies a custom headboard between **88 and 92 inches wide** [2, 5].
+
+For the digital assembly, the joinery and spacing must respect the following real-world limits:
+*   **Visible Joinery Tolerance:** A microscopic gap of **0.5 mm to 1.0 mm** must be maintained between touching solid components (e.g., custom headboard paneling and the bed frame) to generate realistic occlusion shadows rather than flat, synthetic intersections [6, 7].
+*   **Bed Frame Shorter than Mattress:** In physical furniture manufacturing, metal bed frames are intentionally engineered to be **1 to 3 inches shorter** than the mattress they support, allowing a subtle mattress overhang of up to **2 inches** at the head or foot [8, 9].
+*   **Mattress-to-Headboard Clearance:** A standard clearance of **0.5 to 1.5 inches (approximately 1.27 cm to 3.81 cm)** is maintained between the mattress edge and the headboard plane [8]. This physical gap mimics real-world tolerance variations and provides spatial clearance for bedding sheets to be tucked in cleanly [8]. 
+*   **Gap Mitigation:** If mismatched physical dimensions between the bought model and the millwork drawing result in an excessive physical gap, visualizers model physical solutions like slender upholstered **"pillowstops"**, wooden board shims, or foam wedge fillers to block the opening and prevent pillows from visually slipping through [8, 10].
+
+To drape bedding realistically against the custom headboard, visualizers execute physics-based cloth simulations [11]. Using modifiers like **Cloth (3ds Max)** or **Cloth Physics (Blender)**, the custom headboard and mattress are designated as static collision bodies, while the active blankets or comforters are assigned active fabric modifiers [11]. To prevent simulated bedding from sliding off the frame or down the headboard, friction parameters on both the fabric and the collision geometry are set to their maximum values of **1.0** [11, 12]. Furthermore, to eliminate the default **1 to 2-inch "hover" gap** where cloth floats unnaturally above collision geometry, the collision offset and depth values on the collision objects must be adjusted down from the default setting of 1.0 to a range of **0.05 to 0.1 units** [12, 13]. This forces the fabric to compress naturally against the headboard and mattress without clipping [13].
+
+---
+
+### 2. Dimensional Verification and Unit Scale Standardization
+
+Purchased 3D assets frequently exhibit scaling anomalies upon import due to differences in display vs. system units or cross-DCC import/export pipelines [14]. For example, format files like OBJ do not contain embedded unit headers, causing the host DCC to interpret scale using whatever default system unit is active [14, 15]. Similarly, exporting FBX files from Blender to 3ds Max can cause a model to import at **100 times its actual size or 100 times smaller** [14]. 
+
+To verify and correct these scale issues, professional studios enforce the following pipelines:
+
+#### Blender scale auditing and correction:
+1.  **Auditing:** In the 3D Viewport properties sidebar **(N-panel) under the "Item" tab**, the visualizer inspects the absolute bounding box size of the active object in real-world meters or centimeters under the **"Dimensions"** field [16, 17].
+2.  **Verification:** The **"Scale" fields** for the X, Y, and Z axes must read exactly **1.0, 1.0, 1.0** [16]. If the asset was scaled in Object Mode rather than Edit Mode, these scale values will deviate, causing downstream modifiers and physics operations to behave unpredictably [16].
+3.  **Correction:** The scale transform is applied by selecting the object, pressing **Ctrl+A**, and choosing **"Scale"** [16, 18]. This bakes the scale back to 1.0 while preserving the absolute bounding box dimensions [16]. Global scene scale modifications (e.g., changing the unit scale to 0.01) must be avoided as they break third-party add-ons [16].
+
+#### 3ds Max scale auditing and correction:
+1.  **System Unit Verification:** Go to **Customize -> Units Setup** and verify that the **System Unit Scale** is set to the studio’s pipeline standard, which is typically **1 unit = 1 Centimeter or 1 Millimeter** [19]. This must be verified *before* importing any external assets, as changing system units inside an active scene can introduce floating-point rounding errors and distort the geometry [19].
+2.  **Reset Transform Utility:** If the imported bed model has non-uniform object-level scaling, apply the **Reset XForm** utility located in the Utilities panel [19, 20]. Clicking **"Reset Selected"** pushes the scaled transform values down to the object's modifier stack inside an **XForm** modifier [19, 21]. This normalizes the transform matrix, resetting the object-level scale to **100%** and aligning the local pivot point and bounding box with the World coordinate system [19].
+3.  **Stack Collapse:** Collapse the modifier stack to an **Editable Poly** to permanently bake the normalized scale into the geometry vertex data, resolving potential game engine or renderer compatibility bugs [19].
+4.  **Hierarchy Automation:** In complex multi-object hierarchies (such as a bed with numerous pillows and mattress layers), manual resets can break instance relationships or shift pivots [19]. Visualizers deploy scripts like Paul Neale’s **PEN_ResetXform** to batch-reset scales across instanced assets while preserving their unique local pivot positions and orientations [19].
+
+---
+
+### 3. Technical Quality and Aesthetic Acceptance Criteria for Hero Shots
+
+Prior to placing a purchased bed model into a hero rendering slot, the asset must pass a rigorous quality assurance audit [22]. Visualizers evaluate the asset against the following technical and aesthetic metrics:
+
+#### Aesthetic Evaluation
+*   **Bedding Read and Wrinkle Realism:** The sheets, duvet, and blankets must exhibit natural, physically plausible wrinkles rather than rigid, procedurally generated creases [23]. Organic draping is characterized by heavy compression folds near the foot of the bed and gentle, soft-edged wrinkles where sheets fold over [23].
+*   **Fabric Drape and Gravity Representation:** The bedding must show physical weight, draping over the edges of the frame with subtle tension folds [23]. It must visually pool underneath pillows and wrap realistically around corners rather than hanging as a stiff, geometric shell [23].
+*   **Silhouette Chamfering:** perfectly sharp 90-degree edges do not exist in the physical world; they appear as razor-thin catchlights [23, 24]. To capture these micro-reflections, all frame and case edges must possess subtly rounded or chamfered corners, either modeled directly into the high-poly geometry or generated procedurally via **round-edge render shaders** (such as the round edges feature in Corona and V-Ray) [23, 25].
+
+#### Technical Inspection
+*   **Mesh Density and Sub-divisibility:** The mesh must feature a clean, optimized topology composed primarily of **quad polygons** [26, 27]. Triangles are acceptable only in non-deforming flat surfaces or transition zones [26]. The mesh density must support subdivision modifiers, such as **Turbosmooth** or **OpenSubdiv**, allowing the artist to increase geometric detail for extreme close-ups without creating pinching or shading artifacts [26].
+*   **UV Layout and Distortion Auditing:** The UV coordinates must be unwrapped cleanly [26]. Visualizers apply a high-frequency checkerboard pattern to the model; any skewing, stretching (known as the **"taffy stretch"**), or mismatch in check sizes indicates faulty UV mapping that will distort fabric weaves [26, 28].
+*   **PBR Material Compliance:** Materials must adhere to physically based rendering standards [26]. Shaders must define reflectivity through roughness maps rather than static specular colors [26, 29]. Albedo maps must strictly avoid pure black (**0.0**) and pure white (**1.0**) values, as these do not exist in the physical world and break energy conservation laws in modern renderers [26, 30].
+
+---
+
+### 4. Material Management Policies for Secondary Case Goods
+
+For secondary case goods (such as nightstands, dressers, and shelving units), studios implement a strict material policy to maintain visual consistency across the entire space [31]. Lower-tier asset vendors often bundle lower-resolution or uncalibrated textures that clash with high-fidelity hero assets [31]. 
+
+#### The "Trial-by-Zoom" Rendering Test:
+To determine whether to keep or rebuild a case good’s materials, studios employ the **"Trial-by-Zoom" Rendering Test** [31]. The asset is placed in the scene under target lighting and rendered using the specific camera focal length and final output resolution [31]. The rendering is then cropped and inspected at a **100% zoom level** [31]. If the wood grain appears blurry, the specular highlights look plastic or metallic, or if there are visible repeating tiles, the material fails the audit and must be completely rebuilt [31, 32].
+
+When rebuilding case good materials, visualizers utilize several advanced procedural and mapping workflows:
+*   **Automated Material Conversion:** Visualizers rely on conversion scripts to translate imported assets into native rendering formats [33]. In 3ds Max, utilities like the **Corona Converter**, **V-Ray Scene Converter**, or **V-RayMax Converter PRO** translate standard or foreign physical materials into native V-Ray or Corona physical formats [11, 33].
+*   **Normal Map Calibration:** Shading errors can occur due to mismatches in normal map tangent bases [33]. Normal maps must be loaded into the renderer using a **Linear (gamma 1.0)** color space [33]. If a normal map is loaded with sRGB (gamma 2.2) correction, it generates incorrect lighting calculations, manifesting as flat reflections or unnatural geometric creases [33, 34]. If the wood pores or bevel details appear concave (pushed inward) when they should be convex (raised outward), the green channel (Y-axis) of the normal map must be inverted within the shader properties (e.g., ticking **"Flip Y" or "Invert Green Channel"**) to restore correct depth rendering [33, 35].
+*   **Batch Scene Repathing:** When importing assets, linked file paths for albedo, roughness, and normal maps are often lost or severed, rendering the asset black or grey [33]. Studios resolve this by running Colin Senner’s **Relink Bitmaps** script [33]. This utility recursively scans local and network directories to automatically identify and repath missing image textures, V-Ray proxies, Corona proxies, and IES photometric files, restoring the material graph in a single click [33]. Settings are stored in the `Relink Bitmaps.ini` file located at: `C:\Users\USER\AppData\Local\Autodesk\3dsMax\MAXVERSION\ENU\scripts` [33].
+*   **Procedural Alignment:** For wooden furniture with complex joints, traditional UV unwrapping can result in misaligned wood grains and visible seams [36]. Studios apply **Triplanar Mapping** to project wood textures along three orthogonal planes (X, Y, and Z) using local-space coordinate projections [36, 37]. This procedural projection eliminates seams at the edges of nightstands or drawer corners and ensures that the wood veneer maintains a uniform, realistic scale even if the model is non-uniformly stretched or scaled [36, 37].
+
+---
+
+### 5. Texel Density Auditing and Micro-Detail Optimization
+
+Texel density measures the absolute quantity of texture pixels (texels) mapped over a unit of physical 3D space [38]. To ensure that a wooden nightstand drawer or a fabric bedsheet retains crisp details under close-up "hero" camera angles, studios audit and standardize the scene's texel density [38].
+
+#### Mathematical Representation
+Texel density is calculated by dividing the resolution of the applied texture map by the real-world physical dimensions of the object’s bounding box [39, 40]:
+\\[\text{Texel Density} = \frac{\text{Texture Resolution (pixels)}}{\text{Physical Bounding Box Size (meters)}} \quad \text{[39]}\\]
+
+*Example:* If a 4096 x 4096 pixel texture (**4K**) is mapped onto a flat 2-meter headboard, the texel density is calculated as [39]:
+\\[\text{Texel Density} = \frac{4096\text{ px}}{2.0\text{ m}} = 2048\text{ px/m} = 20.48\text{ px/cm} \quad \text{[39]}\\]
+
+#### Auditing and Measurement Tools
+Professional studios utilize dedicated tools and scripts to audit and set texel density uniformly across all imported assets:
+*   **3ds Max Environment:** Artists deploy the **Advanced UV Normalizer (AUVN)** script [41]. AUVN calculates the precise texel density of selected objects based on their real-world geometry area, UV area, and texture map resolution, allowing artists to set a global target density scene-wide [41]. Alternatively, the free **Texel Density Tool** (`mstexeldensitytool.ms`) is used within the Unwrap UVW modifier to measure and scale UV shells to exact pixels-per-meter values [21, 41].
+*   **Blender Environment:** Visualizers use Ivan Vostrikov's **Texel Density Checker** add-on [41]. This tool allows artists to select a mesh face, input a target texture resolution, and calculate the current density in px/m or px/cm [41]. The UV islands can then be scaled interactively to match the exact target density [41, 42]. For parametric pipelines, the **UnwrellaConnect** tool is utilized to scale UV layouts automatically based on explicit real-world metric dimensions [39, 41].
+
+#### Camera-Zone Texel Density Standards
+The target texel density must be adjusted based on the distance from the camera to optimize GPU memory and maintain visual consistency [43, 44]:
+
+| Camera Zone / View Type | Target Texel Density (px/m) | Target Texel Density (px/cm) | Required Texture Map Size (per 1m Bounds) |
+| :--- | :--- | :--- | :--- |
+| **Background / Far Environment** [43] | **512 px/m** [43] | **5.12 px/cm** [43] | 512 x 512 pixels [43] |
+| **Midground / Standard Interactive** [43] | **1024 px/m** [43] | **10.24 px/cm** [43] | 1024 x 1024 pixels [43] |
+| **First-Person Hero Asset (Mid-Close)** [43] | **2048 px/m to 4096 px/m** [43] | **20.48 px/cm to 40.96 px/cm** [43] | 2048 x 2048 to 4096 x 4096 pixels [43] |
+| **Extreme Macro Shot (Close-up Detail)** [43] | **8192 px/m to 51,200 px/m** [43] | **81.92 px/cm to 512.00 px/cm** [43] | 8192 x 8192 pixels or multiple UDIM tiles [43] |
+
+#### Mitigation Workflows for Coarse Texel Density
+When an imported bed or case good displays an inadequate texel density for close-up shots, rendering it blurry or pixelated, professional studios execute four production workflows to restore visual clarity [36]:
+1.  **Multi-Tile UDIM Unwrapping:** If the asset is mapped to a single texture sheet, the UV layout will restrict image resolution [36]. The artist can unwrap the model across multiple UDIM tiles [36]. By splitting the mattress, sheets, and frame into separate UDIM tiles, each component can utilize its own high-resolution (e.g., 4K) texture map, multiplying the local texel density without requiring a single, unmanageable 8K or 16K file [36].
+2.  **Seamless Coordinate Tiling:** For uniform materials (such as woven bedding fabrics or wood veneers), non-tileable single textures can be replaced with seamless, tileable PBR maps [36]. By increasing the tiling coordinate multipliers in the material's mapping node, the texture repeats across the geometry, increasing the effective texel density without consuming additional VRAM [36].
+3.  **Procedural Triplanar Mapping:** Using the Triplanar Mapping node eliminates seams at the edges of nightstands or drawer corners and ensures that the wood veneer maintains a uniform, realistic scale even if the model is non-uniformly stretched or scaled [36, 37].
+4.  **Micro-Normal and Detail Map Blending:** To preserve sharp surface details at grazing angles under extreme close-ups, studios layer micro-textures [36]. A macro-normal map representing the broad fabric folds or wood grain is blended with a secondary, high-frequency micro-normal map representing the tiny fabric fibers, plies, or wood pores [36, 45]. In V-Ray, this is achieved by nesting the maps within a **VRayBumpMtl** or using a **VRayCompTex** node set to an additive operator [36]. In Corona, a **CoronaMix** node or custom Reoriented Normal Mapping (RNM) OSL shaders are deployed to combine both normal maps cleanly [36]. This approach preserves crisp details under close camera angles, preventing the pixelation associated with standard textures [36].
+5.  **Advanced Physical Shaders:** For high-end fabrics, utilizing the specialized **Corona Fabric Material** that procedurally generates warp, weft, plies, twisting, and fiber micro-normals with parallax calculations, preventing a "printed-on" texture appearance under close-up views [36].
+
+---
+
+🎧 This detailed setup would actually make an exceptional audio briefing if you want a reference you can listen to on the go. Want me to generate an Audio Overview based on this?

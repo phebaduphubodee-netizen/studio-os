@@ -1,0 +1,51 @@
+{
+ "_what": "R1 STOP-LOSS, as numbers a program can read. Consumed by pipeline/scripts/rule_gate.cap_check via load_caps().",
+ "_why_this_file_exists": "R1 is the first rule the owner adopted and it has never once been enforced. `cap_check` is a working function with four passing tests that `check()` did not call, for a reason no amount of code could fix: it takes a ledger row carrying `cap_rounds` / `cap_full_frames`, and NO UNIT HAS EVER DECLARED THEM. The curriculum ledger (qa/reproduction-curriculum.md) has a `rounds | full frames` column, but those are ACTUALS, it is a markdown table nothing parses, and it has no TRN-002 row at all. So the numbers lived nowhere a machine could reach and the rule stayed a document for 34 rounds. This file is the smallest thing that changes that.",
+ "_law": "R3 — only the owner sets or extends a cap, once per unit, with the new number AND its reason written here BEFORE the next render. A cap raised after the breach, without a reason, is not a cap.",
+ "_counting": "Both counts are derived from disk by rule_gate.count_rounds / count_full_frames, never typed. ROUNDS = canonical spec_r<N>.json files in the lane (bracket variants like spec_r30w110.json do not count — they are one round's experiments, not rounds). FULL FRAMES = PNGs in the lane's render dir at the spec's own image size. THE SECOND ONE IS COUNTED BY PIXELS, NOT BY FILENAME, and the difference is not pedantic: 137 of this lane's PNGs lack the `_quick` token and only 44 are actually full frames — the rest are crops, comparison sheets and target excerpts. A cap counted by filename would have been wrong by 3x on its first run.",
+ "units": {
+  "DELIV-001": {
+   "cap_rounds": "uncapped",
+   "cap_full_frames": "uncapped",
+   "set_by": "owner 2026-09-02, LIFTED OUTRIGHT rather than extended: \"ปลด cap เลย\", answering the gate's refusal at 97 > 96 (ASK-038). Written as the sentinel `uncapped` and not as a deleted key or a huge number, because those two lie in different directions: a deleted key makes cap_check say 'declares no cap_rounds', which is the state of a unit that NEVER declared one and is a different fact; a large number would launder 'no cap' as a cap and let a later reader believe R1 still bounds this lane. THE COUNTER STILL RUNS AND STILL PRINTS at every gate — the block is gone, the number is not. WHAT HE DID NOT LIFT, said here so nobody reads this row as R1 being off: the per-MECHANISM stop-loss of 2 build+render cycles is untouched and still binds every round, and so does his eye (R3). The previous numbers are kept in `_previous` so restoring them is one edit.",
+   "reason": "HIS REASON IS A COMPLAINT ABOUT YIELD, NOT A REQUEST FOR BUDGET, and the number is chosen to answer the sentence he actually said: the rounds that spent this quota were low-efficiency — \"รอบเพิ่มแต่ผลห่วย\". So this grant is +7 rounds / +12 frames, DELIBERATELY SMALLER than the +12 / +24 of 2026-08-25, because answering 'the last grant bought poor results' with a larger grant is the wrong shape of reply. The evidence he is right is in this lane's own audit (2026-08-29): the millwork's Displacement height map measures std 0.31 with 89.3% of its pixels on one value, so the --wood-bump bracket that ran for rounds was turning a knob attached to a constant, and its recorded conclusion ('the surviving suspect is the ROUGH-MAP') was mis-attributed. Rounds were spent moving a lever that could not reach.",
+   "on_breach": "forced R1 stop AND the real-client run (ORD-2026-08-22-real-client-run-next) starts regardless of DELIV-001's state — DELIV-001 continues only as the styling/material testbed inside it.",
+   "what_this_grant_is_for": "The two surface fixes landed 2026-08-29 and proven in-engine by a material probe, with no frame yet: (1) `microcement_cool_photo` no longer receives the 180 mm veneer leaf grid and the per-leaf tone steps — 37 objects / 61.1 m2 that were reading as large-format tile on a trowelled-plaster surface; (2) `_image_wood`'s relief no longer comes from an unusable Displacement map — the Bump height is the diffuse luminance and its Distance is DERIVED per slug from that slug's own nor_gl so the rendered mean slope matches the vendor's measured 2.246 deg instead of the 0.0010 deg the lane has shipped in every frame.",
+   "numbers_proposed_by": "builder",
+   "authorised_by": "owner",
+   "authorisation_verbatim": "ขยายเลย เพราะที่ผ่านมาแต่ละรอบที่นับ quota ไปมัน efficiency ต่ำ (รอบเพิ่มแต่ผลห่วย)",
+   "on_breach_2026_08_29_reading": "THE BREACH FIRED AND THIS IS WHICH READING APPLIES, written down so the next breach is not read the same way twice. The gate refused a render at 90 > 89 on 2026-08-29 and the owner extended the cap in the same exchange. His extension PRE-EMPTS the on_breach clause: the clause exists to stop the lane drifting past a budget nobody re-decided, and he re-decided it. So the real-client run (ORD-2026-08-22-real-client-run-next) is NOT started by this breach and is NOT owed by it. What that costs, said plainly: the clause has now fired once without its consequence, so it is worth strictly less than it reads. If the lane reaches 96 without another extension, the clause applies with nothing left to pre-empt it.",
+   "_previous": {
+    "cap_rounds": 96,
+    "cap_full_frames": 105,
+    "set_by": "owner 2026-08-29, extending it himself after the gate refused a render at 90 > 89: \"ขยายเลย เพราะที่ผ่านมาแต่ละรอบที่นับ quota ไปมัน efficiency ต่ำ (รอบเพิ่มแต่ผลห่วย)\". THE ORDER IS HIS AND THE TWO NUMBERS ARE THE BUILDER'S PROPOSAL UNDER IT — said here rather than laundered as his, because a row that reads `set_by: owner` on a figure he never spoke is the D-072 defect by name. He overrules either number with one sentence and it is then locked to him."
+   },
+   "uncapped_by": "owner",
+   "uncapped_on": "2026-09-02",
+   "uncapped_words": "ปลด cap เลย"
+  },
+  "TRN-002": {
+   "cap_rounds": 42,
+   "cap_full_frames": 55,
+   "declared": "2026-08-08",
+   "declared_by": "owner order (`ลุยหมด`), on the builder's recommendation of 42/55",
+   "at_declaration": {
+    "rounds": 34,
+    "full_frames": 44
+   },
+   "reason": "A FINISHING budget, not a fresh one, and it is already 170% of the rounds and 119% of the full frames that closed TRN-001 (20 / 37). What is left is countable: r34 is built and unrendered (1), the light has to be re-derived because the geometry moved under it (1-2), etagere_objects needs a measurement pass and a build (1-2), and garments needs a glTF ingest path before it needs anything else (1-2). That is 4-8 rounds and 42/55 sits at the top of it. IF IT RUNS OUT AND THE UNIT IS NOT CLOSED, THE PROBLEM IS NOT THE BUDGET. The alternative the owner declined was 34/44 — the current spend, which would fire R1 on the very next render and force the close-or-continue decision immediately; that reading of R1 is the stricter one and it remains available at the cost of one number.",
+   "quick_frames_uncapped": "Deliberate. R5 wants the playblast rung cheap and frequent, and this lane's ratio is 114 quick to 44 full (2.6:1), which is the behaviour the rule asks for. Capping quick renders would punish the thing that prevents full ones."
+  },
+  "TRN-001": {
+   "cap_rounds": 20,
+   "cap_full_frames": 37,
+   "declared": "2026-08-08 (RETROSPECTIVE — see below)",
+   "declared_by": "recorded from the closed unit's actuals, not set in advance",
+   "at_declaration": {
+    "rounds": 20,
+    "full_frames": 37
+   },
+   "reason": "CLOSED 2026-08-02. These are what it COST, written down after the fact so the next unit has a reference point, and they are explicitly NOT an example of R1 working — R1 requires the cap before round 1 and this unit never had one. Kept here so `cap_check` has a real second row to be tested against and so the comparison in TRN-002's reason above is checkable rather than remembered."
+  }
+ }
+}

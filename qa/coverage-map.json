@@ -1,0 +1,294 @@
+{
+ "_law": "THE MAP THE HEAD STOPPED BEING ABLE TO HOLD (owner 2026-08-22: 'project ใหญ่เกินกว่าที่ตรวจเช็คได้ว่าขั้นไหนผิดอะไรแล้วใช่ไหม' -> advice -> 'ลุย', ORD-2026-08-22-front-door-dims). One row per check the render lanes actually run, classified by (1) STAGE — where in the pipe it fires, and (2) COMPARES — what it holds the work against: a = our own spec/derivation/history (self-consistency), b = the client's sheet / the target / the delivered anchor pool, c = a WORLD standard independent of both, d = process-state (registers, orders, ledgers). The first full census (2026-08-22, 5-agent sweep) found 28 rungs: a=9 b=4 c=3 d=12, with ONE blocking world-standard check on the render path — which is the measured answer to why 'the bed is too small' had no asker. ADMISSION of new rows is governed by D-112 (a new instrument must give eyes to a none_yet critic-debt class, replace a proven liar, or be owner-ordered — printed in the gate that introduces it; enforcement is discipline in gate artifacts, NOT a new checker, by D-112's own words). The defect-class half of the map is qa/critic-debt.json's none_yet rows — this file does not duplicate them. plan_status prints this map's summary at every session open; a map nobody prints is the queue-with-no-consumer defect wearing a map.",
+ "updated": "2026-08-29",
+ "classes": {
+  "a": "own-spec/self-history",
+  "b": "sheet/target/anchor-pool",
+  "c": "world-standard",
+  "d": "process-state"
+ },
+ "stages": [
+  "ingest",
+  "spec",
+  "bench",
+  "scene-dump",
+  "render",
+  "process"
+ ],
+ "rungs": [
+  {
+   "name": "asset_scale (ingest assert)",
+   "stage": "ingest",
+   "compares": "c",
+   "blocking": true,
+   "note": "UNIT only, by its own docstring — size-for-class is dim_check's job"
+  },
+  {
+   "name": "texture_scale (STY-8)",
+   "stage": "ingest",
+   "compares": "c",
+   "blocking": true,
+   "note": "qa/texture-scale.json + <slug>.scale.json beside every cached set: the world size of one texture repeat as the PUBLISHER declares it, against the size the code maps it at. R8 says scale is asserted on every ingest; the mesh side has had asset_scale since 2026-08-01 and the texture side had nothing, so wood_floor was mapped at nine bare literals and the room floor drew 266.67 mm boards from a 188.9 mm photograph. PURE (no PIL/bpy) so check_room calls it directly rather than spawning it. Sweep backlog and scale-debt are both ratchets."
+  },
+  {
+   "name": "model_assert_check",
+   "stage": "ingest",
+   "compares": "a",
+   "blocking": true,
+   "note": "spec vs sidecar vs live re-measure; re-checks asset_scale bands"
+  },
+  {
+   "name": "audit_spec (R10 prov)",
+   "stage": "spec",
+   "compares": "a",
+   "blocking": true
+  },
+  {
+   "name": "contact_check (R9)",
+   "stage": "spec",
+   "compares": "a",
+   "blocking": true,
+   "note": "repro lane"
+  },
+  {
+   "name": "contact_check.undeclared",
+   "stage": "spec",
+   "compares": "a",
+   "blocking": false
+  },
+  {
+   "name": "craft_check (arc-minute)",
+   "stage": "spec",
+   "compares": "c",
+   "blocking": false,
+   "note": "advisory only"
+  },
+  {
+   "name": "pixel_check.unclaimed",
+   "stage": "spec",
+   "compares": "d",
+   "blocking": false
+  },
+  {
+   "name": "coverage_check (R10)",
+   "stage": "spec",
+   "compares": "a",
+   "blocking": true,
+   "note": "repro lane; manifest is our own reading"
+  },
+  {
+   "name": "wholebed bench filters",
+   "stage": "bench",
+   "compares": "b+c",
+   "blocking": true,
+   "note": "qualifier, not gate; front-door anchor_std row added 2026-08-22; D-120 (2026-08-23): the size anchor is the MATTRESS by geometry (pick_mattress, probe cover/top_med/relief), bare-mattress tol +-50 (knowledge:45,124), scale lands the mattress in the slot, the FRAME is capped by the drawn bed rect SR-07 (b); carry_ons stripped at the bench as at the hook; cluster overhang + neighbour clearance REPORTED"
+  },
+  {
+   "name": "placement_check (R9b)",
+   "stage": "scene-dump",
+   "compares": "c",
+   "blocking": true,
+   "note": "physics: floating/overhang/off-axis",
+   "room_lane_debt": {
+    "since": "2026-08-24",
+    "why": "DECLARED blocking here and spawned by neither render path: its only non-test callers are trn001_build.py:394 and trn002_build.py:543, both reproduction lanes, and build_room.py mentions it in one comment. Found 2026-08-24 by the guard in test_rule_gate that this row is now the first exemption to — the same sweep that found sheet_recon in this exact state, declared blocking for 13 days while `git log -S` showed no build had ever spawned it. R9b's own text says THE GUARD IS UNIVERSAL AND READS THE BUILT SCENE, so this is a real hole and not a lane distinction.",
+    "restart_by": "Spawn placement_check beside sheet_recon/existence_check/dim_check in build_room._score_deliverable on the scene dump, exit contract 1=fail 2=hard-stop. Expected to surface a backlog on first run (the north nightstand is already 41.9mm inside bed__frame__acq0), so it lands with its own triage round, not inside an unrelated commit.",
+    "partially_discharged_2026-08-27": "p2r85 carried out the LOAD-PATH half of this restart_by, in a different module and for a measured reason: the defect that forced it (nine hang rails 40 mm short of both gables) walks straight through FLOATING, and two of the nine were excused by the CLOTHES HANGING ON THEM. So the render now spawns `carry_check` (below), which asks what HOLDS a mass. THIS ROW IS NOT CLOSED: OVERHANG and OFF-AXIS are still unwired on this lane, and OFF-AXIS physically cannot run off scene-dump@2 (no rotation is recorded — a world AABB hides a tilt). Do not read the new rung as this one."
+   }
+  },
+  {
+   "name": "carry_check (P2r-28)",
+   "stage": "scene-dump",
+   "compares": "c",
+   "blocking": true,
+   "note": "load path: what carries each mass to the ground — RESTS-ON / HANGS-FROM / HUNG-ON / FIXED-IN / FASTENED-TO / ANCHORED-TO, ledgered backlog in qa/carry-ledger.json",
+   "admitted_by": "D-112: gives an eye to the class DEBT-19 excludes in its own covers-text ('a slab supported at one end and unsupported at the other') and re-arms DEBT-08 (seat-impossible) on a lane where placement_check has never been spawned. First run found the stool cushion floating 1.0 mm — DEBT-08's first live reading on this lane."
+  },
+  {
+   "name": "transform_check (apply-transforms)",
+   "stage": "scene-dump",
+   "compares": "a",
+   "blocking": true,
+   "note": "does a modifier width still mean millimetres — a mesh carrying SOLIDIFY/BEVEL/MIRROR/ARRAY/SCREW/SKIN/WIREFRAME must stand at scale 1, because those modifiers read their widths in LOCAL space while every AABB-reading rung in this repo reads WORLD size and stays green. Scope is the closed set of scale-sensitive MODIFIER TYPES, never a list of object names (R9b). Positive control fires every run; a dump written before the `scale` key exits 2.",
+   "admitted_by": "D-112 shape: learned 2026-08-29 from video 1i6woUR4iQA, whose closing line is 'use reference, get measurements, and APPLY THE TRANSFORMS'. GREEN on the scene of record when it shipped (p2r90: 496 meshes, 0 non-unit, 244 BEVEL modifiers, 0 of them scaled) — it is admitted not because it convicts something today but because the invariant was being held by a SIDE EFFECT nobody wrote down: `_bake_transform_to_mesh` does a hand-rolled Ctrl+A at all three glTF import sites and argues its whole 45-line docstring in TEXTURE space, never mentioning a modifier. `bpy.ops.object.transform_apply` appears 0 times repo-wide.",
+   "class_a_limit": "IT IS A SELF-CONSISTENCY RUNG AND MUST NOT BE READ AS MORE. It proves a declared width reaches the geometry unchanged; it cannot tell whether the width itself was the right number. R7b's law applies unaltered — this measures HOW MUCH, and only an eye says WHAT is wrong. Its sibling defect (the millwork arris at 1.2 mm is sub-pixel and renders no highlight at all) is invisible to it by construction."
+  },
+  {
+   "name": "edge_highlight (bevel px)",
+   "stage": "scene-dump",
+   "compares": "a",
+   "blocking": false,
+   "note": "REPORTING LINE, NOT A CUT. Divides each in-frame bevel's width by that object's own `mm_per_px` (computed inside Blender against the real camera) and prints how many subtend less than one pixel. Measured 2026-08-29: MILL_BEVEL_M = 0.0012 renders at 0.37 px on the wardrobe wall (~3.9 m, 18 mm lens, 2400 px) — right about the world, invisible in the frame.",
+   "why_not_blocking": "Failing a frame needs a threshold, and the pixel width an edge highlight must have has NEVER been measured off delivered work. A number invented in the rung would carry the rung's authority instead of the anchor pool's — the 'a number changed to look productive' defect. Same shape and same reason as the plan's DELIVERED-WORK VALUE BAND, which is a line for exactly this reason. Its own exit 2 also does not stop the build: a rung with no authority over the frame must not acquire it through the back door of its own failure.",
+   "promote_by": "Measure the edge-highlight width, in pixels at a known scale, off the anchor pool (R4). That reading — not this file — sets the cut, and promoting it is a deliberate edit to test_edge_highlight.py's `test_a_frame_where_every_edge_is_invisible_still_exits_0`.",
+   "class_a_note": "Filed 'b' on the first draft and that was wrong: class b is sheet/target/anchor-pool, and this rung reads NOTHING outside our own scene — a bevel width from our dump divided by a mm/px from our camera. It BECOMES a b-class rung only when the anchor-pool reading in `promote_by` exists to compare against, and misfiling it as b beforehand would have let the coverage map claim an outside comparison the repo does not have."
+  },
+  {
+   "name": "sheet_recon (R12)",
+   "stage": "scene-dump",
+   "compares": "b",
+   "blocking": true
+  },
+  {
+   "name": "existence_check (R10)",
+   "stage": "scene-dump",
+   "compares": "a",
+   "blocking": true,
+   "note": "vs human-signed ledger"
+  },
+  {
+   "name": "dim_check (front door)",
+   "stage": "scene-dump",
+   "compares": "c",
+   "blocking": true,
+   "note": "ADDED 2026-08-22, ORD-front-door-dims: built dims vs world standards, no allowlist"
+  },
+  {
+   "name": "pixel_check (R11)",
+   "stage": "render",
+   "compares": "b",
+   "blocking": true,
+   "note": "repro lane (target image)"
+  },
+  {
+   "name": "deliverable_check",
+   "stage": "render",
+   "compares": "b",
+   "blocking": true,
+   "note": "thresholds = delivered-pool percentiles; low score is not a stop, exit-2 is"
+  },
+  {
+   "name": "bed_pixels ratchet",
+   "stage": "render",
+   "compares": "a",
+   "blocking": true,
+   "note": "vs our own baseline; grounded once by sighted panel"
+  },
+  {
+   "name": "value_probe ladder",
+   "stage": "render",
+   "compares": "a",
+   "blocking": true,
+   "note": "signed tonal targets (D-076)"
+  },
+  {
+   "name": "p2_exit harness",
+   "stage": "render",
+   "compares": "b",
+   "blocking": false,
+   "note": "exit 1 is a score"
+  },
+  {
+   "name": "audit_bundle (R7 triage)",
+   "stage": "process",
+   "compares": "d",
+   "blocking": true,
+   "note": "repro lane"
+  },
+  {
+   "name": "audit_blind_ask (R7c)",
+   "stage": "process",
+   "compares": "d",
+   "blocking": true,
+   "note": "repro lane"
+  },
+  {
+   "name": "audit_learning",
+   "stage": "process",
+   "compares": "d",
+   "blocking": true,
+   "note": "repro lane"
+  },
+  {
+   "name": "baseline_ratchet",
+   "stage": "process",
+   "compares": "a",
+   "blocking": true,
+   "note": "repro lane; vs git HEAD predecessor"
+  },
+  {
+   "name": "audit_continuity",
+   "stage": "process",
+   "compares": "a",
+   "blocking": true,
+   "note": "repro lane"
+  },
+  {
+   "name": "R1 cap counter",
+   "stage": "process",
+   "compares": "d",
+   "blocking": true
+  },
+  {
+   "name": "decisions_check",
+   "stage": "process",
+   "compares": "d",
+   "blocking": true
+  },
+  {
+   "name": "orders_check (R13)",
+   "stage": "process",
+   "compares": "d",
+   "blocking": true
+  },
+  {
+   "name": "asks_check (R13)",
+   "stage": "process",
+   "compares": "d",
+   "blocking": true
+  },
+  {
+   "name": "sourcing_check (R13)",
+   "stage": "process",
+   "compares": "d",
+   "blocking": true
+  },
+  {
+   "name": "repo_first",
+   "stage": "process",
+   "compares": "d",
+   "blocking": true
+  },
+  {
+   "name": "debt_check",
+   "stage": "process",
+   "compares": "d",
+   "blocking": true,
+   "note": "repro lane; its none_yet rows are the map's defect-class half"
+  },
+  {
+   "name": "plan_status print rung",
+   "stage": "process",
+   "compares": "d",
+   "blocking": false
+  },
+  {
+   "name": "style_check (STY-1)",
+   "stage": "process",
+   "compares": "d",
+   "blocking": true,
+   "note": "qa/style-of-record.json: nine material slots signed or dated-unsigned, prohibitions with a test, one style name. Wired into check_room (the lane that renders), not check()/enforce()"
+  },
+  {
+   "name": "style_measure palette gap (STY-1b)",
+   "stage": "post-render",
+   "compares": "a",
+   "blocking": true,
+   "note": "R11: the only style rung that OPENS THE PICTURE. style_fingerprint 60/30/10 area split off the frame of record vs concept.md§3; ratchet only ever falls. compares=a because the declared palette is our own document — it is self-consistency measured in PIXELS, not a world standard"
+  },
+  {
+   "name": "blenderkit baseline order (fetch guard)",
+   "stage": "ingest",
+   "compares": "d",
+   "blocking": true,
+   "note": "D-159. A PAID fetch is REFUSED when its pre-registered C2 class has no free baseline recorded, and when a paid fetch carries no --assert-class at all (R8, and the guard's own bypass). The protocol was correct and PRINTED by `status` for five days; p2r86 fetched three paid hung_garments without running it and contaminated that class permanently for D-119's own criterion. Reads CLASSES and the unhashed results file, so obeying the criteria freeze does not read as a violation. Free fetches are never blocked — running the free tier IS the baseline. Gated on the key so ASK-031's could-not-run (2) still outranks a protocol refusal (1)."
+  },
+  {
+   "name": "skill_usage (roster consumer)",
+   "stage": "process",
+   "compares": "d",
+   "blocking": false,
+   "note": "D-160, owner-ordered 2026-08-27. Stamps every Skill/Agent invocation from a PreToolUse hook and prints each roster entry's call count and last-used age at every session open. NON-BLOCKING by design: it counts work, it does not police it. It is in this map because the six skills of 2026-07-02 fired for two days and then went 54 days unused with nothing able to tell. CAVEAT ON THE WIRING: the hook lives in .claude/settings.local.json, which is gitignored — it runs on this machine only, and a fresh clone counts zero. Promotion into the committed law layer is a PR and the owner's call."
+  }
+ ]
+}

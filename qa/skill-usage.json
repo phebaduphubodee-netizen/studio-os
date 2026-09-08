@@ -1,0 +1,10 @@
+{
+ "_what": "Install stamp for skill_usage.py. `wired_at` is the date the counter began, so an empty log can be read as 'nothing was invoked since then' rather than as 'this has always been empty'. The rows themselves live in the append-only qa/skill-usage.jsonl (three sessions run on this repo at once; a read-modify-write JSON would drop whichever call lost the race).",
+ "_why": "owner 2026-08-27: 'มีข้อแม้ว่าทั้งหมดนี้คุณต้องเป็นคนเรียกใช้เองเมื่อต้องใช้'. The six skills of 2026-07-02 fired for two days and then never again for 54 days, and nothing in the repo could tell. This is the consumer that visits the queue.",
+ "wired_at": "2026-08-27",
+ "hook": ".claude/settings.local.json (LOCAL + gitignored — promotion into the committed law layer .claude/settings.json is a PR and the owner's call, same route guard_web took)",
+ "reads": [
+  "qa/skill-usage.jsonl"
+ ],
+ "printed_by": "pipeline/scripts/plan_status.py (every session open)"
+}

@@ -11,6 +11,9 @@ CLAUDE.local.md
 .perplexity_usage.json
 logs/
 pipeline/output/
+# Blender auto-backups anywhere in the tree (pipeline/output/ already covers its own;
+# this catches a .blend saved outside it — outside-review 2026-08-04 item 3)
+*.blend1
 # raw client intake documents (identifying: names, addresses, plan title blocks)
 # stay LOCAL-ONLY — anonymized derivatives (brief.json, specs) are what gets committed
 projects/*/00_intake/raw-local/
@@ -35,3 +38,37 @@ knowledge/_inbox/discord/**/*.rar
 # two image attachments whose Thai CDN filename lost its extension (still images, keep local)
 knowledge/_inbox/discord/**/files/145779_*
 knowledge/_inbox/discord/**/files/383192_*
+# mutation_probe.py parks the reader's pre-probe bytes here while it mutates; a killed probe
+# leaves it behind ON PURPOSE (hand-restore evidence) — it must never be sweepable into a commit
+*.probe-backup
+
+# client-derived CLIP embedding banks (Stage B2) -- never commit
+*embed-bank*.npz
+*.embedbank.npz
+
+# training/ holds TRN reproduction TEXT only (owner decision 2026-08-04, outside-review
+# item A) — every pixel layer (our renders, and target/anchor above all) stays in
+# _private/. Defensive: a stray image/blend dropped here must never ride a commit.
+training/**/*.png
+training/**/*.jpg
+training/**/*.jpeg
+training/**/*.webp
+training/**/*.blend
+training/**/*.blend1
+
+# 3D Warehouse models — Trimble General Model License: free to USE, NOT
+# redistributable AS MODELS. A model that may not be redistributed must not
+# enter version control. Fetch is reproducible from the entity id instead
+# (pipeline/scripts/warehouse.py, and every consuming spec records the id).
+assets/shared/warehouse/
+# BlenderKit assets are ROYALTY-FREE, not public domain: free to use in renders and
+# client work, NOT redistributable as models. Same reason as the Warehouse shelf above
+# — a mesh that may not be redistributed must never enter version control. Fetch is
+# reproducible from the asset id (SOURCE.json records it).
+assets/shared/blenderkit/
+# FurniMesh models are free for unrestricted commercial use, no attribution
+# (library licence, verified live 2026-08-22) — but the grant is USE, not
+# redistribution of the model files, so the shelf stays out of git like the two
+# above. Fetch is reproducible from the model page URL (SOURCE.json records it;
+# pipeline/scripts/furnimesh.py).
+assets/shared/furnimesh/

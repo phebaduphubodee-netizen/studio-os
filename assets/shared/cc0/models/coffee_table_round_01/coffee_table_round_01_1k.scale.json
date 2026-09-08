@@ -1,0 +1,23 @@
+{
+ "file": "coffee_table_round_01_1k.gltf",
+ "class": "coffee_table",
+ "axis": "z",
+ "measured_mm": 491.0,
+ "band_mm": [
+  200.0,
+  900.0
+ ],
+ "ok": true,
+ "in_band": true,
+ "thinnest_over_longest": 0.3773,
+ "min_ratio_for_class": 0.15,
+ "planar_refusal": null,
+ "bbox_mm": {
+  "x_mm": 1301.3,
+  "y_mm": 1301.3,
+  "z_mm": 491.0
+ },
+ "prims": 1,
+ "source": "knowledge/ergonomics/tv-viewing-and-furniture-dimensions.md:39-40 (coffee table 300-460, side/end 380-480); band widened to admit a low plinth table and a console",
+ "in_band_under": null
+}

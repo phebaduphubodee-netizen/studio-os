@@ -1,0 +1,89 @@
+{
+  "_provenance": "Element-7 (โซนตู้เสื้อผ้า / wardrobe bay) ink read, 2026-07-21. METHOD (right-sized like elements 3/4 — deterministic + visual, NOT a mega-workflow: the bay is 0.6pt furniture rectangles + 0.84pt wall lines, uncontested tiers): committed ink.py (f48ab205 lineage, byte-identical across 4 scratchpad copies, md5 bf5bc9c7; calibration = 03_layout/v4/floor2-walls-mm.json, 26.45 mm/pt, origin (171.2,596.5), page 1, rotation 270). VERIFIED TWO WAYS: (a) numeric — minlen sweeps of x[3100,5850] y[3400,8750] by pen weight; (b) visual — 4 self-rendered mm-grid crops (bay_overview / bf092_door / eastleg / northleg) cross-checked feature-by-feature. CALIBRATION RE-PROVEN THIS RUN: BF09-2 drawn length 1498.1 vs its own printed label 150(0)CM = -1.9mm (0.13%); leg depths 599.9 vs '60'; BF10 north face 2497.9 vs its 250 label (-2.1, the exact figure corrections_applied #10 recorded). LABELS READ VISUALLY (this sheet's text is outlined curves — text-layer extraction returns zero 'BF' anywhere): 'BF09-1.520x60x280CM' printed inside the north leg's east module; 'BF09-2.150x60x280CM' printed vertically inside BF09-2. The 'mystery symbols' the numeric sweep found at x4460-4813/y8503-8573 and x3724-3781/y5678-6672 are exactly these labels' GLYPH STROKES — resolved, no unexplained symbols remain in the bay.",
+  "_status": "INK GEOMETRY LOCKED for the ARCHITECTURE (party-wall segments, north/east walls, door mouth, THE ABSENT SOUTH WALL — reproduced to the stroke) and MACHINE-TRUEABLE per the two-layer law. The FURNITURE plane (BF09-1 both legs, BF09-2, their module splits) is OWNER/DESIGNER-AUTHORED: rectangles reproduced to the stroke, MEANING quarantined to inference_tier_questions. Same law as elements 2/3/4: adopt-the-ink is the reco, the sign-off is the owner's.",
+  "architecture_ink_trued": {
+    "west_party_wall": {
+      "band_x": [3152.8, 3254.4], "thk": 101.6, "bay_face_x": 3254.4,
+      "segments_on_bay_face": ["y5897.8->6596.1 masonry (hatched)", "y6596.1->6697.7 CLOSED on the bay side only (the slide mouth — see door_ensuite_bay_side)", "y6697.7->7595.9 OPEN (the sliding doorway)", "y7595.9->8595.7 masonry (hatched)"],
+      "south_terminus": "y5897.8/5799.4 = the ensuite south wall corner. SOUTH of it there is NO wall on this line — BF10's body (x804.1-3302.0) occupies the band.",
+      "status": "ROCK-SOLID. Same wall e4 read from the ensuite side (x3152.8 face); this is its bay face."
+    },
+    "north_wall": {"interior_face_y": 8595.7, "outer_face_y": 8697.3, "run_x": [3254.4, 5552.4], "thk": 101.6, "status": "ROCK-SOLID (0.84 + 0.12 skins). Continuous with the ensuite north wall."},
+    "east_party_wall": {
+      "band_x": [5654.0, 5752.3], "thk": 98.3, "bay_face_x": 5654.0,
+      "segments": ["y4621.9->5697.9 POCKET lanes (0.6pt cavity outline; door-sitting leaves x5657.1/5688.9 y3999.8-4612.4 — already in spec.door_sitting_pocket)", "y5697.9->5897.8 the 200x200 structural column (pocket terminus)", "y5897.8->6199.4 masonry 301.5", "y6199.4->6297.7 junction gap (sitting-room partition y6199.4/6297.7 x5752.3->6152.3 tees in from the east — not a bay opening)", "y6297.7->8097.4 hatched masonry 1799.7 (the door-sitting note's band)", "y8097.4->8195.8 junction gap (second sitting-room partition tee)", "y8195.8->8595.7 masonry 399.9"],
+      "status": "ROCK-SOLID. The two 98.4 'gaps' are junctions where sitting-room partitions meet the party wall from the east — no stroke opens them into the BAY; the bay face x5654.0 is continuous masonry/pocket-back from y5697.9 north (BF09-1's east leg back covers y4621.9->8595.7 in front of it anyway)."
+    },
+    "south_boundary": {
+      "finding": "NO WALL EXISTS. The ensuite south wall (y5799.4/5897.8 band) ENDS at the party wall x3152.8; east of x3254.4 not one stroke crosses the y5800-5900 band anywhere in x[3254,5654]. The bay is OPEN to the dressing corridor.",
+      "build_consequence": "The spec subroom outline's south edge ([3150,5850]->[5650,5850]) is a ZONE boundary, not a wall — but build_room.poly_walls_bpy builds walls on EVERY subroom outline edge, so every render since the subroom landed has carried a PHANTOM full-height wall sealing the bay shut. No camera has ever seen it (e5 recorded the bay as 'RCP-tier placeholder NO camera sees'). Element-7 build MUST make zone-not-wall explicit spec DATA with a consumer, and the e6 door-ensuite-baycut (a hole through the phantom's west return) stays necessary for the COINCIDENT west wall only.",
+      "status": "ROCK-SOLID (an absence verified across the full band at minlen 30, numeric + visual)."
+    },
+    "door_ensuite_bay_side": {
+      "rough_opening_y": [6596.1, 7595.9], "rough_len": 999.8,
+      "bay_face_closed_y": [6596.1, 6697.7],
+      "clear_passage_y": [6697.7, 7595.9], "clear_len": 898.2,
+      "leaf": {"x": [3263.9, 3292.5], "thk": 28.6, "y": [6697.7, 7595.9], "len": 898.2},
+      "lane": {"from_wall_face_x": 3254.4, "to_bf092_west_face_x": 3302.0, "clear": 47.6},
+      "resolution_of_e4_residual": "e4 logged 'rough 999.8 vs leaf 898.2' unresolved. The bay side answers it: the wall's bay face CONTINUES 101.6 past the ensuite-side jamb (y6596.1->6697.7, a real 0.84 stroke, 6.4x pen res) = the SLIDE MOUTH housing; clear passage = leaf length = 898.2 exactly.",
+      "slide_direction_arithmetic": "SOUTH, surface-slide in the 47.6 lane BEHIND BF09-2 (concealed-by, the same trick the owner named for the sitting pocket): (1) the lane exists only south (BF09-2 stands 47.6 off the wall; north of the opening only 400.0 of face remains before BF09-1's north leg — an 898 leaf cannot park); (2) fully open, the leaf spans y5799.5->6697.7 — its south end lands on the y5799.4 BF10/ensuite-wall plane to 0.1mm; (3) BF09-2's north end (y6697.7) IS the mouth line, and its 1498 run covers the parked leaf with 600 to spare; (4) leaf thk 28.6 in a 47.6 lane leaves 9.5 each side = below the 15.87 pen width, NOT quotable as clearance (hardware tier). This is an INFERENCE-tier mechanism read (strong arithmetic), not a stroke: owner/designer confirm remains open from e4 §8 Q1 — but the candidate is now SURFACE-slide in an external lane, NOT an in-wall pocket (a 101.6 wall carries no lane).",
+      "status": "geometry ROCK-SOLID; mechanism = inference (see inference_tier_questions)."
+    }
+  },
+  "furniture_ink_read": {
+    "_law": "OWNER/DESIGNER-AUTHORED furniture plane (two-layer law). Rectangles + module lines reproduced to the stroke; MEANING (front style, door leaves, internal fit-out, z) belongs to DD/owner — a 1:75 furniture plan draws carcass modules, not fronts (corrections #10 (iii): module lines are how the run is BUILT, never a design instruction).",
+    "bf09_1_east_leg": {
+      "x": [5054.1, 5654.0], "depth": 599.9, "y": [4621.9, 8595.7], "len": 3973.8,
+      "carcass_rails_y": [5174.1, 6272.4, 7373.7],
+      "bays_s_to_n": [552.3, 1098.2, 1101.4, 1222.0],
+      "corner_note": "The L-CORNER BELONGS TO THIS LEG: it runs unbroken to the north wall (y8595.7); the north leg butts into its west face at x5054.1 (front-face line y7995.8 stops AT x5054.1). Top bay 1222.0 = 622.1 (to the north-leg front plane) + 599.9 (the corner).",
+      "south_end": "y4621.9 = door-sitting's north jamb TO THE STROKE — the wardrobe is the doorway's north bracket (spec already recorded this pairing).",
+      "back": "ON the sitting-room party wall face x5654.0; conceals the door-sitting pocket (y4621.9-5697.9) exactly as the owner declared ('ซ่อนหลัง BF09-1' = concealed-by).",
+      "spec_diff": "spec x5050 y4674 w600 d3376 -> ink x5054.1 y4621.9 w599.9 d3973.8 (the spec ran the leg only to y8050, leaving a 545.7 hole between its end and the north leg's body; the ink runs it into the north wall and gives the corner to this leg)."
+    },
+    "bf09_1_north_leg": {
+      "x": [3254.4, 5054.1], "len": 1799.7, "y": [7995.8, 8595.7], "depth": 599.9,
+      "module_dividers_x": [3327.4, 4428.8],
+      "modules_w_to_e": [73.0, 1101.4, 625.3],
+      "west_sliver_note": "73.0 at the party wall = a drawn end filler/scribe panel (too narrow for storage; 4.6x pen res, real).",
+      "label": "BF09-1.520x60x280CM printed in the 625.3 east module.",
+      "spec_diff": "spec x3150 y8050 w2500 d600 -> ink x3254.4 y7995.8 w1799.7 d599.9 (the spec ran it wall-to-wall x3150-5650 THROUGH the east leg's body; the ink butts it into the east leg at x5054.1 and starts it at the party wall face 3254.4, not the wall centreline 3150)."
+    },
+    "bf09_1_label_reconcile": "Front-face convention: east-leg front (y4621.9->7995.8 = 3373.9) + north-leg front (x3254.4->5054.1 = 1799.7) = 5173.6; outer-edges-minus-corner gives the identical 5173.6. Label 520CM: -26.4 (0.5%) — the EXACT figure corrections #10 (iv) withdrew as 'depends on a corner-counting convention the reader does not know' (1.7 pen widths). Recorded, NOT a finding.",
+    "bf09_2": {
+      "x": [3302.0, 3803.5], "drawn_depth": 501.5, "y": [5199.5, 6697.7], "len": 1498.1,
+      "label": "BF09-2.150x60x280CM (len 1498.1 vs 1500 = -1.9; depth 501.5 vs '60' = -98.4 — a REAL designer question, the same class as BF11's drawn 498.3 vs label 600, element-2 DD §3; NOT pen res).",
+      "west_face": "x3302.0 stands 47.6 OFF the party wall bay face x3254.4 = the ensuite door's slide lane (see door_ensuite_bay_side). The spec note 'flush to ensuite east wall' is INK-FALSE.",
+      "north_end": "y6697.7 = the slide-mouth line to the stroke.",
+      "south_end": "y5199.5 = BF10's south-face plane (BF10 ink x804.1-3302.0 y5199.5-5799.4 — its east end MEETS BF09-2's west face; the two form a continuous dressing L of their own).",
+      "internal": "one divider line at y5799.4 on the west face only (aligns with BF10's north face) — carcass tier.",
+      "spec_diff": "spec x3150 y5180 w600 d1500 -> ink x3302.0 y5199.5 w501.5 d1498.1."
+    },
+    "clear_floor": "EMPTY — zero strokes in the dressing floor (x3254.4-5054.1 x y6697.7-7995.8) and the entry throat (x3803.5-5054.1 south to the corridor, checked to y3400 at minlen 30). No island, no bench, no mirror, no rug symbol. Whatever furnishes the bay floor is a pure DESIGN question, not a redrawing one."
+  },
+  "zoning_read": "The bay is the master suite's WALK-IN DRESSING ANTEROOM: enter from the bedroom's dressing corridor through the 1250.6 throat (BF09-2 east face x3803.5 -> east leg west face x5054.1), stand in a 1799.7 x 1298.1 clear floor (y6697.7->7995.8) wrapped by wardrobe on THREE sides (BF09-2 west, BF09-1 north leg + east leg), and the ensuite sliding door in the west party wall makes the bay the pivot of the suite's nightly loop: bed -> dressing corridor -> bay -> ensuite. Aisle arithmetic vs vault (casework 914 arm-swing): floor depth 1298.1 in front of the north leg, 1799.7 in front of the east leg, throat 1250.6 — every face clears 914 except BF09-2's own front, which faces the throat (1250.6) diagonally. Both wardrobe fronts also front the two door swings/slides (sitting pocket at the SE, ensuite slide at the NW) — the bay floor is circulation, and the ink leaves it bare.",
+  "inference_tier_questions": [
+    {"question": "Ensuite door mechanism: SURFACE-slide south in the 47.6 lane behind BF09-2 (this read's arithmetic) — confirm?", "why_it_matters": "Closes e4 §8 Q1 (slide/pocket + party-wall feasibility): an external lane needs NO wall cavity, so the 101.6 party wall stays honest; BF09-2's west face becomes the lane's cover and its position becomes load-bearing for the door.", "what_evidence": "Four-way arithmetic in door_ensuite_bay_side (mouth stroke, park-plane 0.1mm landing, no north park room, BF09-2 cover length).", "who_answers": "owner_or_designer", "claude_reco": "Adopt surface-slide-south as the working read; e6's jamb-hook 'fixing/backing constructability gap' note stays (hook backing on a wall that carries a slide track is still a real coordination item)."},
+    {"question": "BF09-2 drawn depth 501.5 vs label 600 — build which?", "why_it_matters": "±98 changes the throat width (1250.6 vs 1152) and the lane cover geometry.", "what_evidence": "Both faces drawn 0.6pt at 501.5 apart along the full 1498 run; label says 60.", "who_answers": "owner_or_designer", "claude_reco": "Build the DRAWN 501.5 (precedent: element-2 built BF11's drawn 498.3 and flagged the label conflict); flag to the designer with BF11's."},
+    {"question": "Wardrobe FRONTS: doors (closed) or open dressing like BF09-3 — and in what material?", "why_it_matters": "The whole element-7 design: mass, rhythm, material budget (D1-A anti-monopoly), hardware.", "what_evidence": "NONE on this tier — the sheet draws carcass modules (~1100 rhythm, the same 1101.4/1098.2 family as BF09-3's dividers), never fronts. BF09-3's open-ness came from the OWNER (ref image #3), not the sheet.", "who_answers": "DD_decides_owner_vetoes", "claude_reco": "DD decides (D7 law — decide, build, render, show the picture)."},
+    {"question": "All z (rail heights, shelf stack, plinth/reveal, leaf head) + internal fit-out?", "why_it_matters": "No stroke carries a z; internals of a CLOSED wardrobe are joinery-tier besides.", "what_evidence": "None on this sheet.", "who_answers": "DD_from_vault_else_est", "claude_reco": "Vault casework values where ingested (hang 1000-1150/1600-1750, reach 457); everything else honest [est]. [CORRECTED by DD verify 2026-07-21: this line originally cited 'shelf span <=900' as a vault value — NO PROMOTED vault row carries a shelf span (millwork-casework.md:158-163 declares spans/thicknesses a corpus GAP); the <=800-900 figure lives only as in-unit CONVENTION (_inbox/nlm-element1-dressing-wall-2026-07-16.md:61, deliberately not promoted) + as the BF09-3 DD's own studio rule quoted in the canonical spec. A bay span limit would be [est].]"}
+  ],
+  "spec_diff_candidate": {
+    "machine_true_now_architecture": [
+      "subrooms[wardrobe]: record south edge OPEN-TO-BEDROOM as DATA with a build consumer (no wall stroke exists x3254.4-5654.0; kill the phantom wall).",
+      "subrooms[wardrobe].openings.door-ensuite-baycut: add the slide-mouth note (bay face closed y6596.1-6697.7; clear passage 898.2 = leaf).",
+      "outline stays at spec convention [3150,5850]-[5650,8650]; ink faces recorded here (party face x3254.4, north y8595.7, east x5654.0)."
+    ],
+    "owner_authored_fixtures_adopt_per_two_layer_reco": [
+      "BF09-1 east leg: x5050 y4674 w600 d3376 -> x5054.1 y4621.9 w599.9 d3973.8 (leg runs to the north wall; owns the corner).",
+      "BF09-1 north leg: x3150 y8050 w2500 d600 -> x3254.4 y7995.8 w1799.7 d599.9 (butts into the east leg; modules 73/1101.4/625.3).",
+      "BF09-2: x3150 y5180 w600 d1500 -> x3302.0 y5199.5 w501.5 d1498.1 (47.6 slide lane behind it; depth-vs-label flagged)."
+    ]
+  },
+  "build_consequences_observed": [
+    "PHANTOM SOUTH WALL: poly_walls_bpy walls every subroom edge -> the bay renders sealed. Zone-not-wall must become spec DATA + consumer in the e7 build.",
+    "SUBROOM FIXTURE ROUTING: subroom fixtures reach only bathroom.fixture_parts; kind='wardrobe' falls to the white-box fix__ fallback — the bay's three masses currently render as blank slabs. e7 must route them to real joinery WITHOUT widening the bathroom lane's contract.",
+    "E5 BAY LIGHTING PREMISE DIES: the 2-can bay ambient row was excluded from LOOK sign-off because 'NO camera sees' the bay — e7 adds the first bay cameras, so that exclusion must be AMENDED and the row LOOK-verified (positions re-derive from the trued geometry by design; the full-height clip set reads the bay fixtures, so their re-geometry flows through).",
+    "CAMERA MECHANISM READY: eye_camera.in_subroom matches by name substring — 'wardrobe' reaches the bay subroom; other subrooms + builtins still occlude."
+  ]
+}

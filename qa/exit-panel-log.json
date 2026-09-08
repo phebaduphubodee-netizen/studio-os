@@ -1,0 +1,527 @@
+{
+ "_what": "Every run of the plan's exit test (exit_panel.py): one row per judge per panel. Decoded through the key, so `ours` is the letter's content, not the letter. Read by plan_status via exit_panel.status().",
+ "runs": [
+  {
+   "at": "2026-09-01T19:58:57",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r91.png",
+   "render_sha1": "d1fed0dbffcd",
+   "panel_dir": "C:\\Users\\teza_\\AppData\\Local\\Temp\\claude\\c--Users-teza--OneDrive-Desktop-PlingPeat\\f5ca859e-37aa-4712-995f-85e1b96625f1\\scratchpad\\panel_send_audit",
+   "judge": "j1",
+   "ours_letter": "A",
+   "ours_score": 61,
+   "ours_rank": 2,
+   "field": 5,
+   "scores": {
+    "F3": 74,
+    "OURS": 61,
+    "F1": 55,
+    "F2": 47,
+    "F4": 38
+   },
+   "order": [
+    "F3",
+    "OURS",
+    "F1",
+    "F2",
+    "F4"
+   ],
+   "ours_sendable": "sendable-after-minor-fixes",
+   "odd_one_out": "F4",
+   "verdict_file": "C:/Users/teza_/.claude/projects/c--Users-teza--OneDrive-Desktop-PlingPeat/f5ca859e-37aa-4712-995f-85e1b96625f1/subagents/workflows/wf_926d5764-e77/journal.jsonl",
+   "note": "audit 2026-09-01 SEND panel, first run of the exit test in its own shape"
+  },
+  {
+   "at": "2026-09-01T19:58:58",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r91.png",
+   "render_sha1": "d1fed0dbffcd",
+   "panel_dir": "C:\\Users\\teza_\\AppData\\Local\\Temp\\claude\\c--Users-teza--OneDrive-Desktop-PlingPeat\\f5ca859e-37aa-4712-995f-85e1b96625f1\\scratchpad\\panel_send_audit",
+   "judge": "j2",
+   "ours_letter": "D",
+   "ours_score": 50,
+   "ours_rank": 4,
+   "field": 5,
+   "scores": {
+    "F3": 72,
+    "F1": 61,
+    "F2": 58,
+    "OURS": 50,
+    "F4": 42
+   },
+   "order": [
+    "F3",
+    "F1",
+    "F2",
+    "OURS",
+    "F4"
+   ],
+   "ours_sendable": "sendable-after-minor-fixes",
+   "odd_one_out": "F4",
+   "verdict_file": "C:/Users/teza_/.claude/projects/c--Users-teza--OneDrive-Desktop-PlingPeat/f5ca859e-37aa-4712-995f-85e1b96625f1/subagents/workflows/wf_926d5764-e77/journal.jsonl",
+   "note": "audit 2026-09-01 SEND panel"
+  },
+  {
+   "at": "2026-09-01T19:58:58",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r91.png",
+   "render_sha1": "d1fed0dbffcd",
+   "panel_dir": "C:\\Users\\teza_\\AppData\\Local\\Temp\\claude\\c--Users-teza--OneDrive-Desktop-PlingPeat\\f5ca859e-37aa-4712-995f-85e1b96625f1\\scratchpad\\panel_send_audit",
+   "judge": "j3",
+   "ours_letter": "B",
+   "ours_score": 58,
+   "ours_rank": 2,
+   "field": 5,
+   "scores": {
+    "F3": 82,
+    "OURS": 58,
+    "F1": 54,
+    "F2": 50,
+    "F4": 44
+   },
+   "order": [
+    "F3",
+    "OURS",
+    "F1",
+    "F2",
+    "F4"
+   ],
+   "ours_sendable": "sendable-after-minor-fixes",
+   "odd_one_out": "OURS",
+   "verdict_file": "C:/Users/teza_/.claude/projects/c--Users-teza--OneDrive-Desktop-PlingPeat/f5ca859e-37aa-4712-995f-85e1b96625f1/subagents/workflows/wf_926d5764-e77/journal.jsonl",
+   "note": "audit 2026-09-01 SEND panel"
+  },
+  {
+   "at": "2026-09-01T21:41:42",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r92.png",
+   "render_sha1": "868d582ba08f",
+   "panel_dir": "C:\\Users\\teza_\\AppData\\Local\\Temp\\claude\\c--Users-teza--OneDrive-Desktop-PlingPeat\\f5ca859e-37aa-4712-995f-85e1b96625f1\\scratchpad\\panel_p2r92",
+   "judge": "j1",
+   "ours_letter": "C",
+   "ours_score": 78,
+   "ours_rank": 1,
+   "field": 5,
+   "scores": {
+    "F2": 52,
+    "F4": 57,
+    "OURS": 78,
+    "F1": 63,
+    "F3": 72
+   },
+   "order": [
+    "OURS",
+    "F3",
+    "F1",
+    "F4",
+    "F2"
+   ],
+   "ours_sendable": "sendable-as-is",
+   "odd_one_out": "F2",
+   "verdict_file": "C:/Users/teza_/AppData/Local/Temp/claude/c--Users-teza--OneDrive-Desktop-PlingPeat/f5ca859e-37aa-4712-995f-85e1b96625f1/scratchpad/panel_p2r92\\j1\\ANSWER.json",
+   "note": "P2r-34 round p2r92, panel field = audit field"
+  },
+  {
+   "at": "2026-09-01T21:41:56",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r92.png",
+   "render_sha1": "868d582ba08f",
+   "panel_dir": "C:\\Users\\teza_\\AppData\\Local\\Temp\\claude\\c--Users-teza--OneDrive-Desktop-PlingPeat\\f5ca859e-37aa-4712-995f-85e1b96625f1\\scratchpad\\panel_p2r92",
+   "judge": "j2",
+   "ours_letter": "B",
+   "ours_score": 78,
+   "ours_rank": 2,
+   "field": 5,
+   "scores": {
+    "F1": 66,
+    "OURS": 78,
+    "F2": 50,
+    "F3": 82,
+    "F4": 56
+   },
+   "order": [
+    "F3",
+    "OURS",
+    "F1",
+    "F4",
+    "F2"
+   ],
+   "ours_sendable": "sendable-after-minor-fixes",
+   "odd_one_out": "F4",
+   "verdict_file": "C:/Users/teza_/AppData/Local/Temp/claude/c--Users-teza--OneDrive-Desktop-PlingPeat/f5ca859e-37aa-4712-995f-85e1b96625f1/scratchpad/panel_p2r92\\j2\\ANSWER.json",
+   "note": "P2r-34 round p2r92, panel field = audit field"
+  },
+  {
+   "at": "2026-09-01T21:41:57",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r92.png",
+   "render_sha1": "868d582ba08f",
+   "panel_dir": "C:\\Users\\teza_\\AppData\\Local\\Temp\\claude\\c--Users-teza--OneDrive-Desktop-PlingPeat\\f5ca859e-37aa-4712-995f-85e1b96625f1\\scratchpad\\panel_p2r92",
+   "judge": "j3",
+   "ours_letter": "C",
+   "ours_score": 81,
+   "ours_rank": 1,
+   "field": 5,
+   "scores": {
+    "F2": 64,
+    "F3": 74,
+    "OURS": 81,
+    "F4": 52,
+    "F1": 47
+   },
+   "order": [
+    "OURS",
+    "F3",
+    "F2",
+    "F4",
+    "F1"
+   ],
+   "ours_sendable": "sendable-as-is",
+   "odd_one_out": "F1",
+   "verdict_file": "C:/Users/teza_/AppData/Local/Temp/claude/c--Users-teza--OneDrive-Desktop-PlingPeat/f5ca859e-37aa-4712-995f-85e1b96625f1/scratchpad/panel_p2r92\\j3\\ANSWER.json",
+   "note": "P2r-34 round p2r92, panel field = audit field"
+  },
+  {
+   "at": "2026-09-02T00:08:23",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r93a.png",
+   "render_sha1": "cc0c9da499e8",
+   "panel_dir": "C:\\Users\\teza_\\AppData\\Local\\Temp\\claude\\c--Users-teza--OneDrive-Desktop-PlingPeat\\f5ca859e-37aa-4712-995f-85e1b96625f1\\scratchpad\\panel_p2r93a",
+   "judge": "j1",
+   "ours_letter": "B",
+   "ours_score": 78,
+   "ours_rank": 2,
+   "field": 5,
+   "scores": {
+    "F2": 45,
+    "OURS": 78,
+    "F1": 62,
+    "F3": 84,
+    "F4": 75
+   },
+   "order": [
+    "F3",
+    "OURS",
+    "F4",
+    "F1",
+    "F2"
+   ],
+   "ours_sendable": "sendable-after-minor-fixes",
+   "odd_one_out": "F2",
+   "verdict_file": "C:/Users/teza_/AppData/Local/Temp/claude/c--Users-teza--OneDrive-Desktop-PlingPeat/f5ca859e-37aa-4712-995f-85e1b96625f1/scratchpad/panel_p2r93a/j1/ANSWER.json",
+   "note": "P2r-34 leg 2 (R1 cycle 2) p2r93a: camera derived at margin 0.051 v, lens 20; sheer diffuser + sun disc after the sheer"
+  },
+  {
+   "at": "2026-09-02T00:08:24",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r93a.png",
+   "render_sha1": "cc0c9da499e8",
+   "panel_dir": "C:\\Users\\teza_\\AppData\\Local\\Temp\\claude\\c--Users-teza--OneDrive-Desktop-PlingPeat\\f5ca859e-37aa-4712-995f-85e1b96625f1\\scratchpad\\panel_p2r93a",
+   "judge": "j2",
+   "ours_letter": "A",
+   "ours_score": 78,
+   "ours_rank": 2,
+   "field": 5,
+   "scores": {
+    "OURS": 78,
+    "F1": 76,
+    "F3": 83,
+    "F4": 74,
+    "F2": 36
+   },
+   "order": [
+    "F3",
+    "OURS",
+    "F1",
+    "F4",
+    "F2"
+   ],
+   "ours_sendable": "sendable-after-minor-fixes",
+   "odd_one_out": "F2",
+   "verdict_file": "C:/Users/teza_/AppData/Local/Temp/claude/c--Users-teza--OneDrive-Desktop-PlingPeat/f5ca859e-37aa-4712-995f-85e1b96625f1/scratchpad/panel_p2r93a/j2/ANSWER.json",
+   "note": "P2r-34 leg 2 (R1 cycle 2) p2r93a: camera derived at margin 0.051 v, lens 20; sheer diffuser + sun disc after the sheer"
+  },
+  {
+   "at": "2026-09-02T00:08:25",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r93a.png",
+   "render_sha1": "cc0c9da499e8",
+   "panel_dir": "C:\\Users\\teza_\\AppData\\Local\\Temp\\claude\\c--Users-teza--OneDrive-Desktop-PlingPeat\\f5ca859e-37aa-4712-995f-85e1b96625f1\\scratchpad\\panel_p2r93a",
+   "judge": "j3",
+   "ours_letter": "E",
+   "ours_score": 58,
+   "ours_rank": 4,
+   "field": 5,
+   "scores": {
+    "F4": 79,
+    "F2": 50,
+    "F1": 70,
+    "F3": 82,
+    "OURS": 58
+   },
+   "order": [
+    "F3",
+    "F4",
+    "F1",
+    "OURS",
+    "F2"
+   ],
+   "ours_sendable": "not-sendable",
+   "odd_one_out": "OURS",
+   "verdict_file": "C:/Users/teza_/AppData/Local/Temp/claude/c--Users-teza--OneDrive-Desktop-PlingPeat/f5ca859e-37aa-4712-995f-85e1b96625f1/scratchpad/panel_p2r93a/j3/ANSWER.json",
+   "note": "P2r-34 leg 2 (R1 cycle 2) p2r93a: camera derived at margin 0.051 v, lens 20; sheer diffuser + sun disc after the sheer"
+  },
+  {
+   "at": "2026-09-02T00:29:08",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r93b.png",
+   "render_sha1": "d1eda93e12d7",
+   "panel_dir": "C:\\Users\\teza_\\AppData\\Local\\Temp\\claude\\c--Users-teza--OneDrive-Desktop-PlingPeat\\f5ca859e-37aa-4712-995f-85e1b96625f1\\scratchpad\\panel_p2r93b",
+   "judge": "j1",
+   "ours_letter": "D",
+   "ours_score": 74,
+   "ours_rank": 2,
+   "field": 5,
+   "scores": {
+    "F3": 82,
+    "F2": 28,
+    "F4": 70,
+    "OURS": 74,
+    "F1": 52
+   },
+   "order": [
+    "F3",
+    "OURS",
+    "F4",
+    "F1",
+    "F2"
+   ],
+   "ours_sendable": "sendable-after-minor-fixes",
+   "odd_one_out": "F2",
+   "verdict_file": "C:/Users/teza_/AppData/Local/Temp/claude/c--Users-teza--OneDrive-Desktop-PlingPeat/f5ca859e-37aa-4712-995f-85e1b96625f1/scratchpad/panel_p2r93b/j1/ANSWER.json",
+   "note": "P2r-34 leg 2 camera B (off-axis 6.8 deg) - the A/B pair's second half"
+  },
+  {
+   "at": "2026-09-02T00:29:09",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r93b.png",
+   "render_sha1": "d1eda93e12d7",
+   "panel_dir": "C:\\Users\\teza_\\AppData\\Local\\Temp\\claude\\c--Users-teza--OneDrive-Desktop-PlingPeat\\f5ca859e-37aa-4712-995f-85e1b96625f1\\scratchpad\\panel_p2r93b",
+   "judge": "j2",
+   "ours_letter": "B",
+   "ours_score": 73,
+   "ours_rank": 3,
+   "field": 5,
+   "scores": {
+    "F3": 82,
+    "OURS": 73,
+    "F2": 37,
+    "F1": 56,
+    "F4": 76
+   },
+   "order": [
+    "F3",
+    "F4",
+    "OURS",
+    "F1",
+    "F2"
+   ],
+   "ours_sendable": "sendable-after-minor-fixes",
+   "odd_one_out": "F2",
+   "verdict_file": "C:/Users/teza_/AppData/Local/Temp/claude/c--Users-teza--OneDrive-Desktop-PlingPeat/f5ca859e-37aa-4712-995f-85e1b96625f1/scratchpad/panel_p2r93b/j2/ANSWER.json",
+   "note": "P2r-34 leg 2 camera B (off-axis 6.8 deg) - the A/B pair's second half"
+  },
+  {
+   "at": "2026-09-02T00:29:09",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r93b.png",
+   "render_sha1": "d1eda93e12d7",
+   "panel_dir": "C:\\Users\\teza_\\AppData\\Local\\Temp\\claude\\c--Users-teza--OneDrive-Desktop-PlingPeat\\f5ca859e-37aa-4712-995f-85e1b96625f1\\scratchpad\\panel_p2r93b",
+   "judge": "j3",
+   "ours_letter": "C",
+   "ours_score": 71,
+   "ours_rank": 2,
+   "field": 5,
+   "scores": {
+    "F2": 41,
+    "F3": 83,
+    "OURS": 71,
+    "F1": 58,
+    "F4": 66
+   },
+   "order": [
+    "F3",
+    "OURS",
+    "F4",
+    "F1",
+    "F2"
+   ],
+   "ours_sendable": "sendable-after-minor-fixes",
+   "odd_one_out": "F2",
+   "verdict_file": "C:/Users/teza_/AppData/Local/Temp/claude/c--Users-teza--OneDrive-Desktop-PlingPeat/f5ca859e-37aa-4712-995f-85e1b96625f1/scratchpad/panel_p2r93b/j3/ANSWER.json",
+   "note": "P2r-34 leg 2 camera B (off-axis 6.8 deg) - the A/B pair's second half"
+  },
+  {
+   "at": "2026-09-02T11:04:09",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r95.png",
+   "render_sha1": "16cad1e9496c",
+   "panel_dir": "C:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\_private\\deliv-001\\exit-panel-p2r95",
+   "judge": "j1",
+   "ours_letter": "E",
+   "ours_score": 72,
+   "ours_rank": 2,
+   "field": 5,
+   "scores": {
+    "F1": 61,
+    "F3": 78,
+    "F2": 34,
+    "F4": 68,
+    "OURS": 72
+   },
+   "order": [
+    "F3",
+    "OURS",
+    "F4",
+    "F1",
+    "F2"
+   ],
+   "ours_sendable": "sendable-after-minor-fixes",
+   "odd_one_out": "F2",
+   "verdict_file": "_private/deliv-001/exit-panel-p2r95/j1/ANSWER.md",
+   "note": "P2r-38 pelmet+park"
+  },
+  {
+   "at": "2026-09-02T11:04:09",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r95.png",
+   "render_sha1": "16cad1e9496c",
+   "panel_dir": "C:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\_private\\deliv-001\\exit-panel-p2r95",
+   "judge": "j2",
+   "ours_letter": "C",
+   "ours_score": 64,
+   "ours_rank": 3,
+   "field": 5,
+   "scores": {
+    "F3": 79,
+    "F2": 33,
+    "OURS": 64,
+    "F1": 47,
+    "F4": 69
+   },
+   "order": [
+    "F3",
+    "F4",
+    "OURS",
+    "F1",
+    "F2"
+   ],
+   "ours_sendable": "sendable-after-minor-fixes",
+   "odd_one_out": "F2",
+   "verdict_file": "_private/deliv-001/exit-panel-p2r95/j2/ANSWER.md",
+   "note": "P2r-38 pelmet+park"
+  },
+  {
+   "at": "2026-09-02T11:04:10",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r95.png",
+   "render_sha1": "16cad1e9496c",
+   "panel_dir": "C:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\_private\\deliv-001\\exit-panel-p2r95",
+   "judge": "j3",
+   "ours_letter": "E",
+   "ours_score": 70,
+   "ours_rank": 2,
+   "field": 5,
+   "scores": {
+    "F3": 80,
+    "F1": 62,
+    "F4": 68,
+    "F2": 44,
+    "OURS": 70
+   },
+   "order": [
+    "F3",
+    "OURS",
+    "F4",
+    "F1",
+    "F2"
+   ],
+   "ours_sendable": "sendable-after-minor-fixes",
+   "odd_one_out": "F2",
+   "verdict_file": "_private/deliv-001/exit-panel-p2r95/j3/ANSWER.md",
+   "note": "P2r-38 pelmet+park"
+  },
+  {
+   "at": "2026-09-02T12:28:16",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r96.png",
+   "render_sha1": "d12100bb90e3",
+   "panel_dir": "C:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\_private\\deliv-001\\exit-panel-p2r96",
+   "judge": "j1",
+   "ours_letter": "E",
+   "ours_score": 56,
+   "ours_rank": 4,
+   "field": 5,
+   "scores": {
+    "F3": 76,
+    "F2": 41,
+    "F1": 62,
+    "F4": 79,
+    "OURS": 56
+   },
+   "order": [
+    "F4",
+    "F3",
+    "F1",
+    "OURS",
+    "F2"
+   ],
+   "ours_sendable": "sendable-after-minor-fixes",
+   "odd_one_out": "F2",
+   "verdict_file": "_private/deliv-001/exit-panel-p2r96/j1/ANSWER.md",
+   "note": "P2r-39 sheer direct 0.10 + hem"
+  },
+  {
+   "at": "2026-09-02T12:28:17",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r96.png",
+   "render_sha1": "d12100bb90e3",
+   "panel_dir": "C:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\_private\\deliv-001\\exit-panel-p2r96",
+   "judge": "j2",
+   "ours_letter": "D",
+   "ours_score": 62,
+   "ours_rank": 4,
+   "field": 5,
+   "scores": {
+    "F2": 48,
+    "F1": 77,
+    "F4": 73,
+    "OURS": 62,
+    "F3": 79
+   },
+   "order": [
+    "F3",
+    "F1",
+    "F4",
+    "OURS",
+    "F2"
+   ],
+   "ours_sendable": "sendable-after-minor-fixes",
+   "odd_one_out": "F2",
+   "verdict_file": "_private/deliv-001/exit-panel-p2r96/j2/ANSWER.md",
+   "note": ""
+  },
+  {
+   "at": "2026-09-02T12:28:18",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r96.png",
+   "render_sha1": "d12100bb90e3",
+   "panel_dir": "C:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\_private\\deliv-001\\exit-panel-p2r96",
+   "judge": "j3",
+   "ours_letter": "C",
+   "ours_score": 63,
+   "ours_rank": 4,
+   "field": 5,
+   "scores": {
+    "F1": 72,
+    "F4": 78,
+    "OURS": 63,
+    "F3": 82,
+    "F2": 36
+   },
+   "order": [
+    "F3",
+    "F4",
+    "F1",
+    "OURS",
+    "F2"
+   ],
+   "ours_sendable": "sendable-after-minor-fixes",
+   "odd_one_out": "F2",
+   "verdict_file": "_private/deliv-001/exit-panel-p2r96/j3/ANSWER.md",
+   "note": ""
+  }
+ ]
+}

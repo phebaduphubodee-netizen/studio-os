@@ -1,0 +1,12 @@
+{
+ "azimuth_plan_deg": 21.577378686913818,
+ "spread_deg": 7.747064078619758,
+ "edges": [
+  22.12095381725328,
+  18.073592502810385,
+  25.820656581430143,
+  20.294311846161463
+ ],
+ "elevation_deg": null,
+ "note": "azimuth measured; elevation left open on purpose - see docstring"
+}

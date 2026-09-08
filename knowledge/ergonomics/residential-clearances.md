@@ -56,6 +56,38 @@ NOT residential TV distances (gap, see below).
 - Statutory room floor: ห้องนอน ≥ 8 ตร.ม. / narrowest side ≥ 2.50 ม. —
   `knowledge/codes-th/mr55-residential-dimensions.md` (ข้อ 20); law wins.
 
+## โซนแต่งตัว / Dressing wall — โต๊ะเครื่องแป้ง กระจก ราวแขวน (P&Z, element-1 DR)
+
+> PROVENANCE (this section only): distilled 2026-07-21 from
+> `knowledge/_inbox/nlm-element1-dressing-wall-2026-07-16.md` (NLM notebook
+> a5a43395; Panero & Zelnik `a1383994`, Postell `01277b77`), tier REFERENCE.
+> Carried: the unit's **GROUNDED-CITED half (Ask 1) only**. The unit's
+> CONVENTION asks (slat detailing, tropical material behaviour) are NOT
+> promoted here — they stay REFERENCE-in-unit until verified vs AWI /
+> supplier / Thai practice, per the unit's own tier tags. mm only — the unit
+> exports no inch values; do not back-convert.
+
+| Clearance | mm |
+|---|---|
+| กระจกแต่งหน้า (นั่ง) — กึ่งกลางกระจก / ระดับตา จากพื้น / makeup mirror (seated): mirror-centre / eye level AFF | 1120–1267 |
+| ระยะหน้า–กระจก / face-to-mirror viewing distance | 457–610 |
+| ช่วงความสูงกระจกที่ใช้งานจริง / useful mirror field height | 610–762 |
+| โต๊ะเครื่องแป้ง (นั่ง) — ความสูงผิวโต๊ะ / dressing vanity surface height | 711–762 |
+| ความกว้างใช้งานโต๊ะเครื่องแป้ง / vanity usable width | 1067–1372 |
+| ที่ว่างเข่า–ต้นขาใต้ apron / knee–thigh clearance under apron | ≥ 196 |
+| ความสูงที่นั่ง / seat popliteal height | 406–432 |
+| ทางสัญจรเมื่อ vanity ร่วมแนวตู้เสื้อผ้า / vanity sharing a wardrobe run — seated vanity + circulation coincide | 1067–1168 |
+| ราวแขวน — ระยะเอื้อมหยิบเสื้อผ้า / hang-rail arm-swing aisle to select a garment | 914 |
+| ราวแขวน–ชั้นเหนือ / rod to shelf above (hanger lift-off) | +102 |
+| ชั้นพับ — ระยะเอื้อมลึกสบาย / folded-shelf comfortable front-to-back reach (5th-pct F) | 457 |
+
+- ข้อแก้สำคัญ: โซนหน้าตู้ 914 (ตาราง ห้องนอน ด้านบน) **ไม่พอ** เมื่อโต๊ะเครื่องแป้ง
+  แบบนั่งกับทางสัญจรทับกันในแนวตู้เดียว — ขยายเป็น **1067–1168** (the 914 mm
+  closet-access clearance is not enough where a seated vanity + circulation
+  coincide).
+- ชั้นลึกกว่า 457 บังคับให้เอื้อม — ตู้ลึก 600 ควรวางของใช้ประจำไว้ด้านหน้า.
+- GAP (not in sources): hanger spacing / density.
+
 ## ห้องครัว / Kitchen — เคาน์เตอร์ ระยะระหว่างเคาน์เตอร์ (P&Z §2.4, turn 1)
 | Clearance | mm | in |
 |---|---|---|

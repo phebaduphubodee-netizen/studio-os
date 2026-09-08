@@ -50,8 +50,21 @@ def _download(url, dest):
     return dest
 
 
-def fetch_model(slug, res="1k"):
-    """Download a Poly Haven model as gltf (+ .bin + textures). Returns the local .gltf path."""
+def fetch_model(slug, res="1k", assert_class=None):
+    """Download a Poly Haven model as gltf (+ .bin + textures). Returns the local .gltf path.
+
+    SCALE IS ASSERTED ON EVERY INGEST (pipeline/CLAUDE.md, a MUST) — and until
+    2026-08-16 this function was the counter-example. `warehouse.py` wrote a
+    `.scale.json` on every fetch; this one wrote none, so the 13 assets of the
+    COMMITTED shelf reached `place_model` with no assertion of any kind while the
+    rule read as enforced everywhere it was mentioned. CC0 does not make a unit
+    right: Poly Haven ships several models as MULTI-VARIANT SHEETS (five plants
+    side by side in `calathea_orbifolia_01`), which is a bounds fact no licence
+    protects you from.
+
+    `assert_class=None` still writes a sidecar — bounds only, saying in the file
+    that the unit is NOT asserted — because "nobody named a class" and "in band"
+    must never read alike."""
     files = _get_json(f"{API}/files/{slug}")
     if "gltf" not in files or res not in files["gltf"]:
         res = next(iter(files["gltf"]))
@@ -60,6 +73,14 @@ def fetch_model(slug, res="1k"):
     main = _download(g["url"], os.path.join(base, os.path.basename(g["url"])))
     for rel, info in (g.get("include") or {}).items():
         _download(info["url"], os.path.join(base, rel.replace("/", os.sep)))
+    import asset_scale as S
+    ok, rep = S.write_sidecar(main, assert_class)
+    if ok is None:
+        print(f"  UNIT NOT ASSERTED for {slug} (no assert_class) — bounds "
+              f"recorded: {rep.get('bbox_mm')}")
+    elif not ok:
+        print(f"  SCALE REFUSED for {slug}: {rep.get('planar_refusal') or rep.get('error')}"
+              f" (measured {rep.get('measured_mm')} against {rep.get('band_mm')})")
     return main
 
 

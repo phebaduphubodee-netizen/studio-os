@@ -1,0 +1,329 @@
+{
+ "gate": "floor2_defect_gate v1.2",
+ "verdict": "PASS",
+ "manifest": "floor2_v4-manifest.json",
+ "counts": {
+  "pieces": 26,
+  "rooms": 4,
+  "defects": 5,
+  "fail": 0,
+  "review": 0,
+  "signed": 5
+ },
+ "answer_key": [
+  {
+   "catch": "BF14 ทะลุ BF09-3 -- owner จับ 2026-07-07; FIXED 2026-07-10 ตามคิว owner 07-07 (\"BF14 trim to y2650\")",
+   "expect": "absent",
+   "status": "RESOLVED-ABSENT",
+   "fingerprints": []
+  },
+  {
+   "catch": "อ่างล้างหน้าคู่ ทะลุ WC -- owner จับ 2026-07-07; FIXED 2026-07-10 ตามคิว owner 07-07 (\"vanity nudge to x650\")",
+   "expect": "absent",
+   "status": "RESOLVED-ABSENT",
+   "fingerprints": []
+  },
+  {
+   "catch": "กำแพงในโมเดลไม่ครบ -- owner จับด้วยตา 2026-07-10",
+   "expect": "present",
+   "status": "CAUGHT",
+   "fingerprints": [
+    "a9a01347d66e",
+    "05bd38d31834",
+    "415fed34d04e"
+   ]
+  },
+  {
+   "catch": "BF09-1 (ขา E) ทับประตู dressing<->sitting -- owner จับ 2026-07-07; RESOLVED 2026-07-10r2: ช่อง s2 y[3400,4622], BF09-1 ยืดถึง y4674 = พ้นวงกบ 52mm; ตรวจได้ด้วยเครื่องแล้ว. UPDATE 2026-07-11: owner 's2 ไม่ใช่บานเลื่อน' -> reclassify sliding->opening (ช่องเปิด); การเคลียร์วงกบยังจริง (BF09-1 พ้นขอบช่อง 52mm ไม่ว่าจะมีบานหรือไม่)",
+   "expect": "absent",
+   "status": "RESOLVED-ABSENT",
+   "fingerprints": []
+  },
+  {
+   "catch": "markup รอบ2: 'ในแบบมีกำแพงระหว่างสองชิ้นนี้' + 'ไม่มีประตู' -- party wall y[2800,5698] เติมกลับแล้ว (กำแพง+ช่อง s2); ขอบต้องเลิกโหว่",
+   "expect": "absent",
+   "status": "RESOLVED-ABSENT",
+   "fingerprints": []
+  },
+  {
+   "catch": "markup รอบ2: ช่องผนังเหนือ sitting ไม่ใช่ประตู -- declare เป็นหน้าต่าง w5; ห้ามมีช่อง undeclared เหลือแถวนี้",
+   "expect": "absent",
+   "status": "RESOLVED-ABSENT",
+   "fingerprints": []
+  },
+  {
+   "catch": "markup รอบ2 วงเล็ก: กระจก pier หาย -- g1 + envelope edge ต้องปิด",
+   "expect": "absent",
+   "status": "RESOLVED-ABSENT",
+   "fingerprints": []
+  },
+  {
+   "catch": "markup รอบ2 วงล่าง: มุม SE party->ผนังใต้โหว่ -- เติม 0.48pt ink กลับแล้ว",
+   "expect": "absent",
+   "status": "RESOLVED-ABSENT",
+   "fingerprints": []
+  }
+ ],
+ "wall_coverage": {
+  "ink_mm": 101642.1,
+  "covered_mm": 101483.4,
+  "coverage": 0.9984,
+  "missing_runs": 0,
+  "missing_mm": 0,
+  "built_segs": 263,
+  "fresh_segs": 992
+ },
+ "doorway_candidates": [
+  {
+   "axis": "h",
+   "offset": 6199.4,
+   "gap_mm": 898.3,
+   "span": [
+    6253.8,
+    7152.1
+   ],
+   "rect": [
+    6253.8,
+    6079.4,
+    7152.1,
+    6417.7
+   ],
+   "declared": "w5:window"
+  },
+  {
+   "axis": "v",
+   "offset": -47.0,
+   "gap_mm": 599.9,
+   "span": [
+    2898.4,
+    3498.3
+   ],
+   "rect": [
+    -167.0,
+    2898.4,
+    73.0,
+    3498.3
+   ],
+   "declared": "w3:window"
+  },
+  {
+   "axis": "v",
+   "offset": -47.0,
+   "gap_mm": 599.9,
+   "span": [
+    4999.6,
+    5599.5
+   ],
+   "rect": [
+    -167.0,
+    4999.6,
+    73.0,
+    5599.5
+   ],
+   "declared": "w4:window"
+  },
+  {
+   "axis": "v",
+   "offset": -47.0,
+   "gap_mm": 1152.1,
+   "span": [
+    7319.8,
+    8471.9
+   ],
+   "rect": [
+    -167.0,
+    7319.8,
+    73.0,
+    8471.9
+   ],
+   "declared": "w6:window"
+  },
+  {
+   "axis": "v",
+   "offset": 3152.8,
+   "gap_mm": 898.2,
+   "span": [
+    6697.7,
+    7595.9
+   ],
+   "rect": [
+    3032.8,
+    6697.7,
+    3374.4,
+    7595.9
+   ],
+   "declared": "d1:door"
+  },
+  {
+   "axis": "v",
+   "offset": 5654.0,
+   "gap_mm": 1222.0,
+   "span": [
+    3400.0,
+    4622.0
+   ],
+   "rect": [
+    5534.0,
+    3400.0,
+    5872.0,
+    4622.0
+   ],
+   "declared": "s2:opening"
+  }
+ ],
+ "openings": {
+  "declared": 10,
+  "pending_confirm": []
+ },
+ "envelope_edges": {
+  "declared": 5,
+  "open_runs": 0
+ },
+ "defects": [
+  {
+   "check": "C2_out_of_room",
+   "severity": "SIGNED",
+   "names": [
+    "ตู้เสื้อผ้า BF09-1 ขาตะวันออก (L 5.2m)"
+   ],
+   "rooms": [
+    "master_bedroom/โซนตู้เสื้อผ้า (wardrobe bay)"
+   ],
+   "outside_mm": 1176.0,
+   "zone": [
+    5050.0,
+    4674.0,
+    5650.0,
+    8050.0
+   ],
+   "fingerprint": "c35b348275f5",
+   "proposal": "'ตู้เสื้อผ้า BF09-1 ขาตะวันออก (L 5.2m)' โผล่นอก 'master_bedroom/โซนตู้เสื้อผ้า (wardrobe bay)' 1176 mm -- เลื่อนกลับเข้า outline หรือแก้ outline ถ้าห้องผิด (owner call)",
+   "signed": {
+    "by": "owner (transcribed)",
+    "date": "2026-07-10",
+    "reason": "BF09-1 ขา E ยืดใต้ถึง y4674 (ปลายใต้เสมอ BF12-1) โดยคำสั่ง owner -- ออกนอก bay outline โดยเจตนา (ตู้ทำหน้าที่ปิดขอบ dress<->sitting)"
+   }
+  },
+  {
+   "check": "C2_out_of_room",
+   "severity": "SIGNED",
+   "names": [
+    "ตู้เสื้อผ้า BF09-2 (150x60x280)"
+   ],
+   "rooms": [
+    "master_bedroom/โซนตู้เสื้อผ้า (wardrobe bay)"
+   ],
+   "outside_mm": 670.0,
+   "zone": [
+    3150.0,
+    5180.0,
+    3750.0,
+    6680.0
+   ],
+   "fingerprint": "82a588cc3271",
+   "proposal": "'ตู้เสื้อผ้า BF09-2 (150x60x280)' โผล่นอก 'master_bedroom/โซนตู้เสื้อผ้า (wardrobe bay)' 670 mm -- เลื่อนกลับเข้า outline หรือแก้ outline ถ้าห้องผิด (owner call)",
+   "signed": {
+    "by": "owner (transcribed)",
+    "date": "2026-07-05",
+    "reason": "BF09-2 running south out of the wardrobe-bay outline into the dress zone is the owner's own placement (S end meets BF10). The bay outline is a zoning rectangle, not a containment contract for this piece."
+   }
+  },
+  {
+   "check": "C4b_room_edge_unwalled",
+   "severity": "SIGNED",
+   "names": [
+    "master_bedroom"
+   ],
+   "rooms": [
+    "master_bedroom"
+   ],
+   "edge": {
+    "axis": "h",
+    "offset": -450.0,
+    "span": [
+     0,
+     5500
+    ],
+    "len_mm": 5500
+   },
+   "zone": [
+    0,
+    -610.0,
+    5500,
+    -290.0
+   ],
+   "fingerprint": "a9a01347d66e",
+   "proposal": "ขอบห้อง 'master_bedroom' ด้าน h@-450 ช่วง [0,5500] (5500 mm) ไม่มีกำแพงในโมเดล -- ถ้าเป็นช่องเปิด/กระจกจริง เซ็น dismiss ครั้งเดียวจบ; ถ้าไม่ใช่ = กำแพงหายจาก build",
+   "signed": {
+    "by": "owner (transcribed)",
+    "date": "2026-07-10",
+    "reason": "ขอบ outline ห้อง (-450) ห่างแนวผนังจริง (-698) 248mm เกิน tolerance ของ C4b -- ผนัง+หน้าต่าง RENDER แล้ว ไม่ใช่กำแพงหาย; ถ้า owner ชี้ว่าขอบห้องจริงคือ -698 ค่อยแก้ outline แล้ว flag นี้จะหายเอง"
+   }
+  },
+  {
+   "check": "C4b_room_edge_unwalled",
+   "severity": "SIGNED",
+   "names": [
+    "master_bedroom/โซนตู้เสื้อผ้า (wardrobe bay)"
+   ],
+   "rooms": [
+    "master_bedroom/โซนตู้เสื้อผ้า (wardrobe bay)"
+   ],
+   "edge": {
+    "axis": "h",
+    "offset": 5850.0,
+    "span": [
+     3254.4,
+     5552.4
+    ],
+    "len_mm": 2298.0
+   },
+   "zone": [
+    3254.4,
+    5690.0,
+    5552.4,
+    6010.0
+   ],
+   "fingerprint": "05bd38d31834",
+   "proposal": "ขอบห้อง 'master_bedroom/โซนตู้เสื้อผ้า (wardrobe bay)' ด้าน h@5850 ช่วง [3254,5552] (2298 mm) ไม่มีกำแพงในโมเดล -- ถ้าเป็นช่องเปิด/กระจกจริง เซ็น dismiss ครั้งเดียวจบ; ถ้าไม่ใช่ = กำแพงหายจาก build",
+   "signed": {
+    "by": "owner (transcribed)",
+    "date": "2026-07-10",
+    "reason": "ปากทางเข้าโซนตู้เสื้อผ้า = ช่องเปิดตามแบบ ไม่ใช่กำแพงหาย"
+   }
+  },
+  {
+   "check": "C4b_room_edge_unwalled",
+   "severity": "SIGNED",
+   "names": [
+    "sitting_room"
+   ],
+   "rooms": [
+    "sitting_room"
+   ],
+   "edge": {
+    "axis": "h",
+    "offset": 0.0,
+    "span": [
+     5752.3,
+     10650
+    ],
+    "len_mm": 4897.7
+   },
+   "zone": [
+    5752.3,
+    -160.0,
+    10650,
+    160.0
+   ],
+   "fingerprint": "415fed34d04e",
+   "proposal": "ขอบห้อง 'sitting_room' ด้าน h@0 ช่วง [5752,10650] (4898 mm) ไม่มีกำแพงในโมเดล -- ถ้าเป็นช่องเปิด/กระจกจริง เซ็น dismiss ครั้งเดียวจบ; ถ้าไม่ใช่ = กำแพงหายจาก build",
+   "signed": {
+    "by": "owner (transcribed)",
+    "date": "2026-07-10",
+    "reason": "ขอบใต้ sitting [5752,10650] = ขอบระเบียง (railing r1 ใน openings-v4.json, ราว 1000mm) ไม่ใช่กำแพงหาย; envelope จริงของห้อง = ประตูเลื่อน s1 ที่ y2050"
+   }
+  }
+ ],
+ "note": "PROPOSAL-ONLY: gate เสนอวิธีแก้ ไม่แตะ scene-graph; เซ็น dismiss ใน defect-review.json ด้วย fingerprint; FAIL ที่ไม่เซ็น = บล็อก build"
+}

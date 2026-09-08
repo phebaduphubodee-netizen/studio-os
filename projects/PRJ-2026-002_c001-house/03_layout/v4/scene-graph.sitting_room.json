@@ -42,12 +42,12 @@
       "name": "ตู้สูง BF12-2 (70x40x280)",
       "kind": "cabinet",
       "x": 5750,
-      "y": 3050,
+      "y": 2650,
       "w": 400,
       "d": 700,
       "h": 2800,
       "bf": "BF12-2",
-      "note": "tall cabinet on the WEST party wall, INDOOR, north of the outer orchid table (owner 2026-07-06: BF12-2 indoor + NOT overlapping the orchid table); EXACT spot pending owner confirm"
+      "note": "tall cabinet on the WEST party wall (x5750), INNER sitting side, just NORTH of the outer orchid table — owner-pointed spot 2026-07-06 (highlighted); 400 deep x 700 N-S"
     },
     {
       "name": "ชั้นวางทีวี ผนังตะวันออก BF13 (410x30x50)",
@@ -76,40 +76,47 @@
       "note": "faces EAST toward BF13/TV"
     },
     {
-      "name": "เก้าอี้ tub ซ้าย (ระเบียง หันออกสวน)",
+      "name": "เก้าอี้ tub ซ้าย (เลานจ์ริมกระจก หันชมสวน)",
       "kind": "armchair",
       "x": 5991,
       "y": 629,
       "w": 680,
       "d": 640,
       "h": 750,
-      "rot": 12,
+      "rot": 8,
       "angled": true,
-      "note": "outdoor terrace; faces the garden (S), converges outside"
+      "note": "indoor floor-2 lounge by the south glass; faces the garden VIEW below",
+      "facing_source": "owner-signed"
     },
     {
-      "name": "เก้าอี้ tub ขวา (ระเบียง หันออกสวน)",
+      "name": "เก้าอี้ tub ขวา (เลานจ์ริมกระจก หันชมสวน)",
       "kind": "armchair",
       "x": 7300,
       "y": 1085,
       "w": 660,
       "d": 640,
       "h": 750,
-      "rot": 335,
+      "rot": 332,
       "angled": true,
-      "note": "outdoor terrace; faces the garden (S), converges outside"
+      "note": "indoor floor-2 lounge by the south glass; faces the garden VIEW below",
+      "facing_source": "owner-signed"
     },
     {
       "name": "โต๊ะกลม (ระหว่างเก้าอี้)",
       "kind": "side_table",
-      "x": 6614,
-      "y": 1114,
-      "w": 600,
-      "d": 600,
+      "x": 6664,
+      "y": 1164,
+      "w": 500,
+      "d": 500,
       "h": 450,
       "cluster": 17,
       "snap_mm": 2,
-      "shape": "round"
+      "shape": "round",
+      "manual_edit": {
+        "by": "owner-directed 2026-07-11",
+        "source": "owner: '1.ไม่ได้ตั้งใจซ้อน 2.ไม่ได้ตั้งใจซ้อน' -- ยืนยันว่า C1 collision กับเก้าอี้ tub ทั้งสองข้างไม่ได้ตั้งใจ",
+        "change": "Ø600->Ø500 (w/d 600->500, center held 6914,1414 -> x/y 6614/1114 -> 6664/1164); clears C1 fp a871a4780550 (L, 36.8mm) + afbf3a642c3e (R, 25.6mm) verified via gate SAT. Alternative offered = keep Ø600 + spread both chairs 40mm each; owner chose/defaulted to table shrink."
+      }
     },
     {
       "name": "โต๊ะกลม (ข้างโซฟา)",

@@ -11,6 +11,12 @@
 > ed. / IES Lighting Library) and Jeremy Birn, *Digital Lighting & Rendering*
 > (see sources-manifest.md); the render/camera turns also draw on the
 > notebook's photography sources — per-turn attribution is not recoverable.
+>
+> STAGED SOURCES (exact paths — the later sections carry their own provenance blocks):
+> - `knowledge/_inbox/nlm-design-systems/lighting.md`
+> - `knowledge/_inbox/id-project-corpus/Interior Design Knowledge Structuring.pdf`
+> - `knowledge/_inbox/id-project-corpus/Automated Production QA Scoring Systems.pdf`
+> - `knowledge/_inbox/id-project-corpus/Automated Vision QA for Interiors.pdf`
 
 ## อำนาจกฎหมาย / Authority cross-ref — กฎหมายชนะ / law wins
 
@@ -27,9 +33,14 @@
 | baseline หลอดไส้อบอุ่นบ้านพัก / typical warm residential incandescent | **2700 K** | notebook a5a43395 turn 2 [3] |
 | เชิงพาณิชย์ / commercial (ไม่ใช่ค่าพักอาศัย — reserved for commercial) | **4000–5700 K** | notebook a5a43395 turn 12 [2] |
 
-- CCT รายห้อง (living / dining / kitchen / bedroom / bath / corridor) — **GAP**: source
-  ระบุเพียงช่วงอบอุ่นรวม ไม่แยกค่าเป็นรายห้อง (turn 2, stated explicitly).
-- CCT ของ task lighting (reading / vanity / counter) — **GAP**: not specified in source.
+- CCT รายห้อง (living / dining / kitchen / bedroom / bath / corridor) — แหล่งของไฟล์นี้
+  (turn 2) ระบุเพียงช่วงอบอุ่นรวม ไม่แยกรายห้อง. ค่าแยกรายห้องอยู่ที่
+  `knowledge/lighting/lumen-method-and-fixture-placement.md` หัวข้อ **§3 Light quality — CCT
+  per zone + CRI floor**: **2700–3000 K** warm
+  (living / bed / dining) · **3000–4000 K** neutral/cool (kitchen / bath / office) ·
+  **5000 K+** ปกติ sterile เกินไปสำหรับที่พักอาศัย — ชุดนั้น single-source (Gemini DR),
+  REFERENCE tier.
+- CCT ของ task lighting (reading / vanity / counter) — **GAP**: not specified in source (turn 2).
 
 ## กฎการผสมอุณหภูมิสี / CCT mixing rules (ห้ามผสม 4000K กับ 2700K ในโซนเดียว)
 
@@ -51,26 +62,65 @@
 
 - ห้ามพึ่งแหล่งแสงเพดานดวงเดียวแบบสม่ำเสมอ — ลบเงาทิศทาง ทำภาพแบน ดู sterile /
   "AI-generated" — notebook a5a43395 turn 7 [1].
-- อัตราส่วนเชิงตัวเลขระหว่างชั้น (layering ratios) — **GAP**: source ไม่ให้ค่า
-  (stated explicitly, turn 2 / inbox lighting.md).
+- อัตราส่วนเชิงตัวเลขระหว่างชั้น (layering ratios) — แหล่งของไฟล์นี้ไม่ให้ค่า
+  (turn 2 / inbox lighting.md, stated explicitly). ค่าเชิงตัวเลขอยู่ที่
+  `knowledge/lighting/lumen-method-and-fixture-placement.md` หัวข้อ **§1 Layered lighting
+  model + numeric ratios**: accent : ambient
+  ≈ **3 : 1** · task surface : surround คุมไว้ภายใน **3 : 1** — single-source (Gemini DR),
+  REFERENCE tier: verify ก่อนให้ค่านี้ gate งานส่งลูกค้า.
 
 ## ความถูกต้องของสี / Color rendition — CRI · R9 · TM-30 (Rf / Rg)
 
-- งานพักอาศัยต้องการ **R9 สูง** (rendering reds) — notebook a5a43395 turn 2 [2].
-  ค่าตัวเลขขั้นต่ำของ R9 — **GAP**: not given.
+- **R9** = ความแม่นยำในการ render สีแดง. กลไกยืนยันแล้ว แต่ **ขอบเขตการใช้ขัดกันระหว่างสองแหล่ง** —
+  อย่าอ้างว่าเป็นข้อกำหนดของงานพักอาศัย:
+  - NLM turn 2 [2] วางประโยค "High R9 values required for rendering reds" ไว้ในแถว
+    *General Residential Spaces* ของตาราง "Recommended Residential Lighting Standards"
+    (`knowledge/_inbox/nlm-design-systems/lighting.md`).
+  - corpus ต้นทางระบุขอบเขตแคบกว่านั้น: "High R9 values are specifically tracked to ensure
+    accurate rendering of reds, a critical requirement for **hospitality and dining**
+    applications" — **ประโยคนี้**ไม่เอ่ยถึง residential (หน้าเดียวกันเอ่ยถึง residential เฉพาะใน
+    บริบท CCT band 2200–3000 K / the R9 sentence does not mention residential; the same page
+    mentions residential only in the CCT band)
+    (`knowledge/_inbox/id-project-corpus/Interior Design Knowledge Structuring.pdf` p.8).
+  สรุป: ที่ p.8 รองรับคือ hospitality/dining; การยกข้อกำหนดนี้มาที่ residential เป็นการขยายขอบเขต
+  ของคำตอบ NLM (REFERENCE tier) ไม่ใช่ค่าที่ corpus รองรับ.
+  ค่าตัวเลขขั้นต่ำของ R9 — **GAP**: ไม่มีในทั้งสองแหล่ง.
 - TM-30 metrics — Color Fidelity (**Rf**) + Color Gamut (**Rg**) — ได้แทนที่ระบบ CRI
-  เดิมเป็นส่วนใหญ่ เพื่อให้สีดูธรรมชาติและอิ่มตัวพอเหมาะ — turn 2 [2].
-  ค่าเป้าหมาย Rf / Rg — **GAP**: not given.
-- CRI ขั้นต่ำรายห้อง — **GAP**: not specified in source.
+  เดิมเป็นส่วนใหญ่ เพื่อให้สีดูธรรมชาติและอิ่มตัวพอเหมาะ — turn 2 [2]; ยืนยันซ้ำที่
+  `knowledge/_inbox/id-project-corpus/Interior Design Knowledge Structuring.pdf` p.8.
+  ค่าเป้าหมายเชิงตัวเลข Rf / Rg — **GAP**: not given.
+- ⚠ **CRI floor และค่า lux รายห้องด้านล่าง ถูกโต้แย้ง 2026-08-08** โดย corpus 315 แหล่ง
+  (notebook 79476082): **82 CRI** คือขั้นต่ำที่แหล่งระบุสำหรับพื้นที่ใช้งานจริง ไม่ใช่ 90;
+  และ **108–215 lux** คือค่า *อ่านหนังสือในห้องนอนโรงแรม* ไม่ใช่ ambient ทั่วไปของห้องนอน
+  (IES ambient ห้องนอน = 6–15 fc ≈ **65–162 lux**). อ่านตารางแก้ที่
+  `knowledge/lighting/lighting-value-attribution-corrections.md` ก่อนใช้ค่าใดค่าหนึ่ง —
+  ค่าที่ encode ไว้ยังไม่ถูกแก้ เพราะการแก้เปลี่ยนผลลัพธ์ที่ gate ตัดสิน (owner decision).
+- **CRI floor:** แหล่งของไฟล์นี้ (turn 2) ไม่ให้ค่า. ค่าพื้นที่สตูดิโอใช้อยู่ที่
+  `knowledge/lighting/lumen-method-and-fixture-placement.md` หัวข้อ **§3 Light quality — CCT
+  per zone + CRI floor** — **CRI ≥ 90** = residential professional floor
+  (single-source Gemini DR, REFERENCE tier) — encode อยู่ที่
+  `pipeline/scripts/dimensional_rules.v0.2.json` → `lighting.cri_min = 90` ซึ่งเป็นไฟล์กฎที่
+  `pipeline/scripts/clearance_check.py` และ `pipeline/scripts/lighting.py` โหลดจริง
+  (ค่าเดียวกันยังค้างอยู่ใน `pipeline/scripts/dimensional_rules.v0.1.json` ฉบับที่ถูก supersede
+  แล้ว — อย่าอ้าง v0.1 เป็นจุด encode / the live rules file is v0.2, not v0.1).
 
-## ความสว่างออกแบบ / Design illuminance (lux) — GAP + law floor
+## ความสว่างออกแบบ / Design illuminance (lux) — pointer + law floor
 
-- Source ยืนยันว่า IES ตีพิมพ์ตาราง recommended illuminance criteria แต่ excerpts
-  **ไม่มีค่า lux รายห้อง/รายงาน** (living, dining, kitchen counter vs general, bedroom,
-  bathroom vanity vs general, corridor, reading) — notebook a5a43395 turn 2 [1]
-  (gap stated explicitly). ห้ามเติมค่าเองจนกว่าจะ ingest ตาราง IES จริง.
-- ระหว่างรอ: ใช้ floor ตามกฎหมายจาก `knowledge/codes-th/mr39-fire-sanitation-ventilation.md`
-  ตาราง 3 เป็นขั้นต่ำ (law wins — ดูหัวข้อ Authority ด้านบน).
+- แหล่ง NLM ของไฟล์นี้ยืนยันว่า IES ตีพิมพ์ตาราง recommended illuminance criteria แต่
+  ตัว excerpts เอง **ไม่มีค่า lux รายห้อง/รายงาน** — notebook a5a43395 turn 2 [1]
+  (stated explicitly). ค่าเหล่านั้นจึงไม่ได้มาจากไฟล์นี้.
+- ค่า design illuminance รายห้อง/รายงาน อยู่ที่
+  `knowledge/lighting/lumen-method-and-fixture-placement.md` หัวข้อ **§2 IES residential
+  illuminance targets** — ตาราง fc + lux 11 แถว ซึ่งแหล่งเรียกว่า **"Indicative" IES
+  maintained targets** (1 fc ≈ 10.76 lux) เช่น Living general **10–20 fc / 108–215 lux**,
+  Kitchen counters **50–80 fc / 538–861 lux**, Bathroom vanity **50–80 fc / 538–861 lux**.
+  **FOREIGN reference — ไม่ใช่มาตรฐานไทย:** IES = Illuminating Engineering Society
+  (North-American recommended practice, หน่วยตั้งต้นเป็น footcandle) — ใช้อ้างอิงได้ แต่ห้ามอ้างว่า
+  applicable-in-Thailand. ค่าชุดนั้นเป็น **single-source REFERENCE** (Gemini DR) — re-verify
+  กับ IES Recommended Practice ฉบับปัจจุบันก่อนให้ค่าใดๆ gate งานส่งลูกค้า.
+- **Law floor ชนะเสมอ:** ค่าข้างต้นเป็น comfort/quality target — ห้ามต่ำกว่า statutory floor ใน
+  `knowledge/codes-th/mr39-fire-sanitation-ventilation.md` ตาราง 3 (law wins — ดูหัวข้อ
+  Authority ด้านบน).
 
 ## หลักแสงเรนเดอร์ / Render lighting principles (Birn-derived, photoreal)
 
@@ -112,19 +162,21 @@
 
 | โปรโตคอล / protocol | ชนิดสัญญาณ / signal | ความละเอียดการควบคุม / control granularity | การใช้งาน / typical use | source |
 |---|---|---|---|---|
-| **0-10V** | analog | หรี่แบบ logarithmic ทั้งวงจร / logarithmic dimming | งานหรี่ไฟทั่วไป / general dimming | Interior Design Knowledge Structuring.pdf p.8 |
-| **DALI / DALI-DT8** | digital addressable (Digital Addressable Lighting Interface) | ควบคุมรายโคมแม่นยำ / precise individual (per-fixture) control | ระบบที่ต้อง address โคมแยกดวง / addressable systems | Interior Design Knowledge Structuring.pdf p.8 |
-| **DMX512** | digital multiplexing | ควบคุมไดนามิกความเร็วสูง / dynamic control | แสงเชิง entertainment / dynamic, entertainment-style lighting | Interior Design Knowledge Structuring.pdf p.8 |
+| **0-10V** | analog | หรี่แบบ logarithmic / logarithmic dimming | งานหรี่ไฟทั่วไป / general dimming | Interior Design Knowledge Structuring.pdf p.8 |
+| **DALI / DALI-DT8** | digital addressable (Digital Addressable Lighting Interface) | ควบคุมรายโคมแม่นยำ / precise individual fixture control | ระบบที่ต้อง address โคมแยกดวง / addressable systems | Interior Design Knowledge Structuring.pdf p.8 |
+| **DMX512** | digital multiplexing | ควบคุมแบบไดนามิก / dynamic control | แสงเชิง entertainment / dynamic, entertainment-style lighting | Interior Design Knowledge Structuring.pdf p.8 |
 
 - **กฎการจับคู่ / matching rule:** control และ dimming protocol ของโคม **ต้อง**
   match กับ electrical/dimming infrastructure ที่มีอยู่ของอาคาร — โคมที่ระบุสเปกต้อง
   interface กับ architectural dimming system ได้โดยไม่เกิด **voltage drops หรือ
   flickering** / fixture control gear must match the building's existing dimming
   infrastructure (Interior Design Knowledge Structuring.pdf p.8).
-- Corroboration: หน้าเดียวกันยืนยันค่า CCT bands ของไฟล์นี้อิสระอีกทาง —
-  warm residential **2200–3000 K** vs cool commercial **4000–5700 K** — และ
-  การใช้ TM-30 (**Rf**/**Rg**) แทน CRI พร้อม track **R9 สูง** สำหรับ reds;
-  values unchanged (Interior Design Knowledge Structuring.pdf p.8).
+- **Corroboration (บางส่วน — ไม่ใช่ทั้งหมด):** หน้าเดียวกันยืนยันอิสระอีกทางเฉพาะ CCT bands
+  ของไฟล์นี้ — warm residential **2200–3000 K** vs cool commercial **4000–5700 K** —
+  และการใช้ TM-30 (**Rf**/**Rg**) แทน CRI: สองรายการนี้ค่าตรงกัน.
+  **แต่ R9 ไม่ corroborate:** p.8 จำกัดขอบเขต "high R9" ไว้ที่ **hospitality and dining**
+  ไม่ใช่ residential — ดูหัวข้อ Color rendition ด้านบน
+  (`knowledge/_inbox/id-project-corpus/Interior Design Knowledge Structuring.pdf` p.8).
 - **GAP:** คำแนะนำเลือกโปรโตคอลรายประเภทห้อง/สเกลพักอาศัย (ห้องไหนควรใช้
   0-10V vs DALI vs DMX512) — corpus ไม่ให้ / protocol-per-room-type guidance
   absent from source.
@@ -133,8 +185,9 @@
 
 > PROVENANCE (this section only): distilled from
 > `knowledge/_inbox/id-project-corpus/Automated Production QA Scoring Systems.pdf`
-> pp.4–5, 12 and `knowledge/_inbox/id-project-corpus/Automated Vision QA for
-> Interiors.pdf` pp.6–7 (DR reports, REFERENCE tier, staged 2026-07-03).
+> pp.4–5, 12 and
+> `knowledge/_inbox/id-project-corpus/Automated Vision QA for Interiors.pdf`
+> pp.6–7 (DR reports, REFERENCE tier, staged 2026-07-03).
 > Vocabulary สำหรับรีวิวภาพเรนเดอร์ photoreal — ไม่ใช่ gate; ดู threshold caveat ท้ายหัวข้อ.
 
 Generative artifacts ด้านแสงที่พบบ่อย: แหล่งแสงขัดแย้งกัน, เงาวิ่งทิศที่เป็นไปไม่ได้
@@ -182,16 +235,20 @@ gate. Gate จริงใดๆ ต้องเสนอผ่าน **PR ต�
 
 ## ช่องว่างข้อมูล / Gaps in source (ห้ามเติมเอง — ingest เพิ่มเท่านั้น)
 
-1. ค่า lux ออกแบบรายห้อง/รายงานจากตาราง IES — ไม่มีใน excerpts (turn 2).
-2. อัตราส่วน ambient:task:accent เชิงตัวเลข — ไม่มี (turn 2).
-3. ค่าตัวเลข CRI / R9 / Rf / Rg ขั้นต่ำหรือเป้าหมาย — ไม่มี (turn 2).
-4. CCT รายห้องและ CCT ของ task lighting — ไม่มี (turn 2).
-5. นิยามละเอียดของ Birn "motivation" และ "exposure discipline" — excerpts มีเพียง
+ขอบเขต: รายการนี้คือสิ่งที่ **แหล่งของไฟล์นี้** (NLM turn 2 / inbox lighting.md /
+id-project-corpus PDFs) ไม่ให้. ค่า lux รายห้อง · layering ratios · CRI floor · CCT รายห้อง
+ไม่อยู่ในรายการนี้แล้ว — ทั้งสี่ชี้ไปที่
+`knowledge/lighting/lumen-method-and-fixture-placement.md` ตามหัวข้อที่เกี่ยวข้องด้านบน.
+
+1. ค่าตัวเลขเป้าหมายของ **Rf / Rg / R9** — ไม่มี (turn 2; PDF p.8 พูดถึง R9 เชิงคุณภาพเท่านั้น
+   และจำกัดขอบเขตไว้ที่ hospitality/dining).
+2. **CCT ของ task lighting** (reading / vanity / counter) — ไม่มี (turn 2).
+3. นิยามละเอียดของ Birn "motivation" และ "exposure discipline" — excerpts มีเพียง
    high-level summaries (turn 2 / inbox lighting.md).
-6. ค่า divergence threshold เชิงตัวเลขของ light-coherence QA — hard gate ของ
+4. ค่า divergence threshold เชิงตัวเลขของ light-coherence QA — hard gate ของ
    Δ_light_angle และขอบบนของ soft band ถูก clip ใน PDF export กู้ไม่ได้
    (รอดเพียงขอบล่าง 15°; Automated Production QA Scoring Systems.pdf p.12) —
    ห้าม invent; gate จริงต้องผ่าน PR ต่อ `qa/thresholds.yaml`.
-7. คำแนะนำ dimming protocol รายประเภทห้อง (0-10V vs DALI vs DMX512 ต่อ
+5. คำแนะนำ dimming protocol รายประเภทห้อง (0-10V vs DALI vs DMX512 ต่อ
    living / bedroom / bath ฯลฯ) — corpus ไม่ให้ (Interior Design Knowledge
    Structuring.pdf p.8 ให้เพียง taxonomy + กฎ match infrastructure).

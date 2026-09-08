@@ -24,6 +24,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path:
     sys.path.insert(0, HERE)
 import furniture   # pure-python massing (INCHES)
+import placement_gate  # bpy-free pure logic: scene_zone_decision (owner-signed below_grade -> excluded)
+import floor_openings  # bpy-free pure logic: doors/windows/glass wall-cuts + boxes
 
 MM = 0.001
 IN = 0.0254
@@ -42,6 +44,14 @@ def _mat(name, rgba, rough=0.85):
     if b:
         b.inputs["Base Color"].default_value = rgba
         b.inputs["Roughness"].default_value = rough
+        if rgba[3] < 1.0:                     # translucent (glass panes)
+            b.inputs["Alpha"].default_value = rgba[3]
+            for attr, val in (("blend_method", "BLEND"),
+                              ("surface_render_method", "BLENDED")):
+                try:                          # EEVEE legacy vs Next: set whichever exists
+                    setattr(m, attr, val)
+                except (AttributeError, TypeError):
+                    pass
     m.diffuse_color = rgba
     _MATS[name] = m
     return m
@@ -49,6 +59,7 @@ def _mat(name, rgba, rough=0.85):
 
 PALETTE = {
     "wall":  ((0.88, 0.86, 0.82, 1.0), 0.9),    # walls – warm off-white plaster
+    "glass": ((0.60, 0.76, 0.80, 0.30), 0.05),  # window/facade panes – translucent
     "floor": ((0.72, 0.69, 0.64, 1.0), 0.9),    # groundplane
     "wood":  ((0.74, 0.65, 0.53, 1.0), 0.7),    # furniture
     "seat":  ((0.80, 0.75, 0.67, 1.0), 0.75),   # upholstery
@@ -141,6 +152,23 @@ def build_walls(segments, h_m, thick_m, coll, zones=None):
     return n
 
 
+def build_openings(openings, ceiling_mm, coll):
+    """Windows/doors/glass as REAL geometry. floor_openings.opening_boxes computes the
+    boxes (glass pane, sill wall, lintel); this only extrudes them -- no decision logic
+    in the bpy layer. Bare 'opening' type contributes nothing (an honest passage)."""
+    n = 0
+    for o in openings:
+        for b in floor_openings.opening_boxes(o, ceiling_mm):
+            r = b["rect"]
+            add_box(f"open_{o.get('id', '?')}_{b['kind']}_{n}",
+                    r[0] * MM, r[1] * MM, b["z0_mm"] * MM,
+                    (r[2] - r[0]) * MM, (r[3] - r[1]) * MM,
+                    (b["z1_mm"] - b["z0_mm"]) * MM,
+                    matp("glass" if b["kind"] == "glass" else "wall"), coll)
+            n += 1
+    print(f"  openings: {n} boxes (glass/sill/lintel)")
+
+
 # --------------------------------------------------------------------- furniture overlay
 def place_massing(kind, name, sw_x, sw_y, w, d, h, rot, base_z, mat_furn, mat_box, coll):
     pivot = (sw_x + w / 2.0, sw_y + d / 2.0)
@@ -210,6 +238,8 @@ def build_furniture(spec, dx_mm, dy_mm, coll):
 
     def place(lst, base_default=0.0, seat_ok=False):
         for it in lst or []:
+            if placement_gate.scene_zone_decision(it)["action"] == "skip":
+                continue                               # owner-signed below_grade: ground-below, not a floor-2 object
             kind = it.get("kind", "block")
             bz = (it.get("mount_mm", 0) or 0) * MM
             mat = seat if (seat_ok and kind in ("sofa", "loveseat", "armchair", "chair", "bench")) else furn
@@ -407,6 +437,13 @@ def require_placement_gate(manifest_path, man, man_dir, repo_root, accept_review
     ledger_path = os.path.join(man_dir, "placement-review.json")
     if os.path.exists(ledger_path) or "placement-review.json" in marker_inputs:
         required["placement-review.json"] = ledger_path
+    # overlay freshness: the owner's REVIEW sign-off is made by SCANNING review-read-vs-sheet*;
+    # a marker gated before the overlay changed (or an overlay deleted/added after gating) must
+    # refuse exactly like a spec edit. Same present-and-matching-or-absent-in-both rule as the
+    # ledger above. Logic lives in placement_gate (top level is stdlib-only, safe in Blender
+    # python; HERE is already on sys.path) so this bpy module carries no decision logic.
+    from placement_gate import overlay_required
+    required.update(overlay_required(man_dir, marker_inputs))
     bad = []
     for name, path in required.items():
         have = _sha1(path) if os.path.exists(path) else None
@@ -437,12 +474,18 @@ def require_placement_gate(manifest_path, man, man_dir, repo_root, accept_review
         print("  [OK] placement gate: PASS (machine-verified reading)")
 
 
+RENDER_VIRTUAL = False
+
+
 def main():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     manifest_path = next((a for a in argv if not a.startswith("-")), None)
     if not manifest_path:
         raise SystemExit("usage: build_floor.py -- <floor-manifest.json> [--render] [--out DIR] [--no-gate]")
     do_render = "--render" in argv
+    global RENDER_VIRTUAL
+    RENDER_VIRTUAL = "--render-virtual" in argv   # D4: opt-in, and it lands in its
+    #   own clearly-named collection so it can never be mistaken for the sheet.
     out_dir = argv[argv.index("--out") + 1] if "--out" in argv else None
 
     with open(manifest_path, encoding="utf-8") as f:
@@ -495,7 +538,56 @@ def main():
     with open(walls_path, encoding="utf-8") as f:
         wj = json.load(f)
     segs = wj["segments"] if isinstance(wj, dict) else wj
+
+    # ---------------------------------------------------------------- D4: THE PHANTOM WALL
+    # MEASURED 2026-07-12: the whole-floor shell was extruding a 4600 mm wall across the living
+    # room that the plan DOES NOT DRAW, plus three more stubs. Source: bluehouse_plan_reader
+    # appends its VIRTUAL edges (the owner-signed north zoning line + the agent-provisional BF01
+    # extension and SW corner stubs) to `segments`, tagged in the parallel `segment_classes` list
+    # -- and this loader took `wj["segments"]` wholesale and never looked at the classes. 8 of the
+    # 98 segments were `signed_virtual`. A zoning line in an OPEN PLAN is not a wall; the room
+    # polygon needs it to close, the FLOOR SHELL must not build it.
+    #
+    # Only INK classes are extruded. Everything else is DECLARED and skipped, loudly.
+    INK_CLASSES = {"wall_poche", "wall_step"}
+    classes = wj.get("segment_classes") if isinstance(wj, dict) else None
+    if classes and len(classes) == len(segs):
+        keep = [s for s, c in zip(segs, classes) if c in INK_CLASSES]
+        dropped = {}
+        for s, c in zip(segs, classes):
+            if c not in INK_CLASSES:
+                dropped[c] = dropped.get(c, 0) + 1
+        if dropped:
+            print(f"  D4 GUARD: {len(segs) - len(keep)} of {len(segs)} segments are NOT INK and "
+                  f"are NOT extruded into the floor shell: "
+                  + ", ".join(f"{n} x {c}" for c, n in sorted(dropped.items())))
+            print("    (a virtual/zoning edge closes a ROOM POLYGON; it is not a wall on the "
+                  "sheet and the floor shell may not invent it. Pass --render-virtual to see "
+                  "them, and they render as a declared, separate collection.)")
+        if RENDER_VIRTUAL:
+            print("    --render-virtual: extruding them anyway, into VIRTUAL_not_on_the_sheet")
+            build_walls([s for s, c in zip(segs, classes) if c not in INK_CLASSES],
+                        h_m, thick_m, new_collection("VIRTUAL_not_on_the_sheet"))
+        segs = keep
+    elif isinstance(wj, dict) and "segment_classes" not in wj:
+        print("  D4 GUARD: this walls-json carries NO segment_classes -- every segment is being "
+              "extruded. If it came from bluehouse_plan_reader, that is a BUG (it always emits "
+              "classes); if it is a legacy pdf_extract_walls file, all of its segments are ink.")
+
+    # 1b) doors/windows/glass (owner 2026-07-10: "ถ้าไม่ใส่เข้า model เวลา render ออกมามันก็ว่าง"):
+    # cut the walls at each declared opening, then contribute glass panes / sills /
+    # lintels back (floor_openings computes; heights are DISCLOSED render defaults)
+    openings = []
+    if man.get("openings_json"):
+        op_path = man["openings_json"] if os.path.isabs(man["openings_json"]) \
+            else os.path.join(repo_root, man["openings_json"])
+        with open(op_path, encoding="utf-8") as f:
+            openings = json.load(f).get("openings", [])
+        segs, n_cut = floor_openings.clip_wall_segments(segs, openings)
+        print(f"  openings: {len(openings)} declared, {n_cut} wall segments cut")
     nwall = build_walls(segs, h_m, thick_m, new_collection("WALLS_from_PDF"), man.get("clip_zones"))
+    if openings:
+        build_openings(openings, man.get("ceiling_mm", 2800), new_collection("OPENINGS"))
 
     if man.get("floor_zones"):
         build_floor_zones(man["floor_zones"], new_collection("floor_zones"))
