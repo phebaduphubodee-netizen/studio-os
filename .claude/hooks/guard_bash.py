@@ -143,6 +143,163 @@ BLOCKED = [
 # The real control is network-egress denial at the sandbox layer; treat these patterns as
 # defence-in-depth, not a guarantee.
 
+# --- CONTENT FLOWING INTO A PROGRAM NOBODY NAMED (2026-09-08) ---------------------------------
+# Every rule above names its SINK (notebooklm, curl, scp, critique.py ...). Evaluating Fabric that
+# day showed the shape, tested against this very file: `cat clients/C-001/x.md | fabric -p summarize`
+# passed, `fabric -a _private/x.png` passed, `cat _private/x | base64 | curl -d @-` passed (the
+# pipe rule above only looks at the ADJACENT segment) — and so will every binary installed next
+# month, because a rule that names the objects it applies to will always exempt the next one (R9b).
+# The fix is not one more name on the sink list; it is the inverse list. When protected content
+# (an IDENTIFIERS hit: clients/C-NNN, _private/, projects/PRJ-..., 00_intake, a project id) sits
+# in a pipeline, EVERY program downstream of it must be one this shell knows stays local, or the
+# call is blocked. The same for `< file` redirects and attachment-style flags (-a, --attachment,
+# --file, --upload, --input, --body-file, -InFile). PowerShell cmdlets are Verb-Noun and the verb
+# decides (Get/Select/Format/... local; Invoke/Send/Publish/Push/Start block; unknown verb blocks).
+# A relative script path (./x.sh, scripts/x.py) is this repo's own and passes here — the named
+# script rules above still apply to it. A local tool missing from LOCAL_TOOLS costs one line here
+# plus a check_allow in scripts/test_guards.sh: that is the cheap direction, and it is deliberate.
+# STILL OUT OF SCOPE, said plainly: a relay through a temp file (`cat _private/x > /tmp/y; tool
+# < /tmp/y`), a heredoc pasted from memory, and a bare file name that carries no identifier.
+LOCAL_TOOLS = set("""
+cat head tail grep egrep fgrep rg ag sed awk gawk sort uniq wc cut tr tee less more column paste jq yq
+join comm diff cmp find fd ls dir du df stat file basename dirname realpath readlink cygpath od
+xxd hexdump strings base64 md5sum sha1sum sha256sum echo printf test true false yes seq sleep
+date env printenv export set read mapfile tac rev nl fold fmt pr split csplit shuf tsort iconv
+dos2unix unix2dos nproc uname which where type hash cp mv rm mkdir rmdir touch ln chmod clip
+python python3 py pytest node ruby perl bash sh zsh pwsh powershell cmd
+git blender ffmpeg ffprobe ffplay magick convert identify exiftool pdftotext pdftoppm pdfinfo
+pdfimages tesseract 7z zip unzip tar gzip gunzip xz zstd bzip2 code notepad explorer
+""".split())
+_SHELL_WORDS = {"while", "for", "if", "then", "else", "elif", "do", "done", "fi", "case", "esac",
+                "until", "select", "function", "%", "?"}
+_WRAPPERS = {"sudo", "doas", "time", "nohup", "exec", "command", "builtin", "nice", "stdbuf",
+             "env", "timeout", "&", "(", "{", "!"}
+_PS_LOCAL_VERBS = {"get", "select", "where", "foreach", "sort", "format", "out", "measure",
+                   "convertfrom", "convertto", "group", "compare", "tee", "set", "add", "write",
+                   "export", "import", "test", "split", "join", "new", "remove", "copy", "move",
+                   "rename", "clear", "read", "find", "resolve", "expand", "compress", "update"}
+_PS_SINK_VERBS = {"invoke", "send", "publish", "push", "connect", "start", "register", "submit"}
+
+_TOKEN_RE = re.compile(r'''"[^"]*"|'[^']*'|\S+''')
+_ENV_ASSIGN_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")
+_XARGS_ARG_FLAGS = re.compile(r"^-(n|P|L|s|I|d|a|E|l|max-args|max-procs|delimiter|replace)$")
+_REDIRECT_RE = re.compile(r"""(?<![<>0-9])<(?![<(&])\s*("[^"]+"|'[^']+'|[^\s|;&<>]+)""")
+_ATTACH_RE = re.compile(
+    r"""(?i)(?:^|\s)(?:-a|--attach(?:ment)?s?|--files?|--upload(?:-file)?|--input(?:-file)?|--image|
+        --body-file|--data-file|-InFile)(?:=|\s+)@?("[^"]+"|'[^']+'|[^\s|;&]+)""", re.X)
+
+
+def _split_outside_quotes(s, seps):
+    parts, buf, i, q = [], [], 0, None
+    while i < len(s):
+        c = s[i]
+        if q:
+            buf.append(c)
+            if c == q:
+                q = None
+            elif c == "\\" and q == '"' and i + 1 < len(s):
+                buf.append(s[i + 1])
+                i += 1
+            i += 1
+            continue
+        if c in ("'", '"'):
+            q = c
+            buf.append(c)
+            i += 1
+            continue
+        sep = next((x for x in seps if s.startswith(x, i)), None)
+        if sep:
+            parts.append("".join(buf))
+            buf = []
+            i += len(sep)
+            continue
+        buf.append(c)
+        i += 1
+    parts.append("".join(buf))
+    return parts
+
+
+def head_of(segment):
+    """The program that receives the bytes of a pipe segment, after wrappers. None = nothing."""
+    toks = _TOKEN_RE.findall(segment)
+    i = 0
+    while i < len(toks):
+        t = toks[i]
+        low = t.lower()
+        if _ENV_ASSIGN_RE.match(t) or low in _WRAPPERS or low.strip("(){}!") == "":
+            if low == "timeout" and i + 1 < len(toks) and re.match(r"^\d", toks[i + 1]):
+                i += 1
+            if low == "stdbuf":
+                while i + 1 < len(toks) and toks[i + 1].startswith("-"):
+                    i += 1
+            i += 1
+            continue
+        if low.startswith(("(", "{")) and len(low) > 1:
+            return low.lstrip("({")
+        if low == "xargs":
+            i += 1
+            while i < len(toks) and toks[i].startswith("-"):
+                flag = toks[i]
+                i += 1
+                if _XARGS_ARG_FLAGS.match(flag) and i < len(toks):
+                    i += 1
+            if i >= len(toks):
+                return "echo"          # bare xargs prints
+            continue
+        return t
+    return None
+
+
+def head_name(token):
+    """Bare program name of a head token: quotes off, path off, .exe off, lower-cased.
+    -> (name, relative_script) where relative_script means './x.py' / 'scripts/x.sh' style."""
+    if token is None:
+        return None, False
+    t = token.strip("\"'").lstrip("&").strip().rstrip(");}").lstrip("({")
+    p = t.replace("\\", "/")
+    if "/" in p:
+        absolute = p.startswith("/") or re.match(r"^[A-Za-z]:/", p) is not None
+        name = p.rstrip("/").rsplit("/", 1)[-1]
+        return re.sub(r"\.(exe|cmd|bat|com)$", "", name.lower()), not absolute
+    return re.sub(r"\.(exe|cmd|bat|com)$", "", t.lower()), False
+
+
+def is_local(token):
+    name, relative_script = head_name(token)
+    if name is None or name == "" or name in _SHELL_WORDS:
+        return True
+    if relative_script:
+        return True                    # a script of this repo; the named-script rules still apply
+    if name in LOCAL_TOOLS:
+        return True
+    m = re.match(r"^([a-z]+)-[a-z][a-z0-9]*$", name)   # PowerShell Verb-Noun
+    if m:
+        verb = m.group(1)
+        if verb in _PS_SINK_VERBS:
+            return False
+        return verb in _PS_LOCAL_VERBS
+    return False
+
+
+def unknown_downstream(cmd):
+    """-> (program_name, how) when protected content reaches a program not known to be local."""
+    for pipeline in _split_outside_quotes(cmd, ["&&", "||", ";", "\n"]):
+        segs = _split_outside_quotes(pipeline, ["|&", "|"])
+        first_hit = None
+        for i, seg in enumerate(segs):
+            hit = find_leak(seg, (IDENTIFIERS,))
+            head = head_of(seg)
+            if hit:
+                if first_hit is None:
+                    first_hit = i
+                targets = [m.group(1) for m in _REDIRECT_RE.finditer(seg)]
+                targets += [m.group(1) for m in _ATTACH_RE.finditer(seg)]
+                if any(find_leak(t, (IDENTIFIERS,)) for t in targets) and not is_local(head):
+                    return head_name(head)[0], "reads it through `<` or an attachment-style flag"
+            if first_hit is not None and i > first_hit and not is_local(head):
+                return head_name(head)[0], "sits downstream of it in a pipe"
+    return None
+
 # Paths that must never be touched via shell redirection/moves either.
 PROTECTED_PATH_HINTS = [
     "qa/thresholds.yaml",
@@ -179,6 +336,20 @@ def main() -> int:
                 file=sys.stderr,
             )
             return 2
+
+    unknown = unknown_downstream(cmd)
+    if unknown:
+        name, how = unknown
+        print(
+            f"BLOCKED by guard_bash: client/private/project content {how}, and `{name}` is a "
+            f"program no rule knows stays on this machine. Everything downstream of clients/, "
+            f"_private/, projects/PRJ-... content must be in LOCAL_TOOLS (.claude/hooks/guard_bash.py) "
+            f"or a PowerShell cmdlet with a local verb. If `{name}` is local-only, add its name there "
+            f"together with a check_allow in scripts/test_guards.sh (a PR — the hook guards itself); "
+            f"if it talks to the network, this block is the point. Command: {cmd[:200]}",
+            file=sys.stderr,
+        )
+        return 2
 
     lowered = cmd.lower().replace("\\", "/")
     if any(tok in lowered for tok in ("rm ", "mv ", " > ", ">> ", "tee ",
